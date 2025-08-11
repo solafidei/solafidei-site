@@ -3,6 +3,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Brand colors (update these to match your logo) */
+  --brand-start: #22d3ee; /* cyan-400 */
+  --brand-end: #a78bfa;   /* violet-300 */
 }
 
 @theme inline {
@@ -17,6 +20,14 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+}
+
+/* Support class-based dark mode (next-themes) */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --brand-start: #22d3ee;
+  --brand-end: #a78bfa;
 }
 
 body {
