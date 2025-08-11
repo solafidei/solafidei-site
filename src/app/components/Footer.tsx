@@ -8,7 +8,7 @@ export function Footer() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>
           <Link href="#home" className="flex items-center gap-2">
-            <Image src="/logo_smaller.png" alt="Solafidei" width={28} height={28} className="h-7 w-auto rounded" />
+            <Image src="/logo_opaque_smaller.png" alt="Solafidei" width={28} height={28} className="h-7 w-auto rounded" />
             <span className="font-semibold tracking-wide">SOLAFIDEI</span>
           </Link>
           <p className="mt-2 text-sm text-black/60 dark:text-white/70">We design and build modern, intuitive web and mobile apps to help you launch and scale with confidence.</p>

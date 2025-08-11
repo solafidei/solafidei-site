@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Mail, Sparkles } from "lucide-react";
 import { useScroll, useTransform } from "framer-motion";
-import BackgroundScene from "./BackgroundScene";
+// import BackgroundScene from "./BackgroundScene";
 import RotatingRingScene from "./RotatingRingScene";
 import { fadeInUp, stagger } from "./animations";
 
@@ -14,7 +14,7 @@ export function Hero() {
 
   return (
     <section id="home" className="relative overflow-hidden">
-      {/* <BackgroundScene className="pointer-events-none absolute inset-0 -z-20" maskSrc="/logo_smaller.png" /> */}
+      {/* <BackgroundScene className="pointer-events-none absolute inset-0 -z-20" maskSrc="/logo_opaque_smaller.png" /> */}
       <RotatingRingScene className="pointer-events-none absolute inset-0 -z-10" gapAngleDeg={36} thickness={10} outerRadius={48} speed={0.7} />
       <div className="mx-auto max-w-7xl px-4 py-20 md:py-28 text-center">
         <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}>

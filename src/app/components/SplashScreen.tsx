@@ -37,7 +37,7 @@ export function SplashScreen({ durationMs = 1000 }: SplashScreenProps) {
       <StarField />
       <RotatingRingScene className="pointer-events-none absolute inset-0" gapAngleDeg={36} thickness={8} outerRadius={30} speed={0.7} />
       <div className="absolute inset-0 flex items-center justify-center">
-        <Image src="/logo_smaller.png" alt="Solafidei" width={160} height={160} className="h-20 w-auto opacity-90" priority />
+        <Image src="/logo_opaque_smaller.png" alt="Solafidei" width={160} height={160} className="h-20 w-auto opacity-90" priority />
       </div>
     </div>
   );

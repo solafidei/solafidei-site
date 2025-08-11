@@ -1,16 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowRight, Sun, Moon } from "lucide-react";
-import { useTheme } from "next-themes";
-import React, { useEffect, useState } from "react";
+import { ArrowRight } from "lucide-react";
 
 export function Nav() {
   return (
     <div className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-white/70 border-b border-black/10 dark:supports-[backdrop-filter]:bg-black/40 dark:border-white/10">
       <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Image src="/logo_smaller.png" alt="Solafidei logo" height={28} width={28} className="h-7 w-auto rounded" priority />
+          <Image src="/logo_opaque_smaller.png" alt="Solafidei logo" height={28} width={28} className="h-7 w-auto rounded" priority />
           <span className="font-semibold tracking-wide">SOLAFIDEI</span>
         </div>
         <nav className="hidden sm:flex items-center gap-6 text-sm text-black/70 dark:text-white/70">
@@ -21,7 +19,7 @@ export function Nav() {
           <a className="hover:text-black dark:hover:text-white" href="#contact">Contact</a>
         </nav>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
+          {/* <ThemeToggle /> */}
           <a
             href="https://cal.com/your-handle"
             target="_blank"
@@ -35,6 +33,7 @@ export function Nav() {
   );
 }
 
+/*
 function ThemeToggle() {
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -61,5 +60,6 @@ function ThemeToggle() {
     </button>
   );
 }
+*/
 
 

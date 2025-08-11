@@ -23,9 +23,9 @@ export const metadata: Metadata = {
   description:
     "We design and build modern, intuitive web and mobile apps that help innovative companies launch and scale digital products with confidence.",
   icons: {
-    icon: "/logo_smaller.png",
-    shortcut: "/logo_smaller.png",
-    apple: "/logo_smaller.png",
+    icon: "/logo_opaque_smaller.png",
+    shortcut: "/logo_opaque_smaller.png",
+    apple: "/logo_opaque_smaller.png",
   },
   openGraph: {
     title: "Solafidei",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     siteName: "Solafidei",
     images: [
       {
-        url: "/logo_smaller.png",
+        url: "/logo_opaque_smaller.png",
         width: 1200,
         height: 630,
         alt: "Solafidei",
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     title: "Solafidei",
     description:
       "We design and build modern, intuitive web and mobile apps that help innovative companies launch and scale digital products with confidence.",
-    images: ["/logo_smaller.png"],
+    images: ["/logo_opaque_smaller.png"],
   },
   robots: {
     index: true,
@@ -66,7 +66,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <StarField />
         <Providers>{children}</Providers>
@@ -79,7 +79,7 @@ export default function RootLayout({
               "@type": "Organization",
               name: "Solafidei",
               url: "https://solafidei.com",
-              logo: "https://solafidei.com/logo_smaller.png",
+              logo: "https://solafidei.com/logo_opaque_smaller.png",
               email: "info@solafidei.com",
               sameAs: [],
             }),
