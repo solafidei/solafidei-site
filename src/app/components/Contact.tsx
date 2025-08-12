@@ -1,7 +1,8 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+// Using implicit Turnstile rendering; no local component needed
 
 export function Contact() {
   const [name, setName] = useState("");
@@ -9,6 +10,26 @@ export function Contact() {
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState<null | { ok: boolean; error?: string }>(null);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [emailTouched, setEmailTouched] = useState(false);
+
+  function isValidEmail(value: string): boolean {
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
+    return emailRegex.test(value.trim());
+  }
+  const emailIsValid = isValidEmail(email);
+  const emailShowError = emailTouched && !emailIsValid;
+
+  // Implicit render callback handler (per docs): window.turnstile passes token to named callback
+  useEffect(() => {
+    (window as unknown as { onTurnstileSuccess?: (token: string) => void }).onTurnstileSuccess = (token: string) => {
+      setTurnstileToken(token || "");
+    };
+    return () => {
+      const w = window as unknown as { onTurnstileSuccess?: (token: string) => void };
+      if (w.onTurnstileSuccess) delete w.onTurnstileSuccess;
+    };
+  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -19,7 +40,7 @@ export function Contact() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify({ name, email, message, turnstileToken }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Failed to send");
@@ -50,14 +71,24 @@ export function Contact() {
             className="rounded-xl border border-black/10 bg-white px-3 py-2 text-sm outline-none placeholder:text-black/40 dark:border-white/10 dark:bg-white/10 dark:placeholder:text-white/40"
             placeholder="Your name"
           />
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="rounded-xl border border-black/10 bg-white px-3 py-2 text-sm outline-none placeholder:text-black/40 dark:border-white/10 dark:bg-white/10 dark:placeholder:text-white/40"
-            placeholder="Your email"
-          />
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => setEmailTouched(true)}
+              aria-invalid={emailShowError}
+              aria-describedby={emailShowError ? "email-error" : undefined}
+              className="rounded-xl border border-black/10 bg-white px-3 py-2 text-sm outline-none placeholder:text-black/40 dark:border-white/10 dark:bg-white/10 dark:placeholder:text-white/40"
+              placeholder="Your email"
+              inputMode="email"
+              autoComplete="email"
+            />
+            {emailShowError && (
+              <p id="email-error" className="mt-1 text-xs text-red-600 dark:text-red-400">
+                Please enter a valid email address.
+              </p>
+            )}
           <textarea
             required
             value={message}
@@ -65,12 +96,21 @@ export function Contact() {
             className="rounded-xl border border-black/10 bg-white px-3 py-2 text-sm outline-none placeholder:text-black/40 min-h-[90px] dark:border-white/10 dark:bg-white/10 dark:placeholder:text-white/40"
             placeholder="How can we help you?"
           />
+          {/* Implicitly rendered widget per Cloudflare docs */}
+          <div className="flex justify-center">
+            <div
+              className="cf-turnstile"
+              data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+              data-callback="onTurnstileSuccess"
+              data-size="flexible"
+            />
+          </div>
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || !turnstileToken || !emailIsValid}
             className="rounded-xl bg-black text-white px-3 py-2 text-sm hover:bg-black/90 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {submitting ? "Sending..." : "Send Message"}
+            {submitting ? "Sending..." : !turnstileToken ? "Verify CAPTCHA" : "Send Message"}
           </button>
           {status?.ok && (
             <p className="text-sm text-green-600 dark:text-green-400">Thanks! Your message has been sent.</p>

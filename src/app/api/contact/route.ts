@@ -4,11 +4,14 @@ import { Resend } from "resend";
 const resendApiKey = process.env.RESEND_API_KEY;
 const emailFrom = process.env.EMAIL_FROM || "Solafidei <onboarding@resend.dev>";
 const emailTo = process.env.EMAIL_TO || "info@solafidei.com";
+const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
 
 type ContactPayload = {
   name?: string;
   email?: string;
   message?: string;
+  turnstileToken?: string;
+  "cf-turnstile-response"?: string;
 };
 
 export async function POST(request: Request) {
@@ -23,9 +26,28 @@ export async function POST(request: Request) {
     const name = (body.name || "").trim();
     const email = (body.email || "").trim();
     const message = (body.message || "").trim();
+    const captchaToken = ((body.turnstileToken || body["cf-turnstile-response"]) || "").trim();
 
     if (!name || !email || !message) {
       return NextResponse.json({ error: "All fields are required." }, { status: 400 });
+    }
+
+    // Verify Turnstile if secret is configured
+    if (turnstileSecret) {
+      if (!captchaToken) {
+        return NextResponse.json({ error: "Captcha required." }, { status: 400 });
+      }
+      const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ secret: turnstileSecret, response: captchaToken }),
+        next: { revalidate: 0 },
+      });
+      const verifyJson = (await verifyRes.json()) as { success?: boolean; "error-codes"?: string[] };
+      if (!verifyJson.success) {
+        console.error("Turnstile verify failed", verifyJson);
+        return NextResponse.json({ error: "Captcha verification failed.", codes: verifyJson["error-codes"] ?? [] }, { status: 400 });
+      }
     }
 
     // Basic email format check
