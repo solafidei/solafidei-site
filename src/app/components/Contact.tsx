@@ -48,6 +48,13 @@ export function Contact() {
       setName("");
       setEmail("");
       setMessage("");
+      // Clear validation and reset captcha after successful send
+      setEmailTouched(false);
+      setTurnstileToken("");
+      try {
+        const w = window as unknown as { turnstile?: { reset?: (id?: unknown) => void } };
+        w.turnstile?.reset?.();
+      } catch {}
     } catch (err) {
       setStatus({ ok: false, error: (err as Error).message });
     } finally {
