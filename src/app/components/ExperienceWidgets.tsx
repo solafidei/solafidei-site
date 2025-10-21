@@ -37,6 +37,8 @@ function LeadsWidget() {
       { name: "Innocent Munyadziwa", role: "Tech Lead", skills: "TypeScript, JavaScript, C#, SQL, Java, AWS, Azure, Terraform" },
       { name: "Muema Kamba", role: "Tech Lead", skills: "TypeScript, JavaScript, Java, Python, Go, Rust, AWS" },
       { name: "Daniel Jorge", role: "Mobile Developer", skills: "Flutter, React Native, Node.js, AWS, Firebase, Code Magic"},
+      { name: "Den Radkevich", role: "Developer", skills: "TypeScript, JavaScript, React, React Native, NodeJS, SQL" },
+      { name: "Nathan Boyega", role: "Product Strategy & Design", skills: "Product Strategy, Product Design, Design Systems" },
     ],
     []
   );
