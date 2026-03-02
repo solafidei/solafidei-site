@@ -20,10 +20,10 @@ export function Testimonials() {
       <h2 className="text-center text-2xl md:text-3xl font-semibold">Why teams choose Solafidei</h2>
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
         {items.map((t, i) => (
-          <div key={i} className="rounded-2xl border border-black/10 bg-white/50 p-5 dark:border-white/10 dark:bg-white/5">
-            <p className="text-sm text-black/80 dark:text-white/80">“{t.quote}”</p>
-            <div className="mt-3 text-sm text-black/60 dark:text-white/70">{t.author}</div>
-            <div className="text-xs text-black/50 dark:text-white/50">{t.role}</div>
+          <div key={i} className="rounded-2xl border border-white/10 bg-white/5 p-5">
+            <p className="text-sm text-white/80">“{t.quote}”</p>
+            <div className="mt-3 text-sm text-white/70">{t.author}</div>
+            <div className="text-xs text-white/50">{t.role}</div>
           </div>
         ))}
       </div>

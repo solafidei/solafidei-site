@@ -22,18 +22,18 @@ export function CaseStudies() {
   return (
     <section id="work" className="mx-auto max-w-7xl px-4 py-16 md:py-20">
       <h2 className="text-center text-2xl md:text-3xl font-semibold">Case Studies</h2>
-      <p className="mx-auto mt-2 max-w-xl text-center text-black/60">
+      <p className="mx-auto mt-2 max-w-xl text-center text-white/70">
         See how Solafidei delivers real-world impact for our clients.
       </p>
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4">
         {studies.map((study, idx) => (
-          <div key={idx} className="rounded-2xl border border-black/10 bg-white/70 p-6 flex flex-col dark:border-white/10 dark:bg-white/5">
+          <div key={idx} className="rounded-2xl border border-white/10 bg-white/5 p-6 flex flex-col">
             <div className="flex items-center gap-3">
               {study.logo && <Logo src={study.logo} alt={`${study.client} logo`} />}
               <div className="font-semibold text-lg">{study.title}</div>
             </div>
-            <div className="mt-2 text-sm text-black/60 flex-1 dark:text-white/70">{study.summary}</div>
-            <div className="mt-4 text-xs text-black/50 dark:text-white/50">Client: {study.client}</div>
+            <div className="mt-2 text-sm text-white/70 flex-1">{study.summary}</div>
+            <div className="mt-4 text-xs text-white/50">Client: {study.client}</div>
           </div>
         ))}
       </div>

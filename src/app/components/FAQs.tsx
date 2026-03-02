@@ -15,7 +15,7 @@ export function FAQs() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 md:py-20">
       <h2 className="text-center text-2xl md:text-3xl font-semibold">We’ve got the answers</h2>
-      <div className="mx-auto mt-6 max-w-3xl divide-y divide-black/10 rounded-2xl border border-black/10 bg-white/50 dark:divide-white/10 dark:border-white/10 dark:bg-white/5">
+      <div className="mx-auto mt-6 max-w-3xl divide-y divide-white/10 rounded-2xl border border-white/10 bg-white/5">
         {faqs.map((f, i) => (
           <div key={i} className="px-4 py-3">
             <button onClick={() => setOpen((v) => (v === i ? null : i))} className="w-full text-left">
@@ -31,7 +31,7 @@ export function FAQs() {
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.25 }}
-                  className="overflow-hidden mt-1 text-sm text-black/60 dark:text-white/70"
+                  className="overflow-hidden mt-1 text-sm text-white/70"
                 >
                   {f.a}
                 </motion.p>

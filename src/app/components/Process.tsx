@@ -39,55 +39,55 @@ export function Process() {
       </h2>
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Step 1 */}
-        <div className="rounded-2xl border border-black/10 bg-white/70 p-5 dark:border-white/10 dark:bg-white/5 flex flex-col">
-          <div className="text-xs text-black/50">Step 1</div>
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-5 flex flex-col">
+          <div className="text-xs text-white/50">Step 1</div>
           <h3 className="mt-1 font-medium">Discover &amp; Define</h3>
-          <p className="mt-2 text-sm text-black/60 dark:text-white/70">
+          <p className="mt-2 text-sm text-white/70">
             We work with you to understand your goals, target users, and the features your app needs to succeed.
           </p>
           <div className="mt-3 space-y-2 flex-1">
             {step1Checklist.map((c) => (
               <div key={c} className="flex items-center gap-2 text-sm">
                 <Check className="h-4 w-4 text-emerald-500" />{" "}
-                <span className="text-black/70 dark:text-white/70">{c}</span>
+                <span className="text-white/70">{c}</span>
               </div>
             ))}
           </div>
         </div>
         {/* Step 2 */}
-        <div className="rounded-2xl border border-black/10 bg-white/70 p-5 dark:border-white/10 dark:bg-white/5 flex flex-col">
-          <div className="text-xs text-black/50">Step 2</div>
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-5 flex flex-col">
+          <div className="text-xs text-white/50">Step 2</div>
           <h3 className="mt-1 font-medium">Design &amp; Architecture</h3>
-          <p className="mt-2 text-sm text-black/60 dark:text-white/70">
+          <p className="mt-2 text-sm text-white/70">
             We craft intuitive UI/UX and plan robust technical architecture for your app.
           </p>
-          <ul className="mt-3 space-y-2 text-sm text-black/70 dark:text-white/70 list-disc list-inside flex-1">
+          <ul className="mt-3 space-y-2 text-sm text-white/70 list-disc list-inside flex-1">
             {step2Checklist.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
         </div>
         {/* Step 3 */}
-        <div className="rounded-2xl border border-black/10 bg-white/70 p-5 dark:border-white/10 dark:bg-white/5 flex flex-col">
-          <div className="text-xs text-black/50">Step 3</div>
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-5 flex flex-col">
+          <div className="text-xs text-white/50">Step 3</div>
           <h3 className="mt-1 font-medium">Build &amp; Integrate</h3>
-          <p className="mt-2 text-sm text-black/60 dark:text-white/70">
+          <p className="mt-2 text-sm text-white/70">
             Develop front‑end and back‑end, implement features, connect APIs, and perform QA.
           </p>
-          <ul className="mt-3 space-y-2 text-sm text-black/70 dark:text-white/70 list-disc list-inside flex-1">
+          <ul className="mt-3 space-y-2 text-sm text-white/70 list-disc list-inside flex-1">
             {step3Checklist.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
         </div>
         {/* Step 4 */}
-        <div className="rounded-2xl border border-black/10 bg-white/70 p-5 dark:border-white/10 dark:bg-white/5 flex flex-col">
-          <div className="text-xs text-black/50">Step 4</div>
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-5 flex flex-col">
+          <div className="text-xs text-white/50">Step 4</div>
           <h3 className="mt-1 font-medium">Launch &amp; Optimize</h3>
-          <p className="mt-2 text-sm text-black/60 dark:text-white/70">
+          <p className="mt-2 text-sm text-white/70">
             Deploy the app, monitor performance, gather feedback, and iterate.
           </p>
-          <ul className="mt-3 space-y-2 text-sm text-black/70 dark:text-white/70 list-disc list-inside flex-1">
+          <ul className="mt-3 space-y-2 text-sm text-white/70 list-disc list-inside flex-1">
             {step4Checklist.map((item) => (
               <li key={item}>{item}</li>
             ))}

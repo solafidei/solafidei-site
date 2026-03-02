@@ -30,13 +30,13 @@ export function Services() {
   return (
     <section id="services" className="mx-auto max-w-7xl px-4 py-16 md:py-20">
       <h2 className="text-center text-2xl md:text-3xl font-semibold">Software solutions that level up your business</h2>
-      <p className="mx-auto mt-2 max-w-xl text-center text-black/60 dark:text-white/70">Work smarter, not harder — accelerate delivery and reduce operational toil.</p>
+      <p className="mx-auto mt-2 max-w-xl text-center text-white/70">Work smarter, not harder — accelerate delivery and reduce operational toil.</p>
       <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {items.map(({ icon: Icon, title, desc }) => (
-          <motion.div key={title} variants={fadeInUp} whileHover={{ y: -6 }} className="rounded-2xl border border-black/10 bg-white/50 p-5 dark:border-white/10 dark:bg-white/5">
-            <Icon className="h-5 w-5 mb-3 text-black/70 dark:text-white/70" />
+          <motion.div key={title} variants={fadeInUp} whileHover={{ y: -6 }} className="rounded-2xl border border-white/10 bg-white/5 p-5">
+            <Icon className="h-5 w-5 mb-3 text-white/70" />
             <h3 className="font-medium">{title}</h3>
-            <p className="mt-1 text-sm text-black/60 dark:text-white/70">{desc}</p>
+            <p className="mt-1 text-sm text-white/70">{desc}</p>
           </motion.div>
         ))}
       </motion.div>

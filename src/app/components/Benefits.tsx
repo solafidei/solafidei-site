@@ -39,11 +39,11 @@ export function Benefits() {
         {benefits.map(({ icon: Icon, title, description }) => (
           <div
             key={title}
-            className="rounded-2xl border border-black/10 bg-white/70 p-6 dark:border-white/10 dark:bg-white/5 flex flex-col items-start gap-3"
+            className="rounded-2xl border border-white/10 bg-white/5 p-6 flex flex-col items-start gap-3"
           >
             <Icon className="h-8 w-8 text-emerald-500" />
             <h3 className="text-lg font-medium">{title}</h3>
-            <p className="text-sm text-black/70 dark:text-white/70">
+            <p className="text-sm text-white/70">
               {description}
             </p>
           </div>

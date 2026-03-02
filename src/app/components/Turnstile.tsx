@@ -26,7 +26,7 @@ type TurnstileProps = {
   theme?: "auto" | "light" | "dark";
 };
 
-export function Turnstile({ siteKey, onVerify, theme = "auto" }: TurnstileProps) {
+export function Turnstile({ siteKey, onVerify, theme = "dark" }: TurnstileProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const widgetRef = useRef<unknown | null>(null);
   const [scriptLoaded, setScriptLoaded] = useState(false);
@@ -98,7 +98,7 @@ export function Turnstile({ siteKey, onVerify, theme = "auto" }: TurnstileProps)
 
   if (!normalizedSiteKey) {
     return (
-      <div className="text-xs text-red-600 dark:text-red-400">
+      <div className="text-xs text-red-400">
         Missing NEXT_PUBLIC_TURNSTILE_SITE_KEY. Add it to your environment.
       </div>
     );
@@ -108,7 +108,7 @@ export function Turnstile({ siteKey, onVerify, theme = "auto" }: TurnstileProps)
     <div>
       <div ref={containerRef} className="cf-turnstile" />
       {status === "error" && (
-        <div className="mt-2 text-xs text-red-600 dark:text-red-400">
+        <div className="mt-2 text-xs text-red-400">
           Captcha failed to load. Check your site key domain settings and ad/script blockers.
         </div>
       )}

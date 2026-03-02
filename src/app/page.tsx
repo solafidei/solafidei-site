@@ -19,7 +19,7 @@ import { SplashScreen } from "./components/SplashScreen";
 
 export default function SolafideiLanding() {
   return (
-    <main className="relative min-h-screen text-[#0B0F14] selection:bg-cyan-500/20 dark:text-white">
+    <main className="relative min-h-screen text-white selection:bg-cyan-500/20">
       <SplashScreen durationMs={2800} />
       <div className="relative z-10">
         <Nav />
