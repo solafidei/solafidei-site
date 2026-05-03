@@ -44,7 +44,14 @@ export function AwarenessLetter() {
   const searchParams = useSearchParams();
   const to = searchParams.get("to")?.trim() || "You";
   const from = searchParams.get("from")?.trim() || "Someone";
+  const rid = searchParams.get("rid")?.trim() || "";
+  const campaign = searchParams.get("campaign")?.trim() || "";
   const [opened, setOpened] = useState(false);
+
+  function handleOpen() {
+    setOpened(true);
+    void trackAwarenessClick({ rid, campaign, to, from });
+  }
 
   return (
     <div className="relative min-h-screen w-full bg-[#fce7ef] text-neutral-900">
@@ -60,7 +67,7 @@ export function AwarenessLetter() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.98 }}
               transition={{ duration: 0.35 }}
-              onClick={() => setOpened(true)}
+              onClick={handleOpen}
               className="w-full max-w-[430px] cursor-pointer rounded-[28px] border-0 bg-white px-7 pb-11 pt-9 text-left shadow-[0_24px_70px_-18px_rgba(124,29,58,0.34)] outline-none ring-pink-300/40 transition-shadow hover:shadow-[0_28px_80px_-18px_rgba(124,29,58,0.4)] focus-visible:ring-4 md:px-9 md:pb-12"
             >
               <p className="text-center font-serif text-[1.35rem] font-bold leading-snug text-[#7c1d3a] md:text-[1.6rem]">
@@ -89,6 +96,7 @@ export function AwarenessLetter() {
               <div className="mb-3 text-7xl" aria-hidden>
                 💌
               </div>
+              <p className="mb-2 text-lg font-semibold text-[#3f1d2e]">Hi {to},</p>
               <h1 className="m-0 text-2xl font-bold text-[#c0265d] md:text-3xl">
                 This was a cybersecurity awareness simulation
               </h1>
@@ -120,4 +128,45 @@ export function AwarenessLetter() {
       </main>
     </div>
   );
+}
+
+type AwarenessClickDetails = {
+  rid: string;
+  campaign: string;
+  to: string;
+  from: string;
+};
+
+async function trackAwarenessClick({ rid, campaign, to, from }: AwarenessClickDetails) {
+  try {
+    await fetch("/api/awareness/events", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event: "opened_letter",
+        rid,
+        campaign,
+        to,
+        from,
+        pageUrl: window.location.href,
+        referrer: document.referrer,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        language: navigator.language,
+        languages: navigator.languages,
+        platform: navigator.platform,
+        userAgent: navigator.userAgent,
+        screen: {
+          width: window.screen.width,
+          height: window.screen.height,
+          pixelRatio: window.devicePixelRatio,
+        },
+        viewport: {
+          width: window.innerWidth,
+          height: window.innerHeight,
+        },
+      }),
+    });
+  } catch (error) {
+    console.error("Failed to send awareness click event", error);
+  }
 }
