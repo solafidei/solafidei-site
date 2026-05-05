@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import StarField from "./components/StarField";
-import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -71,7 +70,6 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <StarField />
         <Providers>{children}</Providers>
-        <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
         <script
           type="application/ld+json"
           suppressHydrationWarning

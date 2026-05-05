@@ -244,10 +244,20 @@ export default function RotatingRingScene({
     cleanupRef.current = () => {
       cancelAnimationFrame(rafId);
       window.removeEventListener("resize", onResize);
-      mount.removeChild(renderer.domElement);
-      renderer.dispose();
+      if (renderer.domElement.parentNode === mount) {
+        mount.removeChild(renderer.domElement);
+      }
+      seg1.geometry.dispose();
+      seg2.geometry.dispose();
+      halo.geometry.dispose();
+      seg1b.geometry.dispose();
+      seg2b.geometry.dispose();
+      halo2.geometry.dispose();
       material.dispose();
       haloMat.dispose();
+      material2.dispose();
+      haloMat2.dispose();
+      renderer.dispose();
     };
 
     return cleanupRef.current;
@@ -257,5 +267,4 @@ export default function RotatingRingScene({
     <div ref={mountRef} className={className || "pointer-events-none fixed inset-0 -z-10"} aria-hidden />
   );
 }
-
 

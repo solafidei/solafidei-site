@@ -31,7 +31,7 @@ export function Hero() {
           </motion.p>
 
           <motion.div variants={fadeInUp} style={{ y: y2 }} className="mt-8 flex items-center justify-center gap-3">
-            <a href="https://calendly.com/solafidei/coffee" target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-2 rounded-xl bg-black text-white px-5 py-3 text-sm font-medium hover:bg-black/90">
+            <a href="https://calendar.app.google/cNPgb76hCUcz6vsr8" target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-2 rounded-xl bg-black text-white px-5 py-3 text-sm font-medium hover:bg-black/90">
               Get in touch <Mail className="h-4 w-4" />
             </a>
             <a href="#services" className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm text-white/90 hover:bg-white/10">

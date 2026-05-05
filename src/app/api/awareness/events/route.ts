@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
+import { createHmac, timingSafeEqual } from "crypto";
 import { Resend } from "resend";
 
 const resendApiKey = process.env.RESEND_API_KEY;
 const emailFrom = process.env.EMAIL_FROM || "Solafidei <onboarding@resend.dev>";
 const emailTo = process.env.AWARENESS_EMAIL_TO || process.env.EMAIL_TO || "info@solafidei.com";
+const awarenessEventSecret = process.env.AWARENESS_EVENT_SECRET;
+const rateLimitWindowMs = getPositiveNumber(process.env.AWARENESS_RATE_LIMIT_WINDOW_MS, 60_000);
+const rateLimitMax = getPositiveNumber(process.env.AWARENESS_RATE_LIMIT_MAX, 20);
+const awarenessRateLimit = new Map<string, { count: number; resetAt: number }>();
+
+export const runtime = "nodejs";
 
 type AwarenessEventPayload = {
   event?: string;
@@ -11,22 +18,12 @@ type AwarenessEventPayload = {
   campaign?: string;
   to?: string;
   from?: string;
+  sig?: string;
   pageUrl?: string;
   referrer?: string;
   timezone?: string;
   language?: string;
   languages?: string[];
-  platform?: string;
-  userAgent?: string;
-  screen?: {
-    width?: number;
-    height?: number;
-    pixelRatio?: number;
-  };
-  viewport?: {
-    width?: number;
-    height?: number;
-  };
 };
 
 export async function POST(request: Request) {
@@ -35,18 +32,43 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing RESEND_API_KEY" }, { status: 500 });
     }
 
+    if (!awarenessEventSecret) {
+      return NextResponse.json({ error: "Missing AWARENESS_EVENT_SECRET" }, { status: 500 });
+    }
+
+    const ip = getClientIp(request);
+    if (!checkRateLimit(`awareness:${ip}`, rateLimitMax, rateLimitWindowMs)) {
+      return NextResponse.json({ error: "Too many awareness events." }, { status: 429 });
+    }
+
     const payload = (await request.json()) as AwarenessEventPayload;
     const event = sanitize(payload.event) || "opened_letter";
-    const recipientToken = sanitize(payload.rid) || "not provided";
+    if (event !== "opened_letter") {
+      return NextResponse.json({ error: "Unsupported event." }, { status: 400 });
+    }
+
+    const recipientToken = sanitize(payload.rid);
     const campaign = sanitize(payload.campaign) || "default";
-    const to = sanitize(payload.to) || "not provided";
-    const from = sanitize(payload.from) || "not provided";
+    const to = sanitize(payload.to) || "You";
+    const from = sanitize(payload.from) || "Someone";
+    const signature = sanitize(payload.sig);
+    if (
+      !recipientToken ||
+      !isValidAwarenessSignature({
+        secret: awarenessEventSecret,
+        signature,
+        rid: recipientToken,
+        campaign,
+        to,
+        from,
+      })
+    ) {
+      return NextResponse.json({ error: "Invalid awareness event signature." }, { status: 401 });
+    }
+
     const pageUrl = sanitize(payload.pageUrl) || "not provided";
     const clientReferrer = sanitize(payload.referrer) || "not provided";
     const serverReferrer = sanitize(request.headers.get("referer")) || "not provided";
-    const ip = getClientIp(request);
-    const userAgent = sanitize(request.headers.get("user-agent")) || sanitize(payload.userAgent) || "unknown";
-    const clientHints = getClientHints(request);
     const geo = getGeoHeaders(request);
     const occurredAt = new Date().toISOString();
 
@@ -57,21 +79,13 @@ export async function POST(request: Request) {
       ["To", to],
       ["From", from],
       ["Time", occurredAt],
-      ["IP", ip],
-      ["User agent", userAgent],
-      ["Client platform", sanitize(payload.platform) || "not provided"],
       ["Client language", sanitize(payload.language) || "not provided"],
-      ["Client languages", payload.languages?.map(sanitize).filter(Boolean).join(", ") || "not provided"],
+      ["Client languages", formatLanguages(payload.languages)],
       ["Timezone", sanitize(payload.timezone) || "not provided"],
-      ["Screen", formatSize(payload.screen?.width, payload.screen?.height, payload.screen?.pixelRatio)],
-      ["Viewport", formatSize(payload.viewport?.width, payload.viewport?.height)],
       ["Page URL", pageUrl],
       ["Client referrer", clientReferrer],
       ["Server referrer", serverReferrer],
       ["Country", geo.country],
-      ["Region", geo.region],
-      ["City", geo.city],
-      ["Client hints", clientHints],
     ];
 
     const text = rows.map(([label, value]) => `${label}: ${value}`).join("\n");
@@ -104,7 +118,7 @@ export async function POST(request: Request) {
     const { error } = await resend.emails.send({
       from: emailFrom,
       to: [emailTo],
-      subject: `Awareness link clicked: ${recipientToken}`,
+      subject: `Awareness link clicked: ${normalizeHeaderValue(recipientToken)}`,
       text,
       html,
     });
@@ -139,30 +153,7 @@ function getGeoHeaders(request: Request) {
 
   return {
     country: sanitize(headers.get("cf-ipcountry")) || sanitize(headers.get("x-vercel-ip-country")) || "unknown",
-    region: sanitize(headers.get("x-vercel-ip-country-region")) || "unknown",
-    city: sanitize(headers.get("x-vercel-ip-city")) || "unknown",
   };
-}
-
-function getClientHints(request: Request): string {
-  const headers = request.headers;
-  const hints = [
-    ["sec-ch-ua", headers.get("sec-ch-ua")],
-    ["sec-ch-ua-mobile", headers.get("sec-ch-ua-mobile")],
-    ["sec-ch-ua-platform", headers.get("sec-ch-ua-platform")],
-  ]
-    .map(([label, value]) => (value ? `${label}: ${value}` : null))
-    .filter(Boolean);
-
-  return hints.length ? hints.join("; ") : "not provided";
-}
-
-function formatSize(width?: number, height?: number, pixelRatio?: number): string {
-  if (!width || !height) {
-    return "not provided";
-  }
-
-  return pixelRatio ? `${width}x${height} @${pixelRatio}x` : `${width}x${height}`;
 }
 
 function sanitize(value: unknown): string {
@@ -171,6 +162,79 @@ function sanitize(value: unknown): string {
   }
 
   return value.trim().slice(0, 500);
+}
+
+function formatLanguages(value: unknown): string {
+  if (!Array.isArray(value)) {
+    return "not provided";
+  }
+
+  const languages = value.map(sanitize).filter(Boolean).slice(0, 10);
+  return languages.length ? languages.join(", ") : "not provided";
+}
+
+function getPositiveNumber(value: string | undefined, fallback: number): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function normalizeHeaderValue(value: string): string {
+  return value
+    .replace(/[\r\n]+/g, " ")
+    .replace(/[\x00-\x1F\x7F]/g, "")
+    .trim()
+    .slice(0, 120) || "unknown";
+}
+
+function checkRateLimit(key: string, maxRequests: number, windowMs: number): boolean {
+  const now = Date.now();
+  for (const [entryKey, entry] of awarenessRateLimit) {
+    if (entry.resetAt <= now) {
+      awarenessRateLimit.delete(entryKey);
+    }
+  }
+
+  const current = awarenessRateLimit.get(key);
+  if (!current || current.resetAt <= now) {
+    awarenessRateLimit.set(key, { count: 1, resetAt: now + windowMs });
+    return true;
+  }
+
+  if (current.count >= maxRequests) {
+    return false;
+  }
+
+  current.count += 1;
+  return true;
+}
+
+function isValidAwarenessSignature({
+  secret,
+  signature,
+  rid,
+  campaign,
+  to,
+  from,
+}: {
+  secret: string;
+  signature: string;
+  rid: string;
+  campaign: string;
+  to: string;
+  from: string;
+}): boolean {
+  const normalizedSignature = signature.replace(/^sha256=/i, "");
+  if (!/^[a-f0-9]{64}$/i.test(normalizedSignature)) {
+    return false;
+  }
+
+  const expected = createHmac("sha256", secret)
+    .update(JSON.stringify([rid, campaign, to, from]))
+    .digest("hex");
+  const expectedBuffer = Buffer.from(expected, "hex");
+  const actualBuffer = Buffer.from(normalizedSignature, "hex");
+
+  return expectedBuffer.length === actualBuffer.length && timingSafeEqual(expectedBuffer, actualBuffer);
 }
 
 function escapeHtml(input: string): string {

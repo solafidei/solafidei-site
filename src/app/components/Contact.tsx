@@ -1,8 +1,8 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import { useEffect, useState } from "react";
-// Using implicit Turnstile rendering; no local component needed
+import { useState } from "react";
+import { Turnstile } from "./Turnstile";
 
 export function Contact() {
   const [name, setName] = useState("");
@@ -11,7 +11,9 @@ export function Contact() {
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState<null | { ok: boolean; error?: string }>(null);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileKey, setTurnstileKey] = useState(0);
   const [emailTouched, setEmailTouched] = useState(false);
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 
   function isValidEmail(value: string): boolean {
     const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
@@ -19,17 +21,6 @@ export function Contact() {
   }
   const emailIsValid = isValidEmail(email);
   const emailShowError = emailTouched && !emailIsValid;
-
-  // Implicit render callback handler (per docs): window.turnstile passes token to named callback
-  useEffect(() => {
-    (window as unknown as { onTurnstileSuccess?: (token: string) => void }).onTurnstileSuccess = (token: string) => {
-      setTurnstileToken(token || "");
-    };
-    return () => {
-      const w = window as unknown as { onTurnstileSuccess?: (token: string) => void };
-      if (w.onTurnstileSuccess) delete w.onTurnstileSuccess;
-    };
-  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -51,10 +42,7 @@ export function Contact() {
       // Clear validation and reset captcha after successful send
       setEmailTouched(false);
       setTurnstileToken("");
-      try {
-        const w = window as unknown as { turnstile?: { reset?: (id?: unknown) => void } };
-        w.turnstile?.reset?.();
-      } catch {}
+      setTurnstileKey((key) => key + 1);
     } catch (err) {
       setStatus({ ok: false, error: (err as Error).message });
     } finally {
@@ -103,15 +91,8 @@ export function Contact() {
             className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm outline-none placeholder:text-white/40 min-h-[90px]"
             placeholder="How can we help you?"
           />
-          {/* Implicitly rendered widget per Cloudflare docs */}
           <div className="flex justify-center">
-            <div
-              className="cf-turnstile"
-              data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
-              data-callback="onTurnstileSuccess"
-              data-theme="dark"
-              data-size="flexible"
-            />
+            <Turnstile key={turnstileKey} siteKey={turnstileSiteKey} onVerify={setTurnstileToken} />
           </div>
           <button
             type="submit"
@@ -130,7 +111,7 @@ export function Contact() {
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6 flex flex-col items-center justify-center text-center">
           <div className="text-lg font-medium mb-2">Prefer a live chat?</div>
           <p className="text-white/70 mb-4">Book a free 30-minute consultation call to discuss your needs.</p>
-          <a href="https://calendly.com/solafidei-info/coffee" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-black text-white px-5 py-3 text-sm font-medium hover:bg-black/90">
+          <a href="https://calendar.app.google/cNPgb76hCUcz6vsr8" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-black text-white px-5 py-3 text-sm font-medium hover:bg-black/90">
             Book a call <ArrowRight className="h-4 w-4" />
           </a>
         </div>
@@ -138,5 +119,4 @@ export function Contact() {
     </section>
   );
 }
-
 

@@ -21,8 +21,9 @@ export function Nav() {
         <div className="flex items-center gap-2">
           {/* <ThemeToggle /> */}
           <a
-            href="https://cal.com/your-handle"
+            href="https://calendar.app.google/cNPgb76hCUcz6vsr8"
             target="_blank"
+            rel="noopener noreferrer"
             className="group inline-flex items-center gap-2 rounded-xl border border-white/10 bg-black text-white px-3 py-2 text-sm hover:bg-black/90"
           >
             Book a call <ArrowRight className="h-4 w-4 transition -translate-x-0.5 group-hover:translate-x-0" />
@@ -61,5 +62,4 @@ function ThemeToggle() {
   );
 }
 */
-
 
