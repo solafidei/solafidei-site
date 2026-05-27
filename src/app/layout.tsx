@@ -58,6 +58,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://solafidei.com",
   },
+  other: {
+    "facebook-domain-verification": "ue9rteh0x5yxy3ceywit8jk744vjpq",
+  },
 };
 
 export default function RootLayout({
