@@ -16,6 +16,7 @@
   --brand-end: #a78bfa; /* violet-300 */
   --aurora-3: #f0abfc; /* pink/fuchsia accent for mesh richness */
   --accent-glow: rgba(94, 106, 210, 0.25);
+  --primary: #cba6f7; /* mauve accent (ShimmerText) */
 
   /* Text */
   --background: var(--bg-base);
@@ -38,6 +39,7 @@
   --color-brand-start: var(--brand-start);
   --color-brand-end: var(--brand-end);
   --color-aurora-3: var(--aurora-3);
+  --color-primary: var(--primary);
 
   --font-sans: var(--font-sans), system-ui, sans-serif;
   --font-heading: var(--font-heading), var(--font-sans), sans-serif;
@@ -83,6 +85,36 @@ h6 {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* Shimmer text (for <ShimmerText>): sweeps a light highlight across the
+   current text color, e.g. `text-primary`. */
+.shimmer-text {
+  display: inline-block;
+  -webkit-text-fill-color: transparent;
+  background: currentColor
+    linear-gradient(
+      to right,
+      currentColor 0%,
+      rgba(255, 255, 255, 0.92) 40%,
+      rgba(255, 255, 255, 0.92) 60%,
+      currentColor 100%
+    );
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-repeat: no-repeat;
+  background-size: 50% 200%;
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position-x: -100%;
+  }
+  50%,
+  100% {
+    background-position-x: 250%;
+  }
 }
 
 /* Edge fade mask (marquees) */
@@ -145,7 +177,8 @@ h6 {
 @media (prefers-reduced-motion: reduce) {
   .aurora-anim-a,
   .aurora-anim-b,
-  .animate-marquee {
+  .animate-marquee,
+  .shimmer-text {
     animation: none !important;
   }
 }
