@@ -1,7 +1,8 @@
 "use client";
 import { Nav } from "./components/Nav";
 import { Hero } from "./components/Hero";
-import { LogosBar } from "./components/LogosBar";
+import { Stats } from "./components/Stats";
+import { TechStack } from "./components/TechStack";
 import { Services } from "./components/Services";
 import { CaseStudies } from "./components/CaseStudies";
 import { ExperienceWidgets } from "./components/ExperienceWidgets";
@@ -20,11 +21,12 @@ import { SplashScreen } from "./components/SplashScreen";
 export default function SolafideiLanding() {
   return (
     <main className="relative min-h-screen text-white selection:bg-cyan-500/20">
-      <SplashScreen durationMs={2800} />
+      <SplashScreen durationMs={1200} />
       <div className="relative z-10">
         <Nav />
         <Hero />
-        <LogosBar />
+        <Stats />
+        <TechStack />
         <Services />
         <CaseStudies />
         <ExperienceWidgets />

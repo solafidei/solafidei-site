@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { SectionHeading } from "./ui/SectionHeading";
 
 export function FAQs() {
   const [open, setOpen] = useState<number | null>(0);
@@ -13,16 +14,20 @@ export function FAQs() {
     { q: "What industries do you serve?", a: "B2B SaaS, services, fintech, logistics, and more." },
   ];
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 md:py-20">
-      <h2 className="text-center text-2xl md:text-3xl font-semibold">We’ve got the answers</h2>
-      <div className="mx-auto mt-6 max-w-3xl divide-y divide-white/10 rounded-2xl border border-white/10 bg-white/5">
+    <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
+      <SectionHeading eyebrow="FAQ" title="We’ve got the" highlight="answers" />
+      <div className="glass mx-auto mt-10 max-w-3xl divide-y divide-[var(--border)] rounded-2xl">
         {faqs.map((f, i) => (
-          <div key={i} className="px-4 py-3">
-            <button onClick={() => setOpen((v) => (v === i ? null : i))} className="w-full text-left">
-              <div className="flex items-center justify-between">
-                <span className="font-medium">{f.q}</span>
-                <ChevronDown className={`h-4 w-4 transition ${open === i ? "rotate-180" : ""}`} />
-              </div>
+          <div key={i} className="px-5 py-4">
+            <button
+              onClick={() => setOpen((v) => (v === i ? null : i))}
+              aria-expanded={open === i ? "true" : "false"}
+              className="flex w-full cursor-pointer items-center justify-between text-left"
+            >
+              <span className="font-heading font-medium">{f.q}</span>
+              <ChevronDown
+                className={`h-4 w-4 text-muted transition ${open === i ? "rotate-180 text-[var(--brand-start)]" : ""}`}
+              />
             </button>
             <AnimatePresence initial={false}>
               {open === i && (
@@ -30,8 +35,8 @@ export function FAQs() {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.25 }}
-                  className="overflow-hidden mt-1 text-sm text-white/70"
+                  transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                  className="mt-2 overflow-hidden text-sm text-muted"
                 >
                   {f.a}
                 </motion.p>
@@ -43,5 +48,3 @@ export function FAQs() {
     </section>
   );
 }
-
-

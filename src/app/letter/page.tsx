@@ -18,7 +18,7 @@ export default function LetterAwarenessPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen w-full bg-[#fce7ef]" aria-busy="true" aria-label="Loading" />
+        <div className="min-h-screen w-full bg-[radial-gradient(120%_90%_at_50%_0%,#fff5f9,#fbd9e8)]" aria-busy="true" aria-label="Loading" />
       }
     >
       <AwarenessLetter />

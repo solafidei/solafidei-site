@@ -4,6 +4,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
+import { ShieldCheck } from "lucide-react";
+
+const EASE = [0.16, 1, 0.3, 1] as const;
 
 function HeartBackdrop() {
   const hearts = useMemo(
@@ -54,7 +57,7 @@ export function AwarenessLetter() {
   }
 
   return (
-    <div className="relative min-h-screen w-full bg-[#fce7ef] text-neutral-900">
+    <div className="relative min-h-screen w-full bg-[radial-gradient(120%_90%_at_50%_0%,#fff5f9,#fbd9e8)] text-neutral-900">
       <HeartBackdrop />
 
       <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-10">
@@ -63,12 +66,13 @@ export function AwarenessLetter() {
             <motion.button
               key="lure"
               type="button"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 12, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98 }}
-              transition={{ duration: 0.35 }}
+              transition={{ duration: 0.4, ease: EASE }}
+              whileHover={{ y: -4 }}
               onClick={handleOpen}
-              className="w-full max-w-[430px] cursor-pointer rounded-[28px] border-0 bg-white px-7 pb-11 pt-9 text-left shadow-[0_24px_70px_-18px_rgba(124,29,58,0.34)] outline-none ring-pink-300/40 transition-shadow hover:shadow-[0_28px_80px_-18px_rgba(124,29,58,0.4)] focus-visible:ring-4 md:px-9 md:pb-12"
+              className="w-full max-w-[430px] cursor-pointer rounded-[28px] border-0 bg-white px-7 pb-11 pt-9 text-left shadow-[0_24px_70px_-18px_rgba(124,29,58,0.34)] outline-none ring-pink-300/50 transition-shadow hover:shadow-[0_30px_85px_-18px_rgba(124,29,58,0.45)] focus-visible:ring-4 md:px-9 md:pb-12"
             >
               <p className="text-center font-serif text-[1.35rem] font-bold leading-snug text-[#7c1d3a] md:text-[1.6rem]">
                 💌 {from} has sent you something special!
@@ -88,13 +92,13 @@ export function AwarenessLetter() {
             <motion.article
               key="awareness"
               role="article"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="w-full max-w-[560px] rounded-[28px] bg-white p-8 text-center shadow-[0_20px_60px_rgba(160,40,90,0.18)] md:p-10"
+              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.45, ease: EASE }}
+              className="w-full max-w-[560px] rounded-[28px] bg-white p-8 text-center shadow-[0_24px_70px_-12px_rgba(160,40,90,0.22)] md:p-10"
             >
-              <div className="mb-3 text-7xl" aria-hidden>
-                💌
+              <div className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-[#fff0f6] text-[#c0265d]">
+                <ShieldCheck className="h-8 w-8" />
               </div>
               <p className="mb-2 text-lg font-semibold text-[#3f1d2e]">Hi {to},</p>
               <h1 className="m-0 text-2xl font-bold text-[#c0265d] md:text-3xl">

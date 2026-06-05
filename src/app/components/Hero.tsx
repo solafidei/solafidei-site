@@ -2,46 +2,86 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight, Mail, Sparkles } from "lucide-react";
-import { useScroll, useTransform } from "framer-motion";
-// import BackgroundScene from "./BackgroundScene";
-import RotatingRingScene from "./RotatingRingScene";
 import { fadeInUp, stagger } from "./animations";
+import { GradientButton } from "./ui/GradientButton";
+import { CodeTerminal } from "./ui/CodeTerminal";
+
+const CALENDAR_URL = "https://calendar.app.google/cNPgb76hCUcz6vsr8";
 
 export function Hero() {
-  const { scrollYProgress } = useScroll();
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, 80]);
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, 120]);
-
   return (
     <section id="home" className="relative overflow-hidden">
-      {/* <BackgroundScene className="pointer-events-none absolute inset-0 -z-20" maskSrc="/logo_opaque_smaller.png" /> */}
-      <RotatingRingScene className="pointer-events-none absolute inset-0 -z-10" gapAngleDeg={36} thickness={10} outerRadius={48} speed={0.7} />
-      <div className="mx-auto max-w-7xl px-4 py-20 md:py-28 text-center">
-        <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}>
-          <motion.p variants={fadeInUp} style={{ y: y1 }} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs text-white/70">
-            <Sparkles className="h-3.5 w-3.5" /> New: Availability for 2 projects this month
+      {/* vibrant hero glows */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-24 left-0 -z-10 h-[30rem] w-[30rem] rounded-full opacity-50 blur-[120px]"
+        style={{ background: "radial-gradient(circle, var(--brand-start), transparent 70%)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-10 right-0 -z-10 h-[28rem] w-[28rem] rounded-full opacity-40 blur-[120px]"
+        style={{ background: "radial-gradient(circle, var(--aurora-3), transparent 70%)" }}
+      />
+
+      <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 md:py-28 lg:grid-cols-2">
+        {/* left: copy */}
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          animate="show"
+          className="text-center lg:text-left"
+        >
+          <motion.p
+            variants={fadeInUp}
+            className="glass inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs text-muted"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-[var(--brand-start)]" /> New: Availability for 2
+            projects this month
           </motion.p>
 
-          <motion.h1 variants={fadeInUp} style={{ y: y1 }} className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight">
-            We design and build modern, intuitive apps
+          <motion.h1
+            variants={fadeInUp}
+            className="mt-6 text-4xl font-semibold tracking-tight md:text-6xl"
+          >
+            We design and build <span className="gradient-text">modern, intuitive</span> apps
           </motion.h1>
 
-          <motion.p variants={fadeInUp} style={{ y: y1 }} className="mx-auto mt-4 max-w-3xl text-white/70">
-            We help innovative companies launch and scale digital products with confidence — from discovery and UI/UX to development, integrations, and optimization.
+          <motion.p
+            variants={fadeInUp}
+            className="mx-auto mt-5 max-w-xl text-balance text-muted lg:mx-0"
+          >
+            We help innovative companies launch and scale digital products with confidence — from
+            discovery and UI/UX to development, integrations, and optimization.
           </motion.p>
 
-          <motion.div variants={fadeInUp} style={{ y: y2 }} className="mt-8 flex items-center justify-center gap-3">
-            <a href="https://calendar.app.google/cNPgb76hCUcz6vsr8" target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-2 rounded-xl bg-black text-white px-5 py-3 text-sm font-medium hover:bg-black/90">
+          <motion.div
+            variants={fadeInUp}
+            className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start"
+          >
+            <GradientButton
+              href={CALENDAR_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto"
+            >
               Get in touch <Mail className="h-4 w-4" />
-            </a>
-            <a href="#services" className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm text-white/90 hover:bg-white/10">
-              View services <ArrowRight className="h-4 w-4" />
-            </a>
+            </GradientButton>
+            <GradientButton variant="ghost" href="#services" className="w-full sm:w-auto">
+              View services{" "}
+              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+            </GradientButton>
           </motion.div>
+        </motion.div>
+
+        {/* right: animated code terminal */}
+        <motion.div
+          initial={{ opacity: 0, y: 24, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+        >
+          <CodeTerminal />
         </motion.div>
       </div>
     </section>
   );
 }
-
-

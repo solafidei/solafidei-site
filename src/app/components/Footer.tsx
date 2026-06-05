@@ -4,45 +4,55 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="mx-auto max-w-7xl px-4 py-12">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <Link href="#home" className="flex items-center gap-2">
-            <Image src="/logo_opaque_smaller.png" alt="Solafidei" width={28} height={28} className="h-7 w-auto rounded" />
-            <span className="font-semibold tracking-wide">SOLAFIDEI</span>
-          </Link>
-          <p className="mt-2 text-sm text-white/70">We design and build modern, intuitive web and mobile apps to help you launch and scale with confidence.</p>
+    <footer className="mx-auto max-w-7xl px-4 pb-12 pt-8">
+      <div className="glass rounded-2xl p-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          <div>
+            <Link href="#home" className="flex items-center gap-2">
+              <Image
+                src="/logo_opaque_smaller.png"
+                alt="Solafidei"
+                width={28}
+                height={28}
+                className="h-7 w-auto rounded"
+              />
+              <span className="font-heading font-semibold tracking-wide">
+                SOLA<span className="gradient-text">FIDEI</span>
+              </span>
+            </Link>
+            <p className="mt-3 max-w-xs text-sm text-muted">
+              We design and build modern, intuitive web and mobile apps to help you launch and
+              scale with confidence.
+            </p>
+          </div>
+          <div>
+            <div className="font-heading font-medium">Links</div>
+            <ul className="mt-3 space-y-2 text-sm text-muted">
+              <li><a className="transition-colors hover:text-foreground" href="#services">Services</a></li>
+              <li><a className="transition-colors hover:text-foreground" href="#benefits">Benefits</a></li>
+              <li><a className="transition-colors hover:text-foreground" href="#about">Process</a></li>
+              <li><a className="transition-colors hover:text-foreground" href="#work">Case studies</a></li>
+            </ul>
+          </div>
+          <div>
+            <div className="font-heading font-medium">Pages</div>
+            <ul className="mt-3 space-y-2 text-sm text-muted">
+              <li><a className="transition-colors hover:text-foreground" href="#home">Home</a></li>
+              <li><a className="transition-colors hover:text-foreground" href="#about">About</a></li>
+              <li><a className="transition-colors hover:text-foreground" href="#contact">Contact</a></li>
+            </ul>
+          </div>
         </div>
-        <div>
-          <div className="font-medium">Links</div>
-          <ul className="mt-2 space-y-1 text-sm text-white/70">
-            <li><a className="hover:text-white" href="#services">Services</a></li>
-            <li><a className="hover:text-white" href="#benefits">Benefits</a></li>
-            <li><a className="hover:text-white" href="#about">Process</a></li>
-            <li><a className="hover:text-white" href="#work">Case studies</a></li>
-          </ul>
-        </div>
-        <div>
-          <div className="font-medium">Pages</div>
-          <ul className="mt-2 space-y-1 text-sm text-white/70">
-            <li><a className="hover:text-white" href="#home">Home</a></li>
-            <li><a className="hover:text-white" href="#about">About</a></li>
-          
-            <li><a className="hover:text-white" href="#contact">Contact</a></li>
-          </ul>
-        </div>
-      </div>
-      <div className="mt-8 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
-      <div className="mt-4 flex flex-col md:flex-row items-center justify-between gap-3 text-white/50 text-sm">
-        <div>© {new Date().getFullYear()} Solafidei. All rights reserved.</div>
-        <div className="flex items-center gap-4">
-          <a className="hover:text-white" href="mailto:info@solafidei.com">info@solafidei.com</a>
-          <a className="hover:text-white" href="#">Privacy</a>
-          <a className="hover:text-white" href="#">Terms</a>
+        <div className="mt-8 h-px w-full bg-gradient-to-r from-transparent via-[var(--border-strong)] to-transparent" />
+        <div className="mt-5 flex flex-col items-center justify-between gap-3 text-sm text-muted md:flex-row">
+          <div>© {new Date().getFullYear()} Solafidei. All rights reserved.</div>
+          <div className="flex items-center gap-4">
+            <a className="transition-colors hover:text-foreground" href="mailto:info@solafidei.com">info@solafidei.com</a>
+            <a className="transition-colors hover:text-foreground" href="#">Privacy</a>
+            <a className="transition-colors hover:text-foreground" href="#">Terms</a>
+          </div>
         </div>
       </div>
     </footer>
   );
 }
-
-

@@ -1,12 +1,13 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Search, BadgeCheck } from "lucide-react";
 import React, { useMemo } from "react";
+import { GlassCard } from "./ui/GlassCard";
 
 export function ExperienceWidgets() {
   return (
-    <section className="mx-auto max-w-7xl px-4 pb-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <section className="mx-auto max-w-7xl px-4 pb-8 pt-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <AssistantWidget />
         <LeadsWidget />
       </div>
@@ -16,17 +17,24 @@ export function ExperienceWidgets() {
 
 function AssistantWidget() {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-      <h4 className="font-medium">Solafidei Assistant</h4>
-      <p className="mt-1 text-sm text-white/70">Coming soon — a lightweight copilot to help summarize, draft, and organize.</p>
-      <div className="mt-3 flex items-center gap-2 opacity-60">
-        <div className="flex-1 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-white/80 flex items-center gap-2">
-          <Search className="h-4 w-4 text-white/50" />
+    <GlassCard interactive={false} reveal={false}>
+      <h4 className="font-heading font-medium">Solafidei Assistant</h4>
+      <p className="mt-1 text-sm text-muted">
+        Coming soon — a lightweight copilot to help summarize, draft, and organize.
+      </p>
+      <div className="mt-4 flex items-center gap-2 opacity-70">
+        <div className="flex flex-1 items-center gap-2 rounded-xl border border-border bg-[var(--bg-deep)]/60 px-3 py-2 text-sm text-muted">
+          <Search className="h-4 w-4" />
           <span>Coming soon…</span>
         </div>
-        <button className="rounded-xl border border-white/10 bg-black text-white px-3 py-2 text-sm" disabled>Send</button>
+        <button
+          className="cursor-not-allowed rounded-xl border border-border bg-[var(--surface)] px-3 py-2 text-sm text-muted"
+          disabled
+        >
+          Send
+        </button>
       </div>
-    </div>
+    </GlassCard>
   );
 }
 
@@ -36,30 +44,35 @@ function LeadsWidget() {
       { name: "Solomon Razaq", role: "Founder", skills: "TypeScript, JavaScript, C#, SQL, GCP" },
       { name: "Innocent Munyadziwa", role: "Tech Lead", skills: "TypeScript, JavaScript, C#, SQL, Java, AWS, Azure, Terraform" },
       { name: "Muema Kamba", role: "Tech Lead", skills: "TypeScript, JavaScript, Java, Python, Go, Rust, AWS" },
-      { name: "Daniel Jorge", role: "Mobile Developer", skills: "Flutter, React Native, Node.js, AWS, Firebase, Code Magic"},
+      { name: "Daniel Jorge", role: "Mobile Developer", skills: "Flutter, React Native, Node.js, AWS, Firebase, Code Magic" },
       { name: "Den Radkevich", role: "Developer", skills: "TypeScript, JavaScript, React, React Native, NodeJS, SQL" },
       { name: "Nathan Boyega", role: "Product Strategy & Design", skills: "Product Strategy, Product Design, Design Systems" },
     ],
     []
   );
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+    <GlassCard interactive={false} reveal={false}>
       <div className="flex items-center justify-between">
-        <h4 className="font-medium">Leads</h4>
+        <h4 className="font-heading font-medium">Leads</h4>
       </div>
       <div className="mt-3 space-y-2">
         {people.map((p) => (
-          <div key={p.name} className="flex items-center justify-between rounded-xl border border-white/10 bg-black/30 px-3 py-2">
-            <div>
+          <div
+            key={p.name}
+            className="flex items-center justify-between gap-3 rounded-xl border border-border bg-[var(--bg-deep)]/50 px-3 py-2"
+          >
+            <div className="min-w-0">
               <div className="text-sm">{p.name}</div>
-              <div className="text-xs text-white/50">{p.role} · {p.skills}</div>
+              <div className="truncate text-xs text-muted">
+                {p.role} · {p.skills}
+              </div>
             </div>
-            <span className="text-xs rounded-full border border-emerald-300/50 bg-emerald-50 px-2 py-0.5 text-emerald-700">Verified</span>
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[var(--brand-start)]/30 bg-[var(--brand-start)]/10 px-2 py-0.5 text-xs text-[var(--brand-start)]">
+              <BadgeCheck className="h-3.5 w-3.5" /> Verified
+            </span>
           </div>
         ))}
       </div>
-    </div>
+    </GlassCard>
   );
 }
-
-

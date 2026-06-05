@@ -1,8 +1,11 @@
 "use client";
 
 import { Check } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
+import { SectionHeading } from "./ui/SectionHeading";
+import { GlassCard } from "./ui/GlassCard";
+import { GradientButton } from "./ui/GradientButton";
 
 type Plan = {
   name: string;
@@ -52,69 +55,84 @@ export function Pricing() {
       ],
     },
   ];
+
+  const toggle = (value: boolean, label: string) => (
+    <button
+      onClick={() => setAnnual(value)}
+      className={`cursor-pointer rounded-full px-4 py-1.5 text-sm transition-colors ${
+        annual === value
+          ? "bg-[linear-gradient(110deg,var(--brand-start),var(--brand-end))] text-[#05070a]"
+          : "text-muted hover:text-foreground"
+      }`}
+    >
+      {label}
+    </button>
+  );
+
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 md:py-20">
-      <div className="flex items-center justify-center gap-2">
-        <button
-          onClick={() => setAnnual(false)}
-          className={`rounded-full px-3 py-1 text-sm ${
-            !annual
-              ? "bg-black text-white"
-              : "bg-black/30 border border-white/10 text-white/70"
-          }`}
-        >
-          Monthly
-        </button>
-        <button
-          onClick={() => setAnnual(true)}
-          className={`rounded-full px-3 py-1 text-sm ${
-            annual
-              ? "bg-black text-white"
-              : "bg-black/30 border border-white/10 text-white/70"
-          }`}
-        >
-          Annually
-        </button>
+    <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
+      <SectionHeading eyebrow="Pricing" title="Plans that" highlight="scale with you" />
+
+      <div className="mt-8 flex justify-center">
+        <div className="glass inline-flex items-center gap-1 rounded-full p-1">
+          {toggle(false, "Monthly")}
+          {toggle(true, "Annually")}
+        </div>
       </div>
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+
+      <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-3">
         {plans.map((p) => (
-          <div key={p.name} className={`rounded-2xl border border-white/10 bg-white/5 p-6 ${p.popular ? "ring-2 ring-violet-300" : ""}`}>
+          <GlassCard
+            key={p.name}
+            reveal={false}
+            className={`flex flex-col p-6 ${
+              p.popular ? "border-[var(--brand-end)]/50 ring-1 ring-[var(--brand-end)]/40" : ""
+            }`}
+          >
             <div className="flex items-center justify-between">
-              <h3 className="font-medium">{p.name}</h3>
-              {p.popular && <span className="text-xs rounded-full border border-violet-300/60 bg-violet-50 px-2 py-0.5 text-violet-700">Popular</span>}
+              <h3 className="font-heading font-medium">{p.name}</h3>
+              {p.popular && (
+                <span className="rounded-full border border-[var(--brand-end)]/40 bg-[var(--brand-end)]/15 px-2 py-0.5 text-xs text-[var(--brand-end)]">
+                  Popular
+                </span>
+              )}
             </div>
-            <p className="mt-1 text-sm text-white/70">{p.desc}</p>
+            <p className="mt-1 text-sm text-muted">{p.desc}</p>
             <div className="mt-4">
               {"custom" in p && p.custom ? (
-                <div className="text-2xl font-semibold">Custom</div>
+                <div className="font-heading text-3xl font-semibold">Custom</div>
               ) : (
                 <motion.div
                   key={annual ? "annual" : "monthly"}
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="text-2xl font-semibold"
+                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-heading text-3xl font-semibold tabular-nums"
                 >
                   ${annual ? Math.round(p.monthly * 12 * 0.9) : p.monthly}
-                  <span className="text-sm font-normal text-white/70">/{annual ? "year" : "month"}</span>
+                  <span className="text-sm font-normal text-muted">
+                    /{annual ? "year" : "month"}
+                  </span>
                 </motion.div>
               )}
             </div>
-            <button className="mt-4 w-full rounded-xl bg-black text-white py-2 text-sm hover:bg-black/90">
+            <GradientButton
+              as="button"
+              variant={p.popular ? "primary" : "ghost"}
+              className="mt-5 w-full"
+            >
               {"custom" in p && p.custom ? "Schedule a call" : "Choose this plan"}
-            </button>
-            <ul className="mt-4 space-y-2 text-sm">
+            </GradientButton>
+            <ul className="mt-5 space-y-2 text-sm">
               {p.features.map((f) => (
-                <li key={f} className="flex items-center gap-2 text-white/70">
-                  <Check className="h-4 w-4 text-emerald-500" /> {f}
+                <li key={f} className="flex items-center gap-2 text-muted">
+                  <Check className="h-4 w-4 shrink-0 text-[var(--brand-start)]" /> {f}
                 </li>
               ))}
             </ul>
-          </div>
+          </GlassCard>
         ))}
       </div>
     </section>
   );
 }
-
-

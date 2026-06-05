@@ -2,7 +2,9 @@
 
 import { motion } from "framer-motion";
 import { Cog, MessageSquare, Cpu, Globe } from "lucide-react";
-import { fadeInUp, stagger } from "./animations";
+import { stagger } from "./animations";
+import { SectionHeading } from "./ui/SectionHeading";
+import { GlassCard } from "./ui/GlassCard";
 
 export function Services() {
   const items = [
@@ -28,20 +30,30 @@ export function Services() {
     },
   ];
   return (
-    <section id="services" className="mx-auto max-w-7xl px-4 py-16 md:py-20">
-      <h2 className="text-center text-2xl md:text-3xl font-semibold">Software solutions that level up your business</h2>
-      <p className="mx-auto mt-2 max-w-xl text-center text-white/70">Work smarter, not harder — accelerate delivery and reduce operational toil.</p>
-      <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <section id="services" className="mx-auto max-w-7xl px-4 py-16 md:py-24">
+      <SectionHeading
+        eyebrow="Services"
+        title="Software solutions that"
+        highlight="level up your business"
+        subtitle="Work smarter, not harder — accelerate delivery and reduce operational toil."
+      />
+      <motion.div
+        variants={stagger}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+        className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
+      >
         {items.map(({ icon: Icon, title, desc }) => (
-          <motion.div key={title} variants={fadeInUp} whileHover={{ y: -6 }} className="rounded-2xl border border-white/10 bg-white/5 p-5">
-            <Icon className="h-5 w-5 mb-3 text-white/70" />
-            <h3 className="font-medium">{title}</h3>
-            <p className="mt-1 text-sm text-white/70">{desc}</p>
-          </motion.div>
+          <GlassCard key={title} className="flex flex-col items-start">
+            <span className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-[linear-gradient(135deg,rgba(34,211,238,0.18),rgba(167,139,250,0.18))] text-[var(--brand-start)]">
+              <Icon className="h-5 w-5" />
+            </span>
+            <h3 className="font-heading font-medium">{title}</h3>
+            <p className="mt-2 text-sm text-muted">{desc}</p>
+          </GlassCard>
         ))}
       </motion.div>
     </section>
   );
 }
-
-

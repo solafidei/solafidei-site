@@ -1,5 +1,11 @@
 "use client";
 
+import { motion } from "framer-motion";
+import { Quote } from "lucide-react";
+import { stagger } from "./animations";
+import { SectionHeading } from "./ui/SectionHeading";
+import { GlassCard } from "./ui/GlassCard";
+
 export function Testimonials() {
   const items = [
     {
@@ -16,19 +22,28 @@ export function Testimonials() {
     },
   ];
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 md:py-20">
-      <h2 className="text-center text-2xl md:text-3xl font-semibold">Why teams choose Solafidei</h2>
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
+      <SectionHeading eyebrow="Testimonials" title="Why teams choose" highlight="Solafidei" />
+      <motion.div
+        variants={stagger}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+        className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2"
+      >
         {items.map((t, i) => (
-          <div key={i} className="rounded-2xl border border-white/10 bg-white/5 p-5">
-            <p className="text-sm text-white/80">“{t.quote}”</p>
-            <div className="mt-3 text-sm text-white/70">{t.author}</div>
-            <div className="text-xs text-white/50">{t.role}</div>
-          </div>
+          <GlassCard key={i} className="flex flex-col p-6">
+            <Quote className="h-7 w-7 text-[var(--brand-start)]/60" />
+            <p className="mt-4 flex-1 text-[15px] leading-relaxed text-foreground/90">
+              “{t.quote}”
+            </p>
+            <div className="mt-5 border-t border-border pt-4">
+              <div className="font-heading text-sm font-medium">{t.author}</div>
+              <div className="text-xs text-muted">{t.role}</div>
+            </div>
+          </GlassCard>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 }
-
-
