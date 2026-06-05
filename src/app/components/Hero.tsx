@@ -5,6 +5,7 @@ import { ArrowRight, Mail, Sparkles } from "lucide-react";
 import { useScroll, useTransform } from "framer-motion";
 // import BackgroundScene from "./BackgroundScene";
 import RotatingRingScene from "./RotatingRingScene";
+import { ShimmerText } from "./ShimmerText";
 import { fadeInUp, stagger } from "./animations";
 
 export function Hero() {
@@ -23,7 +24,7 @@ export function Hero() {
           </motion.p>
 
           <motion.h1 variants={fadeInUp} style={{ y: y1 }} className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight">
-            We design and build modern, intuitive apps
+            We design and build modern, <ShimmerText className="text-primary">intuitive apps.</ShimmerText>
           </motion.h1>
 
           <motion.p variants={fadeInUp} style={{ y: y1 }} className="mx-auto mt-4 max-w-3xl text-white/70">
