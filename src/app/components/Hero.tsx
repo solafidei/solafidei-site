@@ -42,7 +42,7 @@ export function Hero() {
 
           <motion.h1
             variants={fadeInUp}
-            className="mt-6 text-4xl font-semibold tracking-tight md:text-6xl"
+            className="mt-6 font-sans text-4xl font-semibold tracking-tight md:text-6xl"
           >
             We design and build modern, <ShimmerText className="text-primary">intuitive apps.</ShimmerText>
           </motion.h1>
