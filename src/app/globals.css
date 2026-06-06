@@ -50,9 +50,7 @@
 }
 
 body {
-  background:
-    radial-gradient(120% 80% at 50% -10%, rgba(34, 211, 238, 0.06), transparent 60%),
-    var(--bg-deep);
+  background: var(--bg-base);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
 }
