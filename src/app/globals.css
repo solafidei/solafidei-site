@@ -142,6 +142,26 @@ h6 {
   background-clip: text;
 }
 
+/* Cyan -> navy gradient border for cards (masked ring so rounded
+   corners stay clean; works over the frosted glass background). */
+.card-gradient-border {
+  border-color: transparent;
+}
+.card-gradient-border::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, #67e8f9, #1e40af);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
 /* Edge fade mask (marquees) */
 .edge-fade {
   -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
