@@ -87,6 +87,20 @@ export default function RootLayout({
               "radial-gradient(circle at 15% 20%, #67e8f933, transparent 40%), radial-gradient(circle at 85% 70%, #1e40af40, transparent 45%)",
           }}
         />
+        {/* subtle dot grid, fades out downward */}
+        <div
+          aria-hidden
+          className="pointer-events-none fixed inset-0 -z-10"
+          style={{
+            backgroundImage:
+              "radial-gradient(rgba(150,170,210,0.10) 1px, transparent 1px)",
+            backgroundSize: "30px 30px",
+            WebkitMaskImage:
+              "radial-gradient(125% 95% at 50% 0%, #000 35%, transparent 78%)",
+            maskImage:
+              "radial-gradient(125% 95% at 50% 0%, #000 35%, transparent 78%)",
+          }}
+        />
         <Providers>{children}</Providers>
         <script
           type="application/ld+json"
