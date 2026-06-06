@@ -12,18 +12,6 @@ const CALENDAR_URL = "https://calendar.app.google/cNPgb76hCUcz6vsr8";
 export function Hero() {
   return (
     <section id="home" className="relative overflow-hidden">
-      {/* vibrant hero glows */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-24 left-0 -z-10 h-[30rem] w-[30rem] rounded-full opacity-25 blur-[120px]"
-        style={{ background: "radial-gradient(circle, var(--brand-start), transparent 70%)" }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-10 right-0 -z-10 h-[28rem] w-[28rem] rounded-full opacity-20 blur-[120px]"
-        style={{ background: "radial-gradient(circle, var(--aurora-3), transparent 70%)" }}
-      />
-
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 md:py-28 lg:grid-cols-2">
         {/* left: copy */}
         <motion.div
