@@ -12,6 +12,11 @@ const CALENDAR_URL = "https://calendar.app.google/cNPgb76hCUcz6vsr8";
 export function Hero() {
   return (
     <section id="home" className="relative overflow-hidden">
+      {/* top-down hero glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-10 bg-background [background:radial-gradient(110%_90%_at_50%_-30%,#4a5a9e2e_45%,transparent_80%)]"
+      />
       {/* vibrant hero glows */}
       <div
         aria-hidden
