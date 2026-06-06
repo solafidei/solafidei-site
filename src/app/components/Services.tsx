@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Cog, MessageSquare, Cpu, Globe } from "lucide-react";
 import { stagger } from "./animations";
 import { SectionHeading } from "./ui/SectionHeading";
-import { GlassCard } from "./ui/GlassCard";
+import { ServiceCard } from "./ServiceCard";
 
 export function Services() {
   const items = [
@@ -45,13 +45,7 @@ export function Services() {
         className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
       >
         {items.map(({ icon: Icon, title, desc }) => (
-          <GlassCard key={title} className="flex flex-col items-start">
-            <span className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-[linear-gradient(135deg,rgba(34,211,238,0.18),rgba(167,139,250,0.18))] text-[var(--brand-start)]">
-              <Icon className="h-5 w-5" />
-            </span>
-            <h3 className="font-heading font-medium">{title}</h3>
-            <p className="mt-2 text-sm text-muted">{desc}</p>
-          </GlassCard>
+          <ServiceCard key={title} icon={<Icon size={26} />} title={title} description={desc} />
         ))}
       </motion.div>
     </section>
