@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, DM_Sans, Geist_Mono } from "next/font/google";
+import { DM_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { AuroraBackground } from "./components/ui/AuroraBackground";
@@ -8,12 +8,6 @@ const dmSans = DM_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
   weight: ["400", "500", "700"],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-heading",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
@@ -77,7 +71,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${dmSans.variable} ${spaceGrotesk.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${dmSans.variable} ${geistMono.variable} antialiased`}>
         <AuroraBackground />
         <Providers>{children}</Providers>
         <script

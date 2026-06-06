@@ -42,7 +42,7 @@
   --color-primary: var(--primary);
 
   --font-sans: var(--font-sans), system-ui, sans-serif;
-  --font-heading: var(--font-heading), var(--font-sans), sans-serif;
+  --font-heading: var(--font-sans), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
 
   --radius-card: var(--radius);
@@ -63,7 +63,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-heading), var(--font-sans), sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
 }
 
 /* ---------- Reusable primitives ---------- */
