@@ -15,7 +15,7 @@ function classes(variant: Variant, size: Size, extra = "") {
     "group inline-flex items-center justify-center gap-2 rounded-xl font-medium transition duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-start)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-deep)] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer";
   const variants: Record<Variant, string> = {
     primary:
-      "text-[#05070a] bg-[linear-gradient(110deg,var(--brand-start),var(--brand-end))] shadow-[0_8px_30px_-8px_var(--accent-glow)] hover:shadow-[0_12px_40px_-8px_var(--accent-glow)] hover:brightness-110",
+      "text-[#10101a] bg-gradient-to-r from-[#67e8f9] to-[#3b82f6] shadow-[0_8px_30px_-8px_var(--accent-glow)] hover:shadow-[0_12px_40px_-8px_var(--accent-glow)] hover:brightness-110",
     ghost:
       "glass text-foreground hover:bg-[var(--surface-hover)] hover:border-[var(--border-strong)]",
   };
