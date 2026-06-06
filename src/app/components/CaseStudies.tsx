@@ -6,6 +6,7 @@ import { ArrowUpRight } from "lucide-react";
 import { stagger } from "./animations";
 import { SectionHeading } from "./ui/SectionHeading";
 import { GlassCard } from "./ui/GlassCard";
+import { GradientShimmerText } from "./GradientShimmerText";
 
 export function CaseStudies() {
   const studies = [
@@ -56,9 +57,9 @@ export function CaseStudies() {
             </div>
 
             <div className="mt-4 flex items-baseline gap-2">
-              <span className="shimmer-text text-primary font-heading text-3xl font-bold">
+              <GradientShimmerText className="font-heading text-3xl font-bold">
                 {study.metric}
-              </span>
+              </GradientShimmerText>
               <span className="text-xs uppercase tracking-wide text-muted">
                 {study.metricLabel}
               </span>

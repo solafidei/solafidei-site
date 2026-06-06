@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import { GradientShimmerText } from "./GradientShimmerText";
 
 export function Footer() {
   return (
@@ -17,7 +18,7 @@ export function Footer() {
                 className="h-7 w-auto rounded"
               />
               <span className="font-heading font-semibold tracking-wide">
-                SOLA<span className="shimmer-text text-primary">FIDEI</span>
+                SOLA<GradientShimmerText>FIDEI</GradientShimmerText>
               </span>
             </Link>
             <p className="mt-3 max-w-xs text-sm text-muted">
