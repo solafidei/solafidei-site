@@ -74,11 +74,12 @@ export function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* right: animated code terminal */}
+        {/* right: animated code terminal (decorative — hidden on small screens) */}
         <motion.div
           initial={{ opacity: 0, y: 24, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+          className="hidden min-w-0 lg:block"
         >
           <CodeTerminal />
         </motion.div>
