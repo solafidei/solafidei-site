@@ -130,7 +130,7 @@ h6 {
       rgba(255, 255, 255, 0.5) 55%,
       transparent 100%
     ),
-    linear-gradient(110deg, var(--brand-start), var(--aurora-3), var(--brand-end));
+    linear-gradient(110deg, var(--brand-start), var(--brand-end));
   background-repeat: no-repeat;
   background-size:
     50% 100%,
