@@ -76,8 +76,17 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${dmSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
-        {/* site-wide background glow */}
-        <div className="fixed inset-0 -z-10 bg-background [background:radial-gradient(125%_125%_at_50%_-50%,color-mix(in_srgb,var(--primary)_12%,transparent)_40%,transparent_100%)]" />
+        {/* base glow */}
+        <div className="fixed inset-0 -z-10 bg-background [background:radial-gradient(110%_90%_at_50%_-30%,#4a5a9e2e_45%,transparent_80%)]" />
+        {/* soft color blobs */}
+        <div
+          aria-hidden
+          className="pointer-events-none fixed inset-0 -z-10"
+          style={{
+            background:
+              "radial-gradient(circle at 15% 20%, #67e8f912, transparent 30%), radial-gradient(circle at 85% 70%, #1e40af18, transparent 35%)",
+          }}
+        />
         <Providers>{children}</Providers>
         <script
           type="application/ld+json"
