@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { fadeInUp, stagger } from "../animations";
 import { GradientShimmerText } from "../GradientShimmerText";
+import { EyebrowLabel } from "../EyebrowLabel";
 
 type SectionHeadingProps = {
   eyebrow?: string;
@@ -35,15 +36,7 @@ export function SectionHeading({
       viewport={{ once: true, margin: "-80px" }}
       className={`flex flex-col ${alignment} ${align === "center" ? "max-w-2xl" : ""} ${className}`}
     >
-      {eyebrow && (
-        <motion.span
-          variants={fadeInUp}
-          className="glass inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs text-muted"
-        >
-          {eyebrowIcon}
-          {eyebrow}
-        </motion.span>
-      )}
+      {eyebrow && <EyebrowLabel icon={eyebrowIcon}>{eyebrow}</EyebrowLabel>}
       <motion.h2
         variants={fadeInUp}
         className="mt-4 text-2xl font-semibold tracking-tight md:text-4xl"
