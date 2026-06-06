@@ -22,11 +22,11 @@ export function FAQs() {
             <button
               onClick={() => setOpen((v) => (v === i ? null : i))}
               aria-expanded={open === i ? "true" : "false"}
-              className="flex w-full cursor-pointer items-center justify-between text-left"
+              className="flex w-full cursor-pointer items-center justify-between gap-3 text-left"
             >
               <span className="font-heading font-medium">{f.q}</span>
               <ChevronDown
-                className={`h-4 w-4 text-muted transition ${open === i ? "rotate-180 text-[var(--brand-start)]" : ""}`}
+                className={`h-4 w-4 shrink-0 text-muted transition ${open === i ? "rotate-180 text-[var(--brand-start)]" : ""}`}
               />
             </button>
             <AnimatePresence initial={false}>
