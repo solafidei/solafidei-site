@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { GradientButton } from "./ui/GradientButton";
+import { GradientShimmerText } from "./GradientShimmerText";
 
 const links = [
   { href: "#home", label: "Home" },
@@ -32,7 +33,7 @@ export function Nav() {
             priority
           />
           <span className="font-heading font-semibold tracking-wide">
-            SOLA<span className="gradient-shimmer-text">FIDEI</span>
+            SOLA<GradientShimmerText>FIDEI</GradientShimmerText>
           </span>
         </a>
 
