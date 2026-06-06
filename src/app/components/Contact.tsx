@@ -64,7 +64,7 @@ export function Contact() {
         subtitle="Ready to start? Fill out the form or book a call to discuss your project."
       />
       <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <form onSubmit={onSubmit} className="glass flex flex-col gap-4 rounded-2xl p-6">
+        <form onSubmit={onSubmit} className="glass card-gradient-border flex flex-col gap-4 rounded-2xl p-6">
           <label className="flex flex-col gap-1.5">
             <span className="text-xs font-medium text-muted">Name</span>
             <input
@@ -142,7 +142,7 @@ export function Contact() {
             )}
           </div>
         </form>
-        <div className="glass flex flex-col items-center justify-center rounded-2xl p-6 text-center">
+        <div className="glass card-gradient-border flex flex-col items-center justify-center rounded-2xl p-6 text-center">
           <div className="font-heading mb-2 text-lg font-medium">Prefer a live chat?</div>
           <p className="mb-5 max-w-sm text-muted">
             Book a free 30-minute consultation call to discuss your needs.

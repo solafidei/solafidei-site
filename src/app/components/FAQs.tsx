@@ -16,7 +16,7 @@ export function FAQs() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
       <SectionHeading eyebrow="FAQ" title="We’ve got the" highlight="answers" />
-      <div className="glass mx-auto mt-10 max-w-3xl divide-y divide-[var(--border)] rounded-2xl">
+      <div className="glass card-gradient-border mx-auto mt-10 max-w-3xl divide-y divide-[var(--border)] rounded-2xl">
         {faqs.map((f, i) => (
           <div key={i} className="px-5 py-4">
             <button

@@ -19,7 +19,7 @@ export function Stats() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: "-60px" }}
-        className="glass grid grid-cols-1 gap-6 rounded-2xl p-6 sm:grid-cols-3 sm:gap-4 sm:p-8"
+        className="glass card-gradient-border grid grid-cols-1 gap-6 rounded-2xl p-6 sm:grid-cols-3 sm:gap-4 sm:p-8"
       >
         {stats.map(({ icon: Icon, value, label }) => (
           <motion.div

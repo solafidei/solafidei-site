@@ -145,6 +145,7 @@ h6 {
 /* Cyan -> navy gradient border for cards (masked ring so rounded
    corners stay clean; works over the frosted glass background). */
 .card-gradient-border {
+  position: relative;
   border-color: transparent;
 }
 .card-gradient-border::after {

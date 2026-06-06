@@ -6,7 +6,7 @@ import { GradientShimmerText } from "./GradientShimmerText";
 export function Footer() {
   return (
     <footer className="mx-auto max-w-7xl px-4 pb-12 pt-8">
-      <div className="glass rounded-2xl p-8">
+      <div className="glass card-gradient-border rounded-2xl p-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div>
             <Link href="#home" className="flex items-center gap-2">

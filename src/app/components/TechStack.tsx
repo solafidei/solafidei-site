@@ -32,7 +32,7 @@ export function TechStack() {
         className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
       >
         {groups.map(({ icon: Icon, label, items }) => (
-          <motion.div key={label} variants={fadeInUp} className="glass rounded-2xl p-5">
+          <motion.div key={label} variants={fadeInUp} className="glass card-gradient-border rounded-2xl p-5">
             <div className="flex items-center gap-2">
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-[linear-gradient(135deg,rgba(34,211,238,0.18),rgba(167,139,250,0.18))] text-[var(--brand-start)]">
                 <Icon className="h-4 w-4" />

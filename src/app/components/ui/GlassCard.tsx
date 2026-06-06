@@ -29,7 +29,7 @@ export function GlassCard({
       whileHover={interactive ? { y: -6 } : undefined}
       transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
       className={[
-        "glass group relative rounded-2xl p-5",
+        "glass card-gradient-border group relative rounded-2xl p-5",
         interactive
           ? "transition-colors hover:bg-[var(--surface-hover)] hover:border-[var(--border-strong)]"
           : "",
