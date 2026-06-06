@@ -77,7 +77,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${dmSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
         {/* base glow */}
-        <div className="fixed inset-0 -z-10 bg-background [background:radial-gradient(110%_90%_at_50%_-30%,#4a5a9e2e_45%,transparent_80%)]" />
+        <div className="fixed inset-0 -z-10 bg-background [background:radial-gradient(110%_90%_at_50%_-10%,#4a5a9e42_45%,transparent_80%)]" />
         {/* soft color blobs */}
         <div
           aria-hidden
