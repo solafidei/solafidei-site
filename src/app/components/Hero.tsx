@@ -20,12 +20,12 @@ export function Hero() {
       {/* vibrant hero glows */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-24 left-0 -z-10 h-[30rem] w-[30rem] rounded-full opacity-50 blur-[120px]"
+        className="pointer-events-none absolute -top-24 left-0 -z-10 h-[30rem] w-[30rem] rounded-full opacity-25 blur-[120px]"
         style={{ background: "radial-gradient(circle, var(--brand-start), transparent 70%)" }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-10 right-0 -z-10 h-[28rem] w-[28rem] rounded-full opacity-40 blur-[120px]"
+        className="pointer-events-none absolute -top-10 right-0 -z-10 h-[28rem] w-[28rem] rounded-full opacity-20 blur-[120px]"
         style={{ background: "radial-gradient(circle, var(--aurora-3), transparent 70%)" }}
       />
 

@@ -77,7 +77,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${dmSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
         {/* site-wide background glow */}
-        <div className="fixed inset-0 -z-10 bg-background [background:radial-gradient(125%_125%_at_50%_-50%,color-mix(in_srgb,var(--primary)_22%,transparent)_40%,transparent_100%)]" />
+        <div className="fixed inset-0 -z-10 bg-background [background:radial-gradient(125%_125%_at_50%_-50%,color-mix(in_srgb,var(--primary)_12%,transparent)_40%,transparent_100%)]" />
         <Providers>{children}</Providers>
         <script
           type="application/ld+json"
