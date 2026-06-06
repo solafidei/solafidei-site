@@ -84,7 +84,7 @@ export default function RootLayout({
           className="pointer-events-none fixed inset-0 -z-10"
           style={{
             background:
-              "radial-gradient(circle at 15% 20%, #67e8f912, transparent 30%), radial-gradient(circle at 85% 70%, #1e40af18, transparent 35%)",
+              "radial-gradient(circle at 15% 20%, #67e8f933, transparent 40%), radial-gradient(circle at 85% 70%, #1e40af40, transparent 45%)",
           }}
         />
         <Providers>{children}</Providers>
