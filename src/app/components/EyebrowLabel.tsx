@@ -15,7 +15,7 @@ export function EyebrowLabel({ children, icon, className = "" }: EyebrowLabelPro
   return (
     <motion.span
       variants={fadeInUp}
-      className={`glass inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs text-muted ${className}`.trim()}
+      className={`glass card-gradient-border inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs text-muted ${className}`.trim()}
     >
       {icon}
       {children}
