@@ -33,8 +33,8 @@ export function Services() {
     <section id="services" className="mx-auto max-w-7xl px-4 py-16 md:py-24">
       <SectionHeading
         eyebrow="Services"
-        title="Software solutions that"
-        highlight="level up your business"
+        title="Software solutions that level up your"
+        highlight="business."
         subtitle="Work smarter, not harder — accelerate delivery and reduce operational toil."
       />
       <motion.div
