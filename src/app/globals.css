@@ -94,15 +94,15 @@ h6 {
     linear-gradient(
       to right,
       currentColor 0%,
-      rgba(255, 255, 255, 0.92) 40%,
-      rgba(255, 255, 255, 0.92) 60%,
+      rgba(255, 255, 255, 0.5) 45%,
+      rgba(255, 255, 255, 0.5) 55%,
       currentColor 100%
     );
   -webkit-background-clip: text;
   background-clip: text;
   background-repeat: no-repeat;
   background-size: 50% 200%;
-  animation: shimmer 3s linear infinite;
+  animation: shimmer 7s ease-in-out infinite;
 }
 
 @keyframes shimmer {

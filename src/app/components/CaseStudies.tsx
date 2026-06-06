@@ -56,7 +56,7 @@ export function CaseStudies() {
             </div>
 
             <div className="mt-4 flex items-baseline gap-2">
-              <span className="gradient-text font-heading text-3xl font-bold">
+              <span className="shimmer-text text-primary font-heading text-3xl font-bold">
                 {study.metric}
               </span>
               <span className="text-xs uppercase tracking-wide text-muted">

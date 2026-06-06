@@ -17,7 +17,7 @@ export function Footer() {
                 className="h-7 w-auto rounded"
               />
               <span className="font-heading font-semibold tracking-wide">
-                SOLA<span className="gradient-text">FIDEI</span>
+                SOLA<span className="shimmer-text text-primary">FIDEI</span>
               </span>
             </Link>
             <p className="mt-3 max-w-xs text-sm text-muted">

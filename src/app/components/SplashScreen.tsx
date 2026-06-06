@@ -81,7 +81,7 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: EASE, delay: 0.25 }}
           >
-            SOLA<span className="gradient-text">FIDEI</span>
+            SOLA<span className="shimmer-text text-primary">FIDEI</span>
           </motion.div>
 
           {/* progress bar */}

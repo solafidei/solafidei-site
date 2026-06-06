@@ -32,7 +32,7 @@ export function Nav() {
             priority
           />
           <span className="font-heading font-semibold tracking-wide">
-            SOLA<span className="gradient-text">FIDEI</span>
+            SOLA<span className="shimmer-text text-primary">FIDEI</span>
           </span>
         </a>
 
