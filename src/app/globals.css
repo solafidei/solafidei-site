@@ -115,6 +115,48 @@ h6 {
   }
 }
 
+/* Gradient text with a soft moving sheen (for <GradientShimmerText>):
+   the brand gradient stays fixed while a gentle highlight band sweeps
+   across, then rests. */
+.gradient-shimmer-text {
+  display: inline-block;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(255, 255, 255, 0.5) 45%,
+      rgba(255, 255, 255, 0.5) 55%,
+      transparent 100%
+    ),
+    linear-gradient(110deg, var(--brand-start), var(--aurora-3), var(--brand-end));
+  background-repeat: no-repeat;
+  background-size:
+    50% 100%,
+    100% 100%;
+  background-position:
+    -100% 0,
+    0 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: gradient-shimmer 7s ease-in-out infinite;
+}
+
+@keyframes gradient-shimmer {
+  0% {
+    background-position:
+      -100% 0,
+      0 0;
+  }
+  50%,
+  100% {
+    background-position:
+      250% 0,
+      0 0;
+  }
+}
+
 /* Edge fade mask (marquees) */
 .edge-fade {
   -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
@@ -176,7 +218,8 @@ h6 {
   .aurora-anim-a,
   .aurora-anim-b,
   .animate-marquee,
-  .shimmer-text {
+  .shimmer-text,
+  .gradient-shimmer-text {
     animation: none !important;
   }
 }

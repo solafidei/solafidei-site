@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { fadeInUp, stagger } from "../animations";
-import { ShimmerText } from "../ShimmerText";
+import { GradientShimmerText } from "../GradientShimmerText";
 
 type SectionHeadingProps = {
   eyebrow?: string;
@@ -48,7 +48,7 @@ export function SectionHeading({
         variants={fadeInUp}
         className="mt-4 text-2xl font-semibold tracking-tight md:text-4xl"
       >
-        {title} {highlight && <ShimmerText className="text-primary">{highlight}</ShimmerText>}
+        {title} {highlight && <GradientShimmerText>{highlight}</GradientShimmerText>}
       </motion.h2>
       {subtitle && (
         <motion.p variants={fadeInUp} className="mt-3 max-w-xl text-muted">

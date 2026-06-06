@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Mail, Sparkles } from "lucide-react";
 import { fadeInUp, stagger } from "./animations";
-import { ShimmerText } from "./ShimmerText";
+import { GradientShimmerText } from "./GradientShimmerText";
 import { GradientButton } from "./ui/GradientButton";
 import { CodeTerminal } from "./ui/CodeTerminal";
 
@@ -44,7 +44,7 @@ export function Hero() {
             variants={fadeInUp}
             className="mt-6 font-sans text-4xl font-semibold tracking-tight md:text-6xl"
           >
-            We design and build modern, <ShimmerText className="text-primary">intuitive apps.</ShimmerText>
+            We design and build modern, <GradientShimmerText>intuitive apps.</GradientShimmerText>
           </motion.h1>
 
           <motion.p
