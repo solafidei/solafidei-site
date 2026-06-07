@@ -30,7 +30,7 @@ export function SectionHeading({
     align === "center" ? "text-center items-center mx-auto" : "text-left items-start";
   // Dark halo so headings stay legible over the animated shader background.
   const textShadow =
-    "0 2px 6px rgba(0,0,0,1), 0 4px 22px rgba(0,0,0,0.95), 0 0 46px rgba(0,0,0,0.85)";
+    "0 1px 2px #000, 0 0 12px #000, 0 0 28px #000, 0 0 55px rgba(0,0,0,0.9)";
   return (
     <motion.div
       variants={stagger}
