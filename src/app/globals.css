@@ -129,12 +129,19 @@ h6 {
   background-clip: text;
   color: #fff;
   -webkit-text-fill-color: #fff;
-  animation: colorIn 1.8s ease 0.4s forwards;
+  animation: colorIn 5s ease-in-out infinite;
 }
 
 @keyframes colorIn {
-  to {
+  0% {
+    -webkit-text-fill-color: #fff;
+  }
+  30%,
+  70% {
     -webkit-text-fill-color: rgba(255, 255, 255, 0);
+  }
+  100% {
+    -webkit-text-fill-color: #fff;
   }
 }
 
