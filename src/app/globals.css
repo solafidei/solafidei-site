@@ -127,10 +127,18 @@ h6 {
   position: relative;
   display: inline-block;
   background-image: linear-gradient(90deg, #67e8f9, #3b82f6, #1e40af, #3b82f6, #67e8f9);
+  background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
+  animation: titleShimmer 7s linear infinite;
+}
+
+@keyframes titleShimmer {
+  to {
+    background-position: -200% center;
+  }
 }
 
 .flowing-gradient-text::before {
@@ -157,7 +165,8 @@ h6 {
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .gradient-shimmer-text {
+  .gradient-shimmer-text,
+  .flowing-gradient-text {
     animation: none !important;
   }
   .flowing-gradient-text::before {
