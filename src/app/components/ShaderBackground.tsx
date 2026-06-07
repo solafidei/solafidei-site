@@ -174,20 +174,33 @@ export default function ShaderBackground() {
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
-    const startTime = Date.now();
-    let raf = 0;
-    const render = () => {
-      const currentTime = (Date.now() - startTime) / 1000;
+    const drawFrame = (seconds: number) => {
       gl.clearColor(0, 0, 0, 1);
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.useProgram(program);
       gl.uniform2f(resolution, canvas.width, canvas.height);
-      gl.uniform1f(time, currentTime);
+      gl.uniform1f(time, seconds);
       gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
       gl.vertexAttribPointer(vertexPosition, 2, gl.FLOAT, false, 0, 0);
       gl.enableVertexAttribArray(vertexPosition);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    };
+
+    // Respect reduced motion: draw a single static frame, no loop.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      drawFrame(0);
+      return () => window.removeEventListener("resize", resizeCanvas);
+    }
+
+    const startTime = performance.now();
+    const minInterval = 1000 / 30; // cap ~30fps (slow plasma; saves GPU/compositor)
+    let last = 0;
+    let raf = 0;
+    const render = (now: number) => {
       raf = requestAnimationFrame(render);
+      if (now - last < minInterval) return;
+      last = now;
+      drawFrame((now - startTime) / 1000);
     };
     raf = requestAnimationFrame(render);
 
