@@ -117,7 +117,7 @@ h6 {
   border: 1px solid transparent;
   background:
     radial-gradient(130% 110% at 0% 0%, rgba(34, 16, 52, 0.85), rgba(16, 13, 32, 0.85) 70%) padding-box,
-    linear-gradient(120deg, #67e8f9, #1e40af) border-box;
+    linear-gradient(120deg, rgba(103, 232, 249, 0.45), rgba(30, 64, 175, 0.45)) border-box;
 }
 
 /* Respect reduced motion */
