@@ -3,9 +3,9 @@
 :root {
   color-scheme: dark;
 
-  /* Surfaces (never pure black) */
+  /* Surfaces (never pure black) — darker / cinematic */
   --bg-deep: #050507;
-  --bg-base: #0d0a16;
+  --bg-base: #0a0810;
   --surface: rgba(255, 255, 255, 0.05);
   --surface-hover: rgba(255, 255, 255, 0.08);
   --border: rgba(255, 255, 255, 0.08);
@@ -37,6 +37,7 @@
 
   --font-sans: var(--font-sans), system-ui, sans-serif;
   --font-heading: var(--font-sans), system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
   --font-mono: var(--font-geist-mono);
 }
 
@@ -120,57 +121,25 @@ h6 {
     linear-gradient(120deg, rgba(103, 232, 249, 0.45), rgba(30, 64, 175, 0.45)) border-box;
 }
 
-/* Title shows a gradient; a white overlay (::before) loops its opacity
-   white → color → white. Animating opacity keeps it GPU-composited and
-   smooth (for <FlowingGradientText>). */
-.flowing-gradient-text {
-  position: relative;
-  display: inline-block;
-  background-image: linear-gradient(90deg, #67e8f9, #3b82f6, #1e40af, #3b82f6, #67e8f9);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  animation: titleShimmer 7s linear infinite;
+/* Slow Ken-Burns zoom for the cinematic hero background. */
+.hero-zoom {
+  animation: heroZoom 26s ease-in-out infinite alternate;
+  will-change: transform;
 }
 
-@keyframes titleShimmer {
+@keyframes heroZoom {
+  from {
+    transform: scale(1);
+  }
   to {
-    background-position: -200% center;
-  }
-}
-
-.flowing-gradient-text::before {
-  content: attr(data-content);
-  position: absolute;
-  inset: 0;
-  color: #fff;
-  -webkit-text-fill-color: #fff;
-  pointer-events: none;
-  animation: whiteFade 6s ease-in-out var(--fade-delay, 0s) infinite;
-}
-
-@keyframes whiteFade {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
+    transform: scale(1.12);
   }
 }
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .gradient-shimmer-text,
-  .flowing-gradient-text {
+  .hero-zoom {
     animation: none !important;
-  }
-  .flowing-gradient-text::before {
-    animation: none !important;
-    opacity: 0;
   }
 }

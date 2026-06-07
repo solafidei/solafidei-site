@@ -25,14 +25,6 @@ export default function SolafideiLanding() {
       <div className="relative z-10">
         <Nav />
         <Hero />
-        {/* fade from the hero into the shader background */}
-        <div
-          aria-hidden
-          className="pointer-events-none relative z-0 -mt-40 h-40"
-          style={{
-            background: "linear-gradient(to bottom, transparent, var(--background))",
-          }}
-        />
         <Stats />
         <TechStack />
         <Services />

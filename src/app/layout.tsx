@@ -1,13 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Geist_Mono } from "next/font/google";
+import { DM_Sans, Fraunces, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-import ShaderBackground from "./components/ShaderBackground";
 
 const dmSans = DM_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
   weight: ["400", "500", "700"],
+});
+
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  style: ["normal", "italic"],
 });
 
 const geistMono = Geist_Mono({
@@ -76,8 +82,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${dmSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
-        <ShaderBackground />
+      <body className={`${dmSans.variable} ${fraunces.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
         <Providers>{children}</Providers>
         <script
           type="application/ld+json"
