@@ -120,28 +120,39 @@ h6 {
     linear-gradient(120deg, rgba(103, 232, 249, 0.45), rgba(30, 64, 175, 0.45)) border-box;
 }
 
-/* Title text that starts white, then the gradient color fades in (for
-   <FlowingGradientText>). */
+/* Title shows a gradient; a white overlay (::before) loops its opacity
+   white → color → white. Animating opacity keeps it GPU-composited and
+   smooth (for <FlowingGradientText>). */
 .flowing-gradient-text {
+  position: relative;
   display: inline-block;
   background-image: linear-gradient(90deg, #67e8f9, #3b82f6, #1e40af, #3b82f6, #67e8f9);
   -webkit-background-clip: text;
   background-clip: text;
-  color: #fff;
-  -webkit-text-fill-color: #fff;
-  animation: colorIn 5s ease-in-out infinite;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
-@keyframes colorIn {
+.flowing-gradient-text::before {
+  content: attr(data-content);
+  position: absolute;
+  inset: 0;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  pointer-events: none;
+  animation: whiteFade 5s ease-in-out infinite;
+}
+
+@keyframes whiteFade {
   0% {
-    -webkit-text-fill-color: #fff;
+    opacity: 1;
   }
   30%,
   70% {
-    -webkit-text-fill-color: rgba(255, 255, 255, 0);
+    opacity: 0;
   }
   100% {
-    -webkit-text-fill-color: #fff;
+    opacity: 1;
   }
 }
 
@@ -150,8 +161,8 @@ h6 {
   .gradient-shimmer-text {
     animation: none !important;
   }
-  .flowing-gradient-text {
+  .flowing-gradient-text::before {
     animation: none !important;
-    -webkit-text-fill-color: rgba(255, 255, 255, 0);
+    opacity: 0;
   }
 }
