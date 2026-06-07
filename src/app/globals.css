@@ -140,7 +140,7 @@ h6 {
   color: #fff;
   -webkit-text-fill-color: #fff;
   pointer-events: none;
-  animation: whiteFade 5s ease-in-out var(--fade-delay, 0s) infinite;
+  animation: whiteFade 3.2s ease-in-out var(--fade-delay, 0s) infinite;
 }
 
 @keyframes whiteFade {
