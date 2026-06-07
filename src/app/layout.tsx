@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { DM_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-import ParticlesComponent from "./components/ParticlesComponent";
 
 const dmSans = DM_Sans({
   variable: "--font-sans",
@@ -102,7 +101,6 @@ export default function RootLayout({
               "radial-gradient(130% 120% at 50% 0%, #000 60%, transparent 105%)",
           }}
         />
-        <ParticlesComponent />
         <Providers>{children}</Providers>
         <script
           type="application/ld+json"
