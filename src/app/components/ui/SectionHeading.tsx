@@ -28,6 +28,8 @@ export function SectionHeading({
 }: SectionHeadingProps) {
   const alignment =
     align === "center" ? "text-center items-center mx-auto" : "text-left items-start";
+  // Dark halo so headings stay legible over the animated shader background.
+  const textShadow = "0 2px 16px rgba(0,0,0,0.9), 0 0 30px rgba(0,0,0,0.7)";
   return (
     <motion.div
       variants={stagger}
@@ -39,12 +41,13 @@ export function SectionHeading({
       {eyebrow && <EyebrowLabel icon={eyebrowIcon}>{eyebrow}</EyebrowLabel>}
       <motion.h2
         variants={fadeInUp}
+        style={{ textShadow }}
         className="mt-4 text-2xl font-semibold tracking-tight md:text-4xl"
       >
         {title} {highlight && <GradientShimmerText>{highlight}</GradientShimmerText>}
       </motion.h2>
       {subtitle && (
-        <motion.p variants={fadeInUp} className="mt-3 max-w-xl text-muted">
+        <motion.p variants={fadeInUp} style={{ textShadow }} className="mt-3 max-w-xl text-muted">
           {subtitle}
         </motion.p>
       )}
