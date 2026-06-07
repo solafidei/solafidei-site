@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { DM_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import ShaderBackground from "./components/ShaderBackground";
 
 const dmSans = DM_Sans({
   variable: "--font-sans",
@@ -76,31 +77,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${dmSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
-        {/* base glow */}
-        <div className="fixed inset-0 -z-10 bg-background [background:radial-gradient(110%_90%_at_50%_-10%,#6d4aae45_45%,transparent_80%)]" />
-        {/* soft color blobs */}
-        <div
-          aria-hidden
-          className="pointer-events-none fixed inset-0 -z-10"
-          style={{
-            background:
-              "radial-gradient(circle at 15% 20%, #a78bfa2e, transparent 40%), radial-gradient(circle at 85% 70%, #7c3aed3a, transparent 45%)",
-          }}
-        />
-        {/* subtle dot grid, fades out downward */}
-        <div
-          aria-hidden
-          className="pointer-events-none fixed inset-0 -z-10"
-          style={{
-            backgroundImage:
-              "radial-gradient(rgba(108,142,240,0.24) 1px, transparent 1px)",
-            backgroundSize: "30px 30px",
-            WebkitMaskImage:
-              "radial-gradient(130% 120% at 50% 0%, #000 60%, transparent 105%)",
-            maskImage:
-              "radial-gradient(130% 120% at 50% 0%, #000 60%, transparent 105%)",
-          }}
-        />
+        <ShaderBackground />
         <Providers>{children}</Providers>
         <script
           type="application/ld+json"
