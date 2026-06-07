@@ -76,10 +76,31 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${dmSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
-        {/* grid + purple-glow background */}
-        <div className="fixed inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]">
-          <div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_800px_at_100%_200px,#d5c5ff,transparent)]" />
-        </div>
+        {/* base glow */}
+        <div className="fixed inset-0 -z-10 bg-background [background:radial-gradient(110%_90%_at_50%_-10%,#4a5a9e42_45%,transparent_80%)]" />
+        {/* soft color blobs */}
+        <div
+          aria-hidden
+          className="pointer-events-none fixed inset-0 -z-10"
+          style={{
+            background:
+              "radial-gradient(circle at 15% 20%, #67e8f933, transparent 40%), radial-gradient(circle at 85% 70%, #1e40af40, transparent 45%)",
+          }}
+        />
+        {/* subtle dot grid, fades out downward */}
+        <div
+          aria-hidden
+          className="pointer-events-none fixed inset-0 -z-10"
+          style={{
+            backgroundImage:
+              "radial-gradient(rgba(150,170,210,0.10) 1px, transparent 1px)",
+            backgroundSize: "30px 30px",
+            WebkitMaskImage:
+              "radial-gradient(125% 95% at 50% 0%, #000 35%, transparent 78%)",
+            maskImage:
+              "radial-gradient(125% 95% at 50% 0%, #000 35%, transparent 78%)",
+          }}
+        />
         <Providers>{children}</Providers>
         <script
           type="application/ld+json"
