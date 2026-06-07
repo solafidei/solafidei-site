@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Mail, Sparkles } from "lucide-react";
 import { fadeInUp, stagger } from "./animations";
+import { AnimatedHeading } from "./AnimatedHeading";
 import { GradientShimmerText } from "./GradientShimmerText";
 import { GradientButton } from "./ui/GradientButton";
 import { CodeTerminal } from "./ui/CodeTerminal";
@@ -28,12 +29,11 @@ export function Hero() {
             projects this month
           </motion.p>
 
-          <motion.h1
-            variants={fadeInUp}
+          <AnimatedHeading
             className="mt-6 font-sans text-4xl font-semibold tracking-tight md:text-6xl"
-          >
-            We design and build modern, <GradientShimmerText>intuitive apps.</GradientShimmerText>
-          </motion.h1>
+            lead="We design and build modern,"
+            highlight={<GradientShimmerText>intuitive apps.</GradientShimmerText>}
+          />
 
           <motion.p
             variants={fadeInUp}
