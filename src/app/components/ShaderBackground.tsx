@@ -23,7 +23,7 @@ const fsSource = `
   const float minorLineFrequency = 1.0;
   const vec4 gridColor = vec4(0.5);
   const float scale = 5.0;
-  const vec4 lineColor = vec4(0.55, 0.4, 1.0, 1.0);
+  const vec4 lineColor = vec4(0.72, 0.56, 1.0, 1.0);
   const float minLineWidth = 0.01;
   const float maxLineWidth = 0.25;
   const float lineSpeed = 1.0 * overallSpeed;
@@ -85,7 +85,7 @@ const fsSource = `
       float halfWidth = mix(minLineWidth, maxLineWidth, rand * horizontalFade) / 2.0;
       float offset = random(offsetPosition + offsetTime * (1.0 + normalizedLineIndex)) * mix(minOffsetSpread, maxOffsetSpread, horizontalFade);
       float linePosition = getPlasmaY(space.x, horizontalFade, offset);
-      float line = drawSmoothLine(linePosition, halfWidth, space.y) / 2.0 + drawCrispLine(linePosition, halfWidth * 0.25, space.y);
+      float line = drawSmoothLine(linePosition, halfWidth, space.y) / 2.0 + drawCrispLine(linePosition, halfWidth * 0.4, space.y);
 
       float circleX = mod(float(l) + iTime * lineSpeed, 25.0) - 12.0;
       vec2 circlePosition = vec2(circleX, getPlasmaY(circleX, horizontalFade, offset));
@@ -193,14 +193,10 @@ export default function ShaderBackground() {
     }
 
     const startTime = performance.now();
-    const minInterval = 1000 / 30; // cap ~30fps (slow plasma; saves GPU/compositor)
-    let last = 0;
     let raf = 0;
     const render = (now: number) => {
-      raf = requestAnimationFrame(render);
-      if (now - last < minInterval) return;
-      last = now;
       drawFrame((now - startTime) / 1000);
+      raf = requestAnimationFrame(render);
     };
     raf = requestAnimationFrame(render);
 
