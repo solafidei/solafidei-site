@@ -120,7 +120,7 @@ h6 {
     linear-gradient(120deg, rgba(103, 232, 249, 0.45), rgba(30, 64, 175, 0.45)) border-box;
 }
 
-/* Inline text with a continuously flowing gradient (for
+/* Inline text whose gradient sweeps across once, then rests (for
    <FlowingGradientText>). */
 .flowing-gradient-text {
   display: inline-block;
@@ -130,15 +130,18 @@ h6 {
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
-  animation: flowGradient 4s linear infinite;
+  animation: rowSweep 3s ease-in-out infinite;
 }
 
-@keyframes flowGradient {
+@keyframes rowSweep {
   0% {
-    background-position: 0% center;
+    background-position: 115% 0;
+  }
+  35% {
+    background-position: -15% 0;
   }
   100% {
-    background-position: 200% center;
+    background-position: -15% 0;
   }
 }
 
