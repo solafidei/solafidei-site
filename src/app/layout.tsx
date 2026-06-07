@@ -93,12 +93,12 @@ export default function RootLayout({
           className="pointer-events-none fixed inset-0 -z-10"
           style={{
             backgroundImage:
-              "radial-gradient(rgba(150,170,210,0.22) 1px, transparent 1px)",
+              "radial-gradient(rgba(108,142,240,0.24) 1px, transparent 1px)",
             backgroundSize: "30px 30px",
             WebkitMaskImage:
-              "radial-gradient(125% 95% at 50% 0%, #000 35%, transparent 78%)",
+              "radial-gradient(130% 120% at 50% 0%, #000 60%, transparent 105%)",
             maskImage:
-              "radial-gradient(125% 95% at 50% 0%, #000 35%, transparent 78%)",
+              "radial-gradient(130% 120% at 50% 0%, #000 60%, transparent 105%)",
           }}
         />
         <Providers>{children}</Providers>
