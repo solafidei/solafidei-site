@@ -12,6 +12,15 @@ const CALENDAR_URL = "https://calendar.app.google/cNPgb76hCUcz6vsr8";
 export function Hero() {
   return (
     <section id="home" className="relative overflow-hidden bg-background">
+      {/* subtle glow echoing the shader background (blue -> purple, brighter center) */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(90% 70% at 50% 42%, rgba(124,90,255,0.20), transparent 70%), linear-gradient(110deg, rgba(40,50,140,0.30), rgba(100,45,170,0.30))",
+        }}
+      />
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 md:py-28 lg:grid-cols-2">
         {/* left: copy */}
         <motion.div
