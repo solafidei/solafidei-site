@@ -11,7 +11,10 @@ const CALENDAR_URL = "https://calendar.app.google/cNPgb76hCUcz6vsr8";
 
 export function Hero() {
   return (
-    <section id="home" className="relative overflow-hidden bg-background">
+    <section
+      id="home"
+      className="relative overflow-hidden bg-background shadow-[0_28px_70px_-24px_rgba(0,0,0,0.65)]"
+    >
       {/* subtle glow echoing the shader background (blue -> purple, brighter center) */}
       <div
         aria-hidden
