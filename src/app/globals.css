@@ -5,7 +5,7 @@
 
   /* Surfaces (never pure black) */
   --bg-deep: #050507;
-  --bg-base: #0a0a0f;
+  --bg-base: #0d0a16;
   --surface: rgba(255, 255, 255, 0.05);
   --surface-hover: rgba(255, 255, 255, 0.08);
   --border: rgba(255, 255, 255, 0.08);
@@ -111,46 +111,18 @@ h6 {
   }
 }
 
-/* Animatable angle for the rotating card border. */
-@property --gradient-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes border-rotate {
-  to {
-    --gradient-angle: 360deg;
-  }
-}
-
-/* Card surface: translucent dark radial fill (over the glass backdrop
-   blur, for a frosted hint) with a rotating royal-blue conic border. */
+/* Card surface: dark purple radial fill with a static cyan -> navy
+   gradient border. */
 .card-gradient-border {
   border: 1px solid transparent;
   background:
-    radial-gradient(130% 110% at 0% 0%, rgba(34, 16, 52, 0.6), rgba(16, 13, 32, 0.6) 70%) padding-box,
-    conic-gradient(
-        from var(--gradient-angle, 0deg),
-        #1e3a8a 0%,
-        #3b82f6 37%,
-        #bfdbfe 30%,
-        #3b82f6 33%,
-        #1e3a8a 40%,
-        #1e3a8a 50%,
-        #3b82f6 77%,
-        #bfdbfe 80%,
-        #3b82f6 83%,
-        #1e3a8a 90%
-      )
-      border-box;
-  animation: border-rotate 5s linear infinite;
+    radial-gradient(130% 110% at 0% 0%, rgba(34, 16, 52, 0.85), rgba(16, 13, 32, 0.85) 70%) padding-box,
+    linear-gradient(120deg, #67e8f9, #1e40af) border-box;
 }
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .gradient-shimmer-text,
-  .card-gradient-border {
+  .gradient-shimmer-text {
     animation: none !important;
   }
 }

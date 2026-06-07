@@ -77,14 +77,14 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${dmSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
         {/* base glow */}
-        <div className="fixed inset-0 -z-10 bg-background [background:radial-gradient(110%_90%_at_50%_-10%,#4a5a9e42_45%,transparent_80%)]" />
+        <div className="fixed inset-0 -z-10 bg-background [background:radial-gradient(110%_90%_at_50%_-10%,#6d4aae45_45%,transparent_80%)]" />
         {/* soft color blobs */}
         <div
           aria-hidden
           className="pointer-events-none fixed inset-0 -z-10"
           style={{
             background:
-              "radial-gradient(circle at 15% 20%, #67e8f933, transparent 40%), radial-gradient(circle at 85% 70%, #1e40af40, transparent 45%)",
+              "radial-gradient(circle at 15% 20%, #a78bfa2e, transparent 40%), radial-gradient(circle at 85% 70%, #7c3aed3a, transparent 45%)",
           }}
         />
         {/* subtle dot grid, fades out downward */}
