@@ -16,16 +16,11 @@
   --brand-end: #a78bfa; /* violet-300 */
   --aurora-3: #f0abfc; /* pink/fuchsia accent for mesh richness */
   --accent-glow: rgba(94, 106, 210, 0.25);
-  --primary: #cba6f7; /* mauve accent (ShimmerText) */
 
   /* Text */
   --background: var(--bg-base);
   --foreground: #ededef;
   --foreground-muted: #8a8f98;
-
-  /* Shape & motion */
-  --radius: 16px;
-  --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
@@ -39,14 +34,10 @@
   --color-brand-start: var(--brand-start);
   --color-brand-end: var(--brand-end);
   --color-aurora-3: var(--aurora-3);
-  --color-primary: var(--primary);
 
   --font-sans: var(--font-sans), system-ui, sans-serif;
   --font-heading: var(--font-sans), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
-
-  --radius-card: var(--radius);
-  --ease-smooth: var(--ease);
 }
 
 body {
@@ -77,47 +68,10 @@ h6 {
     0 8px 30px -12px rgba(0, 0, 0, 0.5);
 }
 
-/* Gradient text */
-.gradient-text {
-  background-image: linear-gradient(110deg, var(--brand-start), var(--aurora-3), var(--brand-end));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* Shimmer text (for <ShimmerText>): sweeps a light highlight across the
-   current text color, e.g. `text-primary`. */
-.shimmer-text {
-  display: inline-block;
-  -webkit-text-fill-color: transparent;
-  background: currentColor
-    linear-gradient(
-      to right,
-      currentColor 0%,
-      rgba(255, 255, 255, 0.5) 45%,
-      rgba(255, 255, 255, 0.5) 55%,
-      currentColor 100%
-    );
-  -webkit-background-clip: text;
-  background-clip: text;
-  background-repeat: no-repeat;
-  background-size: 50% 200%;
-  animation: shimmer 7s ease-in-out infinite;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position-x: -100%;
-  }
-  50%,
-  100% {
-    background-position-x: 250%;
-  }
-}
-
 /* Gradient text with a soft moving sheen (for <GradientShimmerText>):
-   colors (--gst-from / --gst-to) and the sheen position (--gst-x) are
-   supplied/animated by the component via framer-motion. */
+   colors (--gst-from / --gst-to) and cycle length (--gst-dur) come from
+   the component; the sheen sweeps via a CSS animation (GPU-friendly, no
+   per-frame JS). */
 .gradient-shimmer-text {
   display: inline-block;
   color: transparent;
@@ -136,10 +90,25 @@ h6 {
     50% 100%,
     100% 100%;
   background-position:
-    var(--gst-x, -100%) 0,
+    -100% 0,
     0 0;
   -webkit-background-clip: text;
   background-clip: text;
+  animation: gradient-shimmer var(--gst-dur, 3s) ease-in-out infinite;
+}
+
+@keyframes gradient-shimmer {
+  0% {
+    background-position:
+      -100% 0,
+      0 0;
+  }
+  50%,
+  100% {
+    background-position:
+      250% 0,
+      0 0;
+  }
 }
 
 /* Card surface: translucent dark radial fill (over the glass backdrop
@@ -151,68 +120,8 @@ h6 {
     linear-gradient(120deg, #67e8f9, #1e40af) border-box;
 }
 
-/* Edge fade mask (marquees) */
-.edge-fade {
-  -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
-  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
-}
-
-/* Aurora ambient blobs */
-.aurora-blob {
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(80px);
-  opacity: 0.5;
-  will-change: transform;
-}
-
-@keyframes aurora-drift-a {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(6%, 8%, 0) scale(1.15);
-  }
-}
-
-@keyframes aurora-drift-b {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1.1);
-  }
-  50% {
-    transform: translate3d(-8%, -6%, 0) scale(0.95);
-  }
-}
-
-.aurora-anim-a {
-  animation: aurora-drift-a 18s var(--ease) infinite;
-}
-
-.aurora-anim-b {
-  animation: aurora-drift-b 22s var(--ease) infinite;
-}
-
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-marquee {
-  animation: marquee var(--marquee-duration, 24s) linear infinite;
-}
-
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .aurora-anim-a,
-  .aurora-anim-b,
-  .animate-marquee,
-  .shimmer-text,
   .gradient-shimmer-text {
     animation: none !important;
   }
