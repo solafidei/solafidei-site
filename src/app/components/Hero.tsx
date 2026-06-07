@@ -32,7 +32,9 @@ export function Hero() {
             variants={fadeInUp}
             className="mt-6 font-sans text-4xl font-semibold tracking-tight md:text-6xl"
           >
-            <FlowingGradientText>We design and build modern, intuitive apps.</FlowingGradientText>
+            <FlowingGradientText>We design and build modern,</FlowingGradientText>
+            <br />
+            <FlowingGradientText delay={1}>intuitive apps.</FlowingGradientText>
           </motion.h1>
 
           <motion.p
