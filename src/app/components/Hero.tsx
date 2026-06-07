@@ -34,7 +34,7 @@ export function Hero() {
           >
             <FlowingGradientText>We design and build modern,</FlowingGradientText>
             <br />
-            <FlowingGradientText delay={-2.3}>intuitive apps.</FlowingGradientText>
+            <FlowingGradientText delay={-3}>intuitive apps.</FlowingGradientText>
           </motion.h1>
 
           <motion.p
