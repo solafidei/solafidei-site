@@ -120,9 +120,32 @@ h6 {
     linear-gradient(120deg, rgba(103, 232, 249, 0.45), rgba(30, 64, 175, 0.45)) border-box;
 }
 
+/* Inline text with a continuously flowing gradient (for
+   <FlowingGradientText>). */
+.flowing-gradient-text {
+  display: inline-block;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(90deg, #67e8f9, #3b82f6, #1e40af, #3b82f6, #67e8f9);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: flowGradient 4s linear infinite;
+}
+
+@keyframes flowGradient {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .gradient-shimmer-text {
+  .gradient-shimmer-text,
+  .flowing-gradient-text {
     animation: none !important;
   }
 }
