@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { GradientShimmerText } from "./GradientShimmerText";
 
 type SplashScreenProps = {
   durationMs?: number;
@@ -80,7 +79,7 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: EASE, delay: 0.25 }}
           >
-            SOLA<GradientShimmerText from="#8b5cf6" to="#5b21b6">FIDEI</GradientShimmerText>
+            SOLAFIDEI
           </motion.div>
 
           {/* progress bar */}
