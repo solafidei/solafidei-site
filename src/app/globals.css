@@ -14,7 +14,6 @@
   /* Brand / aurora */
   --brand-start: #22d3ee; /* cyan-400 */
   --brand-end: #a78bfa; /* violet-300 */
-  --aurora-3: #f0abfc; /* pink/fuchsia accent for mesh richness */
   --accent-glow: rgba(94, 106, 210, 0.25);
 
   /* Text */
@@ -33,7 +32,6 @@
   --color-border-strong: var(--border-strong);
   --color-brand-start: var(--brand-start);
   --color-brand-end: var(--brand-end);
-  --color-aurora-3: var(--aurora-3);
 
   --font-sans: var(--font-sans), system-ui, sans-serif;
   --font-heading: var(--font-sans), system-ui, sans-serif;
