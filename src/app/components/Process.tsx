@@ -55,19 +55,19 @@ const steps = [
 export function Process() {
   return (
     <section id="about" className="relative isolate overflow-hidden">
-      {/* full-bleed light-streak backdrop for the process */}
+      {/* full-bleed light-streak backdrop — darkened for legibility and masked
+          to transparent at top/bottom so the section edges reveal the same
+          page background (base + purple wash) as the neighbouring sections */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-20 bg-cover bg-center"
-        style={{ backgroundImage: "url(/process.jpg)" }}
-      />
-      {/* legibility scrim, fading into the adjacent sections */}
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-10"
+        className="absolute inset-0 -z-10 bg-cover bg-center"
         style={{
-          background:
-            "linear-gradient(180deg, var(--bg-base) 0%, rgba(10,8,16,0.82) 14%, rgba(10,8,16,0.82) 86%, var(--bg-base) 100%)",
+          backgroundImage:
+            "linear-gradient(rgba(10,8,16,0.82), rgba(10,8,16,0.82)), url(/process.jpg)",
+          WebkitMaskImage:
+            "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
+          maskImage:
+            "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
         }}
       />
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">

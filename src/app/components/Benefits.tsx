@@ -33,19 +33,18 @@ export function Benefits() {
 
   return (
     <section id="benefits" className="relative isolate overflow-hidden">
-      {/* full-bleed glassy backdrop */}
+      {/* full-bleed glassy backdrop; darkened + masked to transparent at
+          top/bottom so the edges reveal the page background */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-20 bg-cover bg-center"
-        style={{ backgroundImage: "url(/benefits.jpg)" }}
-      />
-      {/* legibility scrim, fading into the adjacent sections */}
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-10"
+        className="absolute inset-0 -z-10 bg-cover bg-center"
         style={{
-          background:
-            "linear-gradient(180deg, var(--bg-base) 0%, rgba(10,8,16,0.88) 14%, rgba(10,8,16,0.88) 86%, var(--bg-base) 100%)",
+          backgroundImage:
+            "linear-gradient(rgba(10,8,16,0.88), rgba(10,8,16,0.88)), url(/benefits.jpg)",
+          WebkitMaskImage:
+            "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
+          maskImage:
+            "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
         }}
       />
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
