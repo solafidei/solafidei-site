@@ -1,10 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
-import { stagger } from "./animations";
+import { stagger, sectionReveal } from "./animations";
 import { SectionHeading } from "./ui/SectionHeading";
-import { GlassCard } from "./ui/GlassCard";
 
 const steps = [
   {
@@ -56,7 +54,7 @@ const steps = [
 
 export function Process() {
   return (
-    <section id="about" className="mx-auto max-w-7xl px-4 py-16 md:py-24">
+    <section id="about" className="mx-auto max-w-7xl px-6 py-24 md:py-32">
       <SectionHeading
         eyebrow="Process"
         title="Simple, smart, and"
@@ -67,28 +65,35 @@ export function Process() {
         variants={stagger}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: true }}
-        className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
+        viewport={{ once: true, margin: "-80px" }}
+        className="mt-16 flex flex-col"
       >
-        {steps.map(({ step, title, desc, items }, i) => (
-          <GlassCard key={step} className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="font-heading inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-[linear-gradient(135deg,rgba(34,211,238,0.2),rgba(167,139,250,0.2))] text-sm font-semibold text-[var(--brand-start)]">
-                {i + 1}
+        {steps.map(({ title, desc, items }, i) => (
+          <motion.div
+            key={title}
+            variants={sectionReveal}
+            className="grid gap-8 border-t border-border py-12 md:grid-cols-12 md:gap-12"
+          >
+            <div className="md:col-span-5">
+              <span className="font-[family-name:var(--font-fraunces)] text-4xl font-light text-foreground/30 md:text-5xl">
+                {String(i + 1).padStart(2, "0")}
               </span>
-              <span className="text-xs uppercase tracking-wide text-muted">{step}</span>
+              <h3 className="mt-5 font-[family-name:var(--font-fraunces)] text-2xl font-normal text-foreground">
+                {title}
+              </h3>
+              <p className="mt-3 leading-relaxed text-muted">{desc}</p>
             </div>
-            <h3 className="font-heading mt-3 font-medium">{title}</h3>
-            <p className="mt-2 text-sm text-muted">{desc}</p>
-            <div className="mt-4 flex-1 space-y-2">
-              {items.map((c) => (
-                <div key={c} className="flex items-start gap-2 text-sm">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--brand-start)]" />
-                  <span className="text-muted">{c}</span>
-                </div>
-              ))}
+            <div className="md:col-span-7 md:pt-3">
+              <ul className="space-y-3">
+                {items.map((c) => (
+                  <li key={c} className="flex gap-3 text-sm leading-relaxed text-muted">
+                    <span className="select-none text-foreground/30">—</span>
+                    <span>{c}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </GlassCard>
+          </motion.div>
         ))}
       </motion.div>
     </section>
