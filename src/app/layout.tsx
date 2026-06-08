@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Fraunces, Geist_Mono } from "next/font/google";
+import { DM_Sans, Fraunces, Montserrat, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -14,6 +14,12 @@ const fraunces = Fraunces({
   subsets: ["latin"],
   weight: ["300", "400", "500"],
   style: ["normal", "italic"],
+});
+
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
 });
 
 const geistMono = Geist_Mono({
@@ -82,7 +88,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${dmSans.variable} ${fraunces.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
+      <body className={`${dmSans.variable} ${fraunces.variable} ${montserrat.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
         <Providers>{children}</Providers>
         <script
           type="application/ld+json"

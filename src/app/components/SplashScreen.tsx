@@ -35,7 +35,7 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease: EASE }}
-            className="font-[family-name:var(--font-fraunces)] text-3xl font-light tracking-[0.04em] text-foreground md:text-4xl"
+            className="font-[family-name:var(--font-montserrat)] text-3xl font-light tracking-[0.04em] text-foreground md:text-4xl"
           >
             Solafidei
           </motion.span>
