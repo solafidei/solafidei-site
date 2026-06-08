@@ -121,18 +121,18 @@ h6 {
     linear-gradient(120deg, rgba(103, 232, 249, 0.45), rgba(30, 64, 175, 0.45)) border-box;
 }
 
-/* Slow Ken-Burns zoom for the cinematic hero background. */
+/* Slow Ken-Burns zoom + drift for the cinematic hero background. */
 .hero-zoom {
-  animation: heroZoom 26s ease-in-out infinite alternate;
+  animation: heroZoom 22s ease-in-out infinite alternate;
   will-change: transform;
 }
 
 @keyframes heroZoom {
   from {
-    transform: scale(1);
+    transform: scale(1.04) translate3d(0, 0, 0);
   }
   to {
-    transform: scale(1.12);
+    transform: scale(1.16) translate3d(-2.5%, -1.8%, 0);
   }
 }
 
