@@ -37,8 +37,8 @@ export function Footer() {
         <div>© {new Date().getFullYear()} Solafidei. All rights reserved.</div>
         <div className="flex items-center gap-4">
           <a className="hover:text-white" href="mailto:info@solafidei.com">info@solafidei.com</a>
-          <a className="hover:text-white" href="#">Privacy</a>
-          <a className="hover:text-white" href="#">Terms</a>
+          <Link className="hover:text-white" href="/privacy">Privacy</Link>
+          <Link className="hover:text-white" href="/terms">Terms</Link>
         </div>
       </div>
     </footer>
