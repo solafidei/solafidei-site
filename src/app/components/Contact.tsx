@@ -57,19 +57,34 @@ export function Contact() {
     "w-full border-b border-border bg-transparent py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted/60 focus:border-foreground";
 
   return (
-    <section id="contact" className="mx-auto max-w-7xl px-6 py-24 md:py-32">
-      <SectionHeading
-        eyebrow="Contact"
-        title="Let’s build"
-        highlight="something great"
-        subtitle="Ready to start? Fill out the form or book a call to discuss your project."
+    <section id="contact" className="relative isolate overflow-hidden">
+      {/* subtle particle backdrop — heavily darkened + masked to transparent
+          at top/bottom so it's just a faint glow and the edges blend */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-cover bg-center"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(10,8,16,0.9), rgba(10,8,16,0.9)), url(/contact.jpg)",
+          WebkitMaskImage:
+            "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
+          maskImage:
+            "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
+        }}
       />
-      <motion.div
-        variants={sectionReveal}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, margin: "-80px" }}
-        className="mt-16 grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-16"
+      <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+        <SectionHeading
+          eyebrow="Contact"
+          title="Let’s build"
+          highlight="something great"
+          subtitle="Ready to start? Fill out the form or book a call to discuss your project."
+        />
+        <motion.div
+          variants={sectionReveal}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-80px" }}
+          className="mt-16 grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-16"
       >
         <form onSubmit={onSubmit} className="flex flex-col gap-7">
           <label className="flex flex-col gap-2">
@@ -168,6 +183,7 @@ export function Contact() {
           </a>
         </div>
       </motion.div>
+      </div>
     </section>
   );
 }
