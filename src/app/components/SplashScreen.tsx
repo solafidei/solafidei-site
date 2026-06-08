@@ -30,20 +30,36 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
           key="splash"
           aria-hidden
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 1.8, ease: [0.8, 0, 1, 1] } }}
+          exit={
+            reduce
+              ? { opacity: 0, transition: { duration: 0.6 } }
+              : { opacity: 0, transition: { delay: 1.5, duration: 0.3, ease: "easeIn" } }
+          }
           transition={{ duration: 0.9, ease: EASE }}
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-cover bg-center"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(5,5,7,0.5), rgba(5,5,7,0.5)), url(/intro.jpg)",
-            backgroundColor: "var(--bg-deep)",
-          }}
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden"
         >
-
-          {/* logo inside a spinning gradient ring — on exit it zooms up toward
-              the viewer while the splash fades, revealing the site behind it */}
+          {/* background image layer — fades out on exit so the site behind it
+              shows through the logo's transparent areas (the window effect) */}
           <motion.div
-            className="relative h-36 w-36"
+            aria-hidden
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(5,5,7,0.5), rgba(5,5,7,0.5)), url(/intro.jpg)",
+              backgroundColor: "var(--bg-deep)",
+            }}
+            exit={
+              reduce
+                ? undefined
+                : { opacity: 0, transition: { duration: 1.2, ease: [0.45, 0, 0.55, 1] } }
+            }
+          />
+
+          {/* logo inside a spinning gradient ring — on exit the ring + dark disc
+              fade away while the transparent logo zooms toward the viewer, so the
+              site shows through the logo's negative space like a window */}
+          <motion.div
+            className="relative z-10 h-36 w-36"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
             exit={
@@ -66,11 +82,26 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
                   ? undefined
                   : { repeat: Infinity, ease: "linear", duration: 1.6 }
               }
+              exit={
+                reduce
+                  ? undefined
+                  : { opacity: 0, transition: { duration: 0.7, ease: [0.45, 0, 0.55, 1] } }
+              }
             />
-            {/* mask to turn the disc into a ring */}
-            <div className="absolute inset-[3px] flex items-center justify-center rounded-full bg-[var(--bg-deep)]">
+            {/* dark disc backing — fades on exit to "open" the window */}
+            <motion.div
+              className="absolute inset-[3px] rounded-full bg-[var(--bg-deep)]"
+              exit={
+                reduce
+                  ? undefined
+                  : { opacity: 0, transition: { duration: 0.7, ease: [0.45, 0, 0.55, 1] } }
+              }
+            />
+            {/* logo (transparent PNG) on top — its black space is alpha, so the
+                site behind shows through it once the disc/background clear */}
+            <div className="absolute inset-0 flex items-center justify-center">
               <Image
-                src="/logo_opaque_smaller.png"
+                src="/logo_transparent_smaller.png"
                 alt="Solafidei"
                 width={120}
                 height={120}
@@ -80,18 +111,22 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
             </div>
           </motion.div>
 
-          {/* wordmark */}
+          {/* wordmark — clears quickly on exit so only the logo zooms */}
           <motion.div
-            className="font-heading mt-7 text-lg font-semibold tracking-[0.3em] text-foreground"
+            className="font-heading relative z-10 mt-7 text-lg font-semibold tracking-[0.3em] text-foreground"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, transition: { duration: 0.4 } }}
             transition={{ duration: 0.6, ease: EASE, delay: 0.25 }}
           >
             SOLAFIDEI
           </motion.div>
 
-          {/* progress bar */}
-          <div className="mt-6 h-1 w-44 overflow-hidden rounded-full bg-[var(--surface)]">
+          {/* progress bar — clears quickly on exit */}
+          <motion.div
+            className="relative z-10 mt-6 h-1 w-44 overflow-hidden rounded-full bg-[var(--surface)]"
+            exit={{ opacity: 0, transition: { duration: 0.4 } }}
+          >
             <motion.div
               className="h-full rounded-full"
               style={{ background: "linear-gradient(90deg, #8b5cf6, #4c1d95)" }}
@@ -99,7 +134,7 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
               animate={{ width: "100%" }}
               transition={{ duration: Math.max(0.4, durationMs / 1000 - 0.3), ease: EASE }}
             />
-          </div>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
