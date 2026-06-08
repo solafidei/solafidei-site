@@ -31,18 +31,20 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
           key="splash"
           aria-hidden
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.05, filter: "blur(8px)" }}
-          transition={{ duration: 0.6, ease: EASE }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.9, ease: EASE }}
           className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-cover bg-center"
           style={{ backgroundImage: "url(/intro.jpg)", backgroundColor: "var(--bg-deep)" }}
         >
 
-          {/* logo inside a spinning gradient ring */}
+          {/* logo inside a spinning gradient ring — on exit it zooms up toward
+              the viewer while the splash fades, revealing the site behind it */}
           <motion.div
             className="relative h-36 w-36"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, ease: EASE }}
+            exit={reduce ? { opacity: 0 } : { scale: 8, opacity: 0 }}
+            transition={{ duration: 0.8, ease: EASE }}
           >
             <motion.div
               className="absolute inset-0 rounded-full"
