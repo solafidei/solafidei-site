@@ -76,7 +76,7 @@ export function Contact() {
           text-muted inside: eyebrow, subtitle, labels, placeholders, copy) */}
       <div
         className="mx-auto max-w-7xl px-6 py-24 md:py-32"
-        style={{ "--color-muted": "#d6d9df" } as React.CSSProperties}
+        style={{ "--color-muted": "var(--foreground)" } as React.CSSProperties}
       >
         <SectionHeading
           eyebrow="Contact"
