@@ -11,7 +11,6 @@ import { Benefits } from "./components/Benefits";
 import { Testimonials } from "./components/Testimonials";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
-import { SplashScreen } from "./components/SplashScreen";
 
 // Solafidei — landing page inspired by Xtract's layout and IA
 // Reference: https://plum-words-798095.framer.app/
@@ -21,7 +20,6 @@ import { SplashScreen } from "./components/SplashScreen";
 export default function SolafideiLanding() {
   return (
     <main className="relative min-h-screen text-white selection:bg-cyan-500/20">
-      <SplashScreen durationMs={1200} />
       <div className="relative z-10">
         <Nav />
         <Hero />

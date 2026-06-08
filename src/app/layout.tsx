@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { DM_Sans, Fraunces, Montserrat, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { SplashScreen } from "./components/SplashScreen";
 
 const dmSans = DM_Sans({
   variable: "--font-sans",
@@ -89,6 +90,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${dmSans.variable} ${fraunces.variable} ${montserrat.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
+        {/* full-screen intro splash with the logo; sits above all content */}
+        <SplashScreen durationMs={1200} />
         {/* subtle purple wash (ties to the splash); behind all content */}
         <div
           aria-hidden
