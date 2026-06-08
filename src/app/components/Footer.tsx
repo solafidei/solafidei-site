@@ -20,8 +20,23 @@ const columns = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-border">
-      <div className="mx-auto max-w-7xl px-6 py-16 md:py-20">
+    <footer className="relative isolate overflow-hidden">
+      {/* full-bleed particle backdrop for the bottom of the site */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-20 bg-cover bg-center"
+        style={{ backgroundImage: "url(/footer.jpg)" }}
+      />
+      {/* fade in from the page background + legibility scrim */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10"
+        style={{
+          background:
+            "linear-gradient(180deg, var(--bg-base) 0%, rgba(10,8,16,0.6) 38%, rgba(10,8,16,0.55) 100%)",
+        }}
+      />
+      <div className="mx-auto max-w-7xl px-6 py-20 md:py-28">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
           <div>
             <a
