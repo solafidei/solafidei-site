@@ -2,9 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Clock, User, Layers, MessageCircle } from "lucide-react";
-import { stagger } from "./animations";
+import { stagger, sectionReveal } from "./animations";
 import { SectionHeading } from "./ui/SectionHeading";
-import { GlassCard } from "./ui/GlassCard";
 
 export function Benefits() {
   const benefits = [
@@ -33,27 +32,29 @@ export function Benefits() {
   ];
 
   return (
-    <section id="benefits" className="mx-auto max-w-7xl px-4 py-16 md:py-24">
-      <SectionHeading
-        eyebrow="Why us"
-        title="Benefits of"
-        highlight="working with us"
-      />
+    <section id="benefits" className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+      <SectionHeading eyebrow="Why us" title="Benefits of" highlight="working with us" />
       <motion.div
         variants={stagger}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: true }}
-        className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
+        viewport={{ once: true, margin: "-80px" }}
+        className="mt-16 grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-4"
       >
         {benefits.map(({ icon: Icon, title, description }) => (
-          <GlassCard key={title} className="flex flex-col items-start gap-3 p-6">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-[linear-gradient(135deg,rgba(34,211,238,0.18),rgba(167,139,250,0.18))] text-[var(--brand-start)]">
-              <Icon className="h-6 w-6" />
+          <motion.div
+            key={title}
+            variants={sectionReveal}
+            className="flex flex-col border-t border-border pt-8"
+          >
+            <span className="text-muted">
+              <Icon size={22} strokeWidth={1.5} />
             </span>
-            <h3 className="font-heading text-lg font-medium">{title}</h3>
-            <p className="text-sm text-muted">{description}</p>
-          </GlassCard>
+            <h3 className="mt-7 font-[family-name:var(--font-fraunces)] text-xl font-normal text-foreground">
+              {title}
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-muted">{description}</p>
+          </motion.div>
         ))}
       </motion.div>
     </section>
