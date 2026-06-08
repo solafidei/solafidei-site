@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
@@ -22,9 +21,11 @@ export function Hero() {
       className="relative flex min-h-[92vh] items-end overflow-hidden bg-background shadow-[0_28px_70px_-24px_rgba(0,0,0,0.65)]"
     >
       {/* full-bleed cinematic background image (slow Ken-Burns via .hero-zoom) */}
-      <div aria-hidden className="hero-zoom absolute inset-0 -z-20">
-        <Image src="/hero.jpg" alt="" fill priority sizes="100vw" className="object-cover" />
-      </div>
+      <div
+        aria-hidden
+        className="hero-zoom absolute inset-0 -z-20 bg-cover bg-center"
+        style={{ backgroundImage: "url(/hero.jpg)" }}
+      />
       {/* legibility scrim — darker toward the bottom where the copy sits */}
       <div
         aria-hidden
