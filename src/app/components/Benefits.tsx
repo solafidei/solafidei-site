@@ -45,7 +45,7 @@ export function Benefits() {
         className="absolute inset-0 -z-10"
         style={{
           background:
-            "linear-gradient(180deg, var(--bg-base) 0%, rgba(10,8,16,0.82) 14%, rgba(10,8,16,0.82) 86%, var(--bg-base) 100%)",
+            "linear-gradient(180deg, var(--bg-base) 0%, rgba(10,8,16,0.88) 14%, rgba(10,8,16,0.88) 86%, var(--bg-base) 100%)",
         }}
       />
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
