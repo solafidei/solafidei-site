@@ -30,7 +30,7 @@ export function Services() {
     },
   ];
   return (
-    <section id="services" className="mx-auto max-w-7xl px-4 py-16 md:py-24">
+    <section id="services" className="mx-auto max-w-7xl px-6 py-24 md:py-32">
       <SectionHeading
         eyebrow="Services"
         title="Software solutions that level up your"
@@ -41,11 +41,11 @@ export function Services() {
         variants={stagger}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: true }}
-        className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
+        viewport={{ once: true, margin: "-80px" }}
+        className="mt-16 grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-4"
       >
         {items.map(({ icon: Icon, title, desc }) => (
-          <ServiceCard key={title} icon={<Icon size={24} />} title={title} description={desc} />
+          <ServiceCard key={title} icon={<Icon size={22} strokeWidth={1.5} />} title={title} description={desc} />
         ))}
       </motion.div>
     </section>

@@ -3,14 +3,11 @@
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { fadeInUp, stagger } from "../animations";
-import { GradientShimmerText } from "../GradientShimmerText";
-import { EyebrowLabel } from "../EyebrowLabel";
 
 type SectionHeadingProps = {
   eyebrow?: string;
-  eyebrowIcon?: ReactNode;
   title: ReactNode;
-  /** Highlight portion rendered with the shimmer text treatment. */
+  /** Emphasised tail of the headline, rendered in serif italic. */
   highlight?: string;
   subtitle?: ReactNode;
   align?: "center" | "left";
@@ -19,7 +16,6 @@ type SectionHeadingProps = {
 
 export function SectionHeading({
   eyebrow,
-  eyebrowIcon,
   title,
   highlight,
   subtitle,
@@ -27,31 +23,34 @@ export function SectionHeading({
   className = "",
 }: SectionHeadingProps) {
   const alignment =
-    align === "center" ? "text-center items-center mx-auto" : "text-left items-start";
+    align === "center" ? "items-center text-center" : "items-start text-left";
   return (
     <motion.div
       variants={stagger}
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, margin: "-80px" }}
-      className={`flex flex-col ${alignment} ${align === "center" ? "max-w-2xl" : ""} ${className}`}
+      className={`flex flex-col ${alignment} ${align === "center" ? "mx-auto max-w-2xl" : ""} ${className}`}
     >
-      {eyebrow && <EyebrowLabel icon={eyebrowIcon}>{eyebrow}</EyebrowLabel>}
-      <motion.div variants={fadeInUp} className="relative mt-4 inline-block px-10 py-8">
-        {/* dark radial glow behind the text for legibility over the shader */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 blur-[10px]"
-          style={{
-            background:
-              "radial-gradient(60% 60% at 50% 50%, rgba(5,5,12,0.85), rgba(5,5,12,0.55) 45%, transparent 75%)",
-          }}
-        />
-        <h2 className="text-2xl font-semibold tracking-tight md:text-4xl">
-          {title} {highlight && <GradientShimmerText>{highlight}</GradientShimmerText>}
-        </h2>
-        {subtitle && <p className="mx-auto mt-3 max-w-xl text-muted">{subtitle}</p>}
-      </motion.div>
+      {eyebrow && (
+        <motion.span
+          variants={fadeInUp}
+          className="text-xs uppercase tracking-[0.25em] text-muted"
+        >
+          {eyebrow}
+        </motion.span>
+      )}
+      <motion.h2
+        variants={fadeInUp}
+        className="mt-5 font-[family-name:var(--font-fraunces)] text-3xl font-light leading-[1.1] tracking-tight text-foreground md:text-5xl"
+      >
+        {title} {highlight && <em className="font-light italic">{highlight}</em>}
+      </motion.h2>
+      {subtitle && (
+        <motion.p variants={fadeInUp} className="mt-5 max-w-xl leading-relaxed text-muted">
+          {subtitle}
+        </motion.p>
+      )}
     </motion.div>
   );
 }
