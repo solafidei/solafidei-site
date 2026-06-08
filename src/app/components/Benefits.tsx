@@ -61,7 +61,7 @@ export function Benefits() {
             variants={sectionReveal}
             className="flex flex-col border-t border-border pt-8"
           >
-            <span className="text-muted">
+            <span className="text-icon">
               <Icon size={22} strokeWidth={1.5} />
             </span>
             <h3 className="mt-7 font-[family-name:var(--font-fraunces)] text-xl font-normal text-foreground">
