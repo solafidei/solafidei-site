@@ -39,7 +39,7 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
 
           {/* logo inside a spinning gradient ring */}
           <motion.div
-            className="relative h-28 w-28"
+            className="relative h-36 w-36"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, ease: EASE }}
@@ -62,7 +62,7 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
                 width={120}
                 height={120}
                 priority
-                className="h-14 w-auto"
+                className="h-24 w-auto"
               />
             </div>
           </motion.div>
