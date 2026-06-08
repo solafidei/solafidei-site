@@ -32,15 +32,31 @@ export function Benefits() {
   ];
 
   return (
-    <section id="benefits" className="mx-auto max-w-7xl px-6 py-24 md:py-32">
-      <SectionHeading eyebrow="Why us" title="Benefits of" highlight="working with us" />
-      <motion.div
-        variants={stagger}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, margin: "-80px" }}
-        className="mt-16 grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-4"
-      >
+    <section id="benefits" className="relative isolate overflow-hidden">
+      {/* full-bleed glassy backdrop */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-20 bg-cover bg-center"
+        style={{ backgroundImage: "url(/benefits.jpg)" }}
+      />
+      {/* legibility scrim, fading into the adjacent sections */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10"
+        style={{
+          background:
+            "linear-gradient(180deg, var(--bg-base) 0%, rgba(10,8,16,0.82) 14%, rgba(10,8,16,0.82) 86%, var(--bg-base) 100%)",
+        }}
+      />
+      <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+        <SectionHeading eyebrow="Why us" title="Benefits of" highlight="working with us" />
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-80px" }}
+          className="mt-16 grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-4"
+        >
         {benefits.map(({ icon: Icon, title, description }) => (
           <motion.div
             key={title}
@@ -56,7 +72,8 @@ export function Benefits() {
             <p className="mt-3 text-sm leading-relaxed text-muted">{description}</p>
           </motion.div>
         ))}
-      </motion.div>
+        </motion.div>
+      </div>
     </section>
   );
 }
