@@ -1,10 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Quote } from "lucide-react";
-import { stagger } from "./animations";
+import { stagger, sectionReveal } from "./animations";
 import { SectionHeading } from "./ui/SectionHeading";
-import { GlassCard } from "./ui/GlassCard";
 
 export function Testimonials() {
   const items = [
@@ -22,26 +20,29 @@ export function Testimonials() {
     },
   ];
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
+    <section className="mx-auto max-w-7xl px-6 py-24 md:py-32">
       <SectionHeading eyebrow="Testimonials" title="Why teams choose" highlight="Solafidei" />
       <motion.div
         variants={stagger}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: true }}
-        className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2"
+        viewport={{ once: true, margin: "-80px" }}
+        className="mt-16 grid grid-cols-1 gap-x-12 gap-y-14 md:grid-cols-2"
       >
         {items.map((t, i) => (
-          <GlassCard key={i} className="flex flex-col p-6">
-            <Quote className="h-7 w-7 text-[var(--brand-start)]/60" />
-            <p className="mt-4 flex-1 text-[15px] leading-relaxed text-foreground/90">
+          <motion.figure
+            key={i}
+            variants={sectionReveal}
+            className="flex flex-col border-t border-border pt-8"
+          >
+            <blockquote className="flex-1 font-[family-name:var(--font-fraunces)] text-xl font-light leading-relaxed text-foreground md:text-2xl">
               “{t.quote}”
-            </p>
-            <div className="mt-5 border-t border-border pt-4">
-              <div className="font-heading text-sm font-medium">{t.author}</div>
-              <div className="text-xs text-muted">{t.role}</div>
-            </div>
-          </GlassCard>
+            </blockquote>
+            <figcaption className="mt-8">
+              <div className="text-sm text-foreground">{t.author}</div>
+              <div className="mt-1 text-xs uppercase tracking-[0.15em] text-muted">{t.role}</div>
+            </figcaption>
+          </motion.figure>
         ))}
       </motion.div>
     </section>
