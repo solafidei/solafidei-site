@@ -77,7 +77,7 @@ export function Process() {
             backgroundSize: "100% 50%",
             backgroundRepeat: "repeat-y",
             backgroundPosition: "center",
-            filter: "brightness(0.7) contrast(1.3)",
+            filter: "brightness(0.5) contrast(1.5)",
           }}
         />
         {/* dark wash over the graded image for text legibility */}
