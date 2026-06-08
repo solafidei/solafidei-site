@@ -18,7 +18,7 @@ export function Hero() {
     <section
       ref={ref}
       id="home"
-      className="relative flex min-h-[92vh] items-end overflow-hidden bg-background shadow-[0_28px_70px_-24px_rgba(0,0,0,0.65)]"
+      className="relative isolate flex min-h-[92vh] items-end overflow-hidden bg-background shadow-[0_28px_70px_-24px_rgba(0,0,0,0.65)]"
     >
       {/* full-bleed cinematic background image (slow Ken-Burns via .hero-zoom) */}
       <div
