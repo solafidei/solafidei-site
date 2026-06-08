@@ -33,17 +33,9 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.05, filter: "blur(8px)" }}
           transition={{ duration: 0.6, ease: EASE }}
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden"
-          style={{ backgroundColor: "var(--bg-deep)" }}
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-cover bg-center"
+          style={{ backgroundImage: "url(/intro.jpg)", backgroundColor: "var(--bg-deep)" }}
         >
-          {/* ambient aurora glow */}
-          <motion.div
-            className="pointer-events-none absolute left-1/2 top-1/2 h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[110px]"
-            style={{ background: "radial-gradient(circle, #6d28d9, transparent 70%)" }}
-            initial={{ opacity: 0, scale: 0.7 }}
-            animate={{ opacity: 0.45, scale: 1 }}
-            transition={{ duration: 1, ease: EASE }}
-          />
 
           {/* logo inside a spinning gradient ring */}
           <motion.div
