@@ -104,7 +104,7 @@ export function Process() {
             className="grid gap-8 border-t border-border py-12 md:grid-cols-12 md:gap-12"
           >
             <div className="md:col-span-5">
-              <span className="font-[family-name:var(--font-fraunces)] text-4xl font-light text-foreground/30 md:text-5xl">
+              <span className="font-[family-name:var(--font-fraunces)] text-4xl font-light text-icon md:text-5xl">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <h3 className="mt-5 font-[family-name:var(--font-fraunces)] text-2xl font-normal text-foreground">

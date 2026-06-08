@@ -21,7 +21,7 @@ export function Stats() {
       >
         {stats.map(({ value, label }) => (
           <div key={label} className="flex flex-col">
-            <span className="font-[family-name:var(--font-fraunces)] text-5xl font-light tracking-tight text-foreground md:text-6xl">
+            <span className="font-[family-name:var(--font-fraunces)] text-5xl font-light tracking-tight text-icon md:text-6xl">
               {value}
             </span>
             <span className="mt-4 max-w-[16rem] text-sm leading-relaxed text-muted">{label}</span>

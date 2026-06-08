@@ -32,7 +32,7 @@ export function TechStack() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="text-xs uppercase tracking-[0.25em] text-muted"
+          className="text-xs uppercase tracking-[0.25em] text-icon"
         >
           Our stack
         </motion.p>
