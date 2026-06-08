@@ -2,11 +2,8 @@
 import Image from "next/image";
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
-import { stagger } from "./animations";
+import { stagger, sectionReveal } from "./animations";
 import { SectionHeading } from "./ui/SectionHeading";
-import { GlassCard } from "./ui/GlassCard";
-import { GradientShimmerText } from "./GradientShimmerText";
 
 export function CaseStudies() {
   const studies = [
@@ -30,7 +27,7 @@ export function CaseStudies() {
     },
   ];
   return (
-    <section id="work" className="mx-auto max-w-7xl px-4 py-16 md:py-24">
+    <section id="work" className="mx-auto max-w-7xl px-6 py-24 md:py-32">
       <SectionHeading
         eyebrow="Case studies"
         title="Real-world impact for"
@@ -41,35 +38,34 @@ export function CaseStudies() {
         variants={stagger}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: true }}
-        className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2"
+        viewport={{ once: true, margin: "-80px" }}
+        className="mt-16 flex flex-col"
       >
         {studies.map((study, idx) => (
-          <GlassCard key={idx} className="flex flex-col p-6">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-center gap-3">
-                {study.logo && <Logo src={study.logo} alt={`${study.client} logo`} />}
-                <div className="font-heading text-lg font-semibold leading-tight">
-                  {study.title}
-                </div>
-              </div>
-              <ArrowUpRight className="h-5 w-5 shrink-0 text-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-            </div>
-
-            <div className="mt-4 flex items-baseline gap-2">
-              <GradientShimmerText className="font-heading text-3xl font-bold">
+          <motion.article
+            key={idx}
+            variants={sectionReveal}
+            className="grid gap-8 border-t border-border py-12 md:grid-cols-12 md:gap-12"
+          >
+            <div className="md:col-span-4">
+              <div className="font-[family-name:var(--font-fraunces)] text-5xl font-light leading-none text-foreground md:text-6xl">
                 {study.metric}
-              </GradientShimmerText>
-              <span className="text-xs uppercase tracking-wide text-muted">
+              </div>
+              <div className="mt-3 text-xs uppercase tracking-[0.18em] text-muted">
                 {study.metricLabel}
-              </span>
+              </div>
+              <div className="mt-8 flex items-center gap-2.5">
+                <Logo src={study.logo} alt={`${study.client} logo`} />
+                <span className="text-sm text-foreground">{study.client}</span>
+              </div>
             </div>
-
-            <p className="mt-4 flex-1 text-sm text-muted">{study.summary}</p>
-            <div className="mt-6 border-t border-border pt-4 text-xs text-muted">
-              Client: <span className="text-foreground">{study.client}</span>
+            <div className="md:col-span-8">
+              <h3 className="font-[family-name:var(--font-fraunces)] text-xl font-normal leading-snug text-foreground md:text-2xl">
+                {study.title}
+              </h3>
+              <p className="mt-5 leading-relaxed text-muted">{study.summary}</p>
             </div>
-          </GlassCard>
+          </motion.article>
         ))}
       </motion.div>
     </section>
@@ -84,7 +80,7 @@ function Logo({ src, alt }: { src: string; alt: string }) {
       alt={alt}
       width={96}
       height={24}
-      className="h-6 w-auto"
+      className="h-5 w-auto opacity-80"
       onError={() => setCurrent("/logo_opaque_smaller.png")}
     />
   );
