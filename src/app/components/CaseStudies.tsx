@@ -27,13 +27,27 @@ export function CaseStudies() {
     },
   ];
   return (
-    <section id="work" className="mx-auto max-w-7xl px-6 py-24 md:py-32">
-      <SectionHeading
-        eyebrow="Case studies"
-        title="Real-world impact for"
-        highlight="our clients"
-        subtitle="See how Solafidei delivers measurable outcomes."
+    <section id="work" className="relative isolate overflow-hidden">
+      {/* full-bleed particle backdrop — darkened + masked at edges to blend */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-cover bg-center"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(10,8,16,0.84), rgba(10,8,16,0.84)), url(/casestudies.jpg)",
+          WebkitMaskImage:
+            "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
+          maskImage:
+            "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
+        }}
       />
+      <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+        <SectionHeading
+          eyebrow="Case studies"
+          title="Real-world impact for"
+          highlight="our clients"
+          subtitle="See how Solafidei delivers measurable outcomes."
+        />
       <motion.div
         variants={stagger}
         initial="hidden"
@@ -68,6 +82,7 @@ export function CaseStudies() {
           </motion.article>
         ))}
       </motion.div>
+      </div>
     </section>
   );
 }
