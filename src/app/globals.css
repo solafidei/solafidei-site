@@ -69,49 +69,6 @@ h6 {
     0 8px 30px -12px rgba(0, 0, 0, 0.5);
 }
 
-/* Gradient text with a soft moving sheen (for <GradientShimmerText>):
-   colors (--gst-from / --gst-to) and cycle length (--gst-dur) come from
-   the component; the sheen sweeps via a CSS animation (GPU-friendly, no
-   per-frame JS). */
-.gradient-shimmer-text {
-  display: inline-block;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  background-image:
-    linear-gradient(
-      to right,
-      transparent 0%,
-      rgba(255, 255, 255, 0.5) 45%,
-      rgba(255, 255, 255, 0.5) 55%,
-      transparent 100%
-    ),
-    linear-gradient(110deg, var(--gst-from, #67e8f9), var(--gst-to, #1e40af));
-  background-repeat: no-repeat;
-  background-size:
-    50% 100%,
-    100% 100%;
-  background-position:
-    -100% 0,
-    0 0;
-  -webkit-background-clip: text;
-  background-clip: text;
-  animation: gradient-shimmer var(--gst-dur, 3s) ease-in-out infinite;
-}
-
-@keyframes gradient-shimmer {
-  0% {
-    background-position:
-      -100% 0,
-      0 0;
-  }
-  50%,
-  100% {
-    background-position:
-      250% 0,
-      0 0;
-  }
-}
-
 /* Card surface: dark purple radial fill with a static cyan -> navy
    gradient border. */
 .card-gradient-border {
@@ -138,7 +95,6 @@ h6 {
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .gradient-shimmer-text,
   .hero-zoom {
     animation: none !important;
   }
