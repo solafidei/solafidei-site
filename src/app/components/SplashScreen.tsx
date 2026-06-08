@@ -11,7 +11,7 @@ type SplashScreenProps = {
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const RING_GRADIENT =
-  "conic-gradient(from 0deg, #c4b5fd, #ddd6fe, #a78bfa, #c4b5fd)";
+  "conic-gradient(from 0deg, #6d28d9, #8b5cf6, #4c1d95, #6d28d9)";
 
 export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
   // Start visible on the server + first client paint so the overlay is in the
@@ -39,7 +39,7 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
           {/* ambient aurora glow */}
           <motion.div
             className="pointer-events-none absolute left-1/2 top-1/2 h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[110px]"
-            style={{ background: "radial-gradient(circle, #a78bfa, transparent 70%)" }}
+            style={{ background: "radial-gradient(circle, #6d28d9, transparent 70%)" }}
             initial={{ opacity: 0, scale: 0.7 }}
             animate={{ opacity: 0.45, scale: 1 }}
             transition={{ duration: 1, ease: EASE }}
@@ -82,14 +82,14 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: EASE, delay: 0.25 }}
           >
-            SOLA<GradientShimmerText from="#ddd6fe" to="#a78bfa">FIDEI</GradientShimmerText>
+            SOLA<GradientShimmerText from="#8b5cf6" to="#5b21b6">FIDEI</GradientShimmerText>
           </motion.div>
 
           {/* progress bar */}
           <div className="mt-6 h-1 w-44 overflow-hidden rounded-full bg-[var(--surface)]">
             <motion.div
               className="h-full rounded-full"
-              style={{ background: "linear-gradient(90deg, #c4b5fd, #a78bfa)" }}
+              style={{ background: "linear-gradient(90deg, #8b5cf6, #4c1d95)" }}
               initial={{ width: "0%" }}
               animate={{ width: "100%" }}
               transition={{ duration: Math.max(0.4, durationMs / 1000 - 0.3), ease: EASE }}
