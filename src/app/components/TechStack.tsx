@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { stagger, fadeInUp } from "./animations";
+import { stagger, sectionReveal } from "./animations";
 
 const groups = [
   { label: "Frontend", items: ["Next.js", "React", "React Native", "Flutter"] },
@@ -31,7 +31,7 @@ export function TechStack() {
         className="mt-12 grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4"
       >
         {groups.map(({ label, items }) => (
-          <motion.div key={label} variants={fadeInUp} className="border-t border-border pt-6">
+          <motion.div key={label} variants={sectionReveal} className="border-t border-border pt-6">
             <h3 className="text-xs uppercase tracking-[0.2em] text-foreground">{label}</h3>
             <ul className="mt-5 space-y-2">
               {items.map((item) => (

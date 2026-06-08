@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
-import { fadeInUp } from "./animations";
+import { sectionReveal } from "./animations";
 
 type ServiceCardProps = {
   icon: ReactNode;
@@ -13,7 +13,7 @@ type ServiceCardProps = {
 /** Editorial service block: thin top rule, muted icon, serif title, copy. */
 export function ServiceCard({ icon, title, description }: ServiceCardProps) {
   return (
-    <motion.div variants={fadeInUp} className="flex flex-col border-t border-border pt-8">
+    <motion.div variants={sectionReveal} className="flex flex-col border-t border-border pt-8">
       <span className="text-muted">{icon}</span>
       <h3 className="mt-7 font-[family-name:var(--font-fraunces)] text-xl font-normal text-foreground">
         {title}
