@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { fadeInUp, stagger } from "../animations";
 
 type SectionHeadingProps = {
@@ -24,12 +24,18 @@ export function SectionHeading({
 }: SectionHeadingProps) {
   const alignment =
     align === "center" ? "items-center text-center" : "items-start text-left";
+  const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], [28, -28]);
   return (
     <motion.div
+      ref={ref}
       variants={stagger}
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, margin: "-80px" }}
+      style={reduce ? undefined : { y }}
       className={`flex flex-col ${alignment} ${align === "center" ? "mx-auto max-w-2xl" : ""} ${className}`}
     >
       {eyebrow && (

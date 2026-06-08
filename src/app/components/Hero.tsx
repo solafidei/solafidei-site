@@ -1,13 +1,25 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 const CALENDAR_URL = "https://calendar.app.google/cNPgb76hCUcz6vsr8";
 
 export function Hero() {
+  const ref = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  // Content lags the scroll (parallax) and fades as the hero leaves.
+  const y = useTransform(scrollYProgress, [0, 1], [0, 110]);
+  const opacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
+
   return (
-    <section id="home" className="relative flex min-h-[92vh] items-end overflow-hidden">
+    <section
+      ref={ref}
+      id="home"
+      className="relative flex min-h-[92vh] items-end overflow-hidden bg-background shadow-[0_28px_70px_-24px_rgba(0,0,0,0.65)]"
+    >
       {/* full-bleed cinematic background — placeholder; swap for an image/video.
           (e.g. <video> or <Image fill> in place of this gradient layer) */}
       <div
@@ -28,7 +40,10 @@ export function Hero() {
         }}
       />
 
-      <div className="mx-auto w-full max-w-7xl px-6 pb-24 pt-44 md:pb-32">
+      <motion.div
+        style={reduce ? undefined : { y, opacity }}
+        className="mx-auto w-full max-w-7xl px-6 pb-24 pt-44 md:pb-32"
+      >
         <motion.div
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
@@ -59,7 +74,7 @@ export function Hero() {
             </a>
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }
