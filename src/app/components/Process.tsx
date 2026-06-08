@@ -60,10 +60,13 @@ export function Process() {
           page background (base + purple wash) as the neighbouring sections */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-cover bg-center"
+        className="absolute inset-0 -z-10"
         style={{
           backgroundImage:
             "linear-gradient(rgba(10,8,16,0.82), rgba(10,8,16,0.82)), url(/process.jpg)",
+          backgroundSize: "100% 100%, 100% 50%",
+          backgroundRepeat: "no-repeat, repeat-y",
+          backgroundPosition: "center, center",
           WebkitMaskImage:
             "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
           maskImage:
