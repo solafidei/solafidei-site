@@ -72,7 +72,12 @@ export function Contact() {
             "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
         }}
       />
-      <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+      {/* lift the muted text just for this section (cascades to every
+          text-muted inside: eyebrow, subtitle, labels, placeholders, copy) */}
+      <div
+        className="mx-auto max-w-7xl px-6 py-24 md:py-32"
+        style={{ "--color-muted": "#d6d9df" } as React.CSSProperties}
+      >
         <SectionHeading
           eyebrow="Contact"
           title="Let’s build"
