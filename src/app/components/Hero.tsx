@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
@@ -20,16 +21,10 @@ export function Hero() {
       id="home"
       className="relative flex min-h-[92vh] items-end overflow-hidden bg-background shadow-[0_28px_70px_-24px_rgba(0,0,0,0.65)]"
     >
-      {/* full-bleed cinematic background — placeholder; swap for an image/video.
-          (e.g. <video> or <Image fill> in place of this gradient layer) */}
-      <div
-        aria-hidden
-        className="hero-zoom absolute inset-0 -z-20"
-        style={{
-          background:
-            "radial-gradient(110% 90% at 72% 18%, #241d38 0%, transparent 58%), radial-gradient(90% 80% at 12% 95%, #15131f 0%, transparent 70%), linear-gradient(180deg, #0a0810 0%, #0c0a15 100%)",
-        }}
-      />
+      {/* full-bleed cinematic background image (slow Ken-Burns via .hero-zoom) */}
+      <div aria-hidden className="hero-zoom absolute inset-0 -z-20">
+        <Image src="/hero.jpg" alt="" fill priority sizes="100vw" className="object-cover" />
+      </div>
       {/* legibility scrim — darker toward the bottom where the copy sits */}
       <div
         aria-hidden
