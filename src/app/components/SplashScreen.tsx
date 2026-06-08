@@ -30,7 +30,7 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
           key="splash"
           aria-hidden
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 1.3, ease: EASE } }}
+          exit={{ opacity: 0, transition: { duration: 1.8, ease: EASE } }}
           transition={{ duration: 0.9, ease: EASE }}
           className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-cover bg-center"
           style={{ backgroundImage: "url(/intro.jpg)", backgroundColor: "var(--bg-deep)" }}
@@ -45,7 +45,7 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
             exit={
               reduce
                 ? { opacity: 0 }
-                : { scale: 8, opacity: 0, transition: { duration: 1.3, ease: EASE } }
+                : { scale: 8, opacity: 0, transition: { duration: 1.8, ease: EASE } }
             }
             transition={{ duration: 0.8, ease: EASE }}
           >
