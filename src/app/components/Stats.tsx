@@ -1,39 +1,31 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { TrendingDown, Clock, Users } from "lucide-react";
-import { stagger, fadeInUp } from "./animations";
+import { sectionReveal } from "./animations";
 
 const stats = [
-  { icon: TrendingDown, value: "70%", label: "Lower operating costs delivered" },
-  { icon: Clock, value: "20+", label: "Years of combined experience" },
-  { icon: Users, value: "6", label: "Expert engineering & design leads" },
+  { value: "70%", label: "Lower operating costs delivered" },
+  { value: "20+", label: "Years of combined experience" },
+  { value: "6", label: "Expert engineering & design leads" },
 ];
 
 export function Stats() {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-8">
+    <section className="mx-auto max-w-7xl px-6 py-24 md:py-32">
       <motion.div
-        variants={stagger}
+        variants={sectionReveal}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: true, margin: "-60px" }}
-        className="glass card-gradient-border grid grid-cols-1 gap-6 rounded-2xl p-6 sm:grid-cols-3 sm:gap-4 sm:p-8"
+        viewport={{ once: true, margin: "-100px" }}
+        className="grid grid-cols-1 gap-12 border-t border-border pt-14 sm:grid-cols-3 sm:gap-8"
       >
-        {stats.map(({ icon: Icon, value, label }) => (
-          <motion.div
-            key={label}
-            variants={fadeInUp}
-            className="flex flex-col items-center text-center sm:items-start sm:text-left"
-          >
-            <span className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-[linear-gradient(135deg,rgba(34,211,238,0.2),rgba(167,139,250,0.2))] text-[var(--brand-start)]">
-              <Icon className="h-5 w-5" />
-            </span>
-            <div className="font-heading text-4xl font-bold tabular-nums text-white md:text-5xl">
+        {stats.map(({ value, label }) => (
+          <div key={label} className="flex flex-col">
+            <span className="font-[family-name:var(--font-fraunces)] text-5xl font-light tracking-tight text-foreground md:text-6xl">
               {value}
-            </div>
-            <p className="mt-1.5 max-w-[14rem] text-sm text-muted">{label}</p>
-          </motion.div>
+            </span>
+            <span className="mt-4 max-w-[16rem] text-sm leading-relaxed text-muted">{label}</span>
+          </div>
         ))}
       </motion.div>
     </section>

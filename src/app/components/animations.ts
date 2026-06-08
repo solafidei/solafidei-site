@@ -21,3 +21,14 @@ export const staggerFast = {
   hidden: {},
   show: { transition: { staggerChildren: 0.04, delayChildren: 0.05 } },
 } as const;
+
+// Cinematic section entrance: fade + slide + slight scale.
+export const sectionReveal = {
+  hidden: { opacity: 0, y: 40, scale: 0.98 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.8, ease: EASE },
+  },
+} as const;
