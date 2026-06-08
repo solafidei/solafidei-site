@@ -39,7 +39,7 @@ export function Team() {
       {/* full-bleed light-streak backdrop */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-20 bg-cover bg-center"
+        className="absolute inset-0 -z-20 rotate-180 bg-cover bg-center"
         style={{ backgroundImage: "url(/team.jpg)" }}
       />
       {/* legibility scrim, fading into the adjacent sections */}
