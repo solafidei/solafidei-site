@@ -2,9 +2,10 @@
 
 import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Turnstile } from "./Turnstile";
 import { SectionHeading } from "./ui/SectionHeading";
-import { GradientButton } from "./ui/GradientButton";
+import { sectionReveal } from "./animations";
 
 export function Contact() {
   const [name, setName] = useState("");
@@ -53,20 +54,26 @@ export function Contact() {
   }
 
   const inputClass =
-    "rounded-xl border border-border bg-[var(--bg-deep)]/50 px-3.5 py-2.5 text-sm text-foreground outline-none transition placeholder:text-muted focus:border-[var(--brand-start)]/60 focus:ring-2 focus:ring-[var(--brand-start)]/30";
+    "w-full border-b border-border bg-transparent py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted/60 focus:border-foreground";
 
   return (
-    <section id="contact" className="mx-auto max-w-7xl px-4 py-16 md:py-24">
+    <section id="contact" className="mx-auto max-w-7xl px-6 py-24 md:py-32">
       <SectionHeading
         eyebrow="Contact"
         title="Let’s build"
         highlight="something great"
         subtitle="Ready to start? Fill out the form or book a call to discuss your project."
       />
-      <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <form onSubmit={onSubmit} className="glass card-gradient-border flex flex-col gap-4 rounded-2xl p-6">
-          <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-muted">Name</span>
+      <motion.div
+        variants={sectionReveal}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-80px" }}
+        className="mt-16 grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-16"
+      >
+        <form onSubmit={onSubmit} className="flex flex-col gap-7">
+          <label className="flex flex-col gap-2">
+            <span className="text-xs uppercase tracking-[0.18em] text-muted">Name</span>
             <input
               type="text"
               required
@@ -77,8 +84,8 @@ export function Contact() {
               autoComplete="name"
             />
           </label>
-          <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-muted">Email</span>
+          <label className="flex flex-col gap-2">
+            <span className="text-xs uppercase tracking-[0.18em] text-muted">Email</span>
             <input
               type="email"
               required
@@ -98,24 +105,23 @@ export function Contact() {
               </p>
             )}
           </label>
-          <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-muted">Message</span>
+          <label className="flex flex-col gap-2">
+            <span className="text-xs uppercase tracking-[0.18em] text-muted">Message</span>
             <textarea
               required
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className={`${inputClass} min-h-[110px] resize-y`}
+              className={`${inputClass} min-h-[96px] resize-y`}
               placeholder="How can we help you?"
             />
           </label>
-          <div className="flex justify-center">
+          <div className="flex justify-start">
             <Turnstile key={turnstileKey} siteKey={turnstileSiteKey} onVerify={setTurnstileToken} />
           </div>
-          <GradientButton
-            as="button"
+          <button
             type="submit"
             disabled={submitting || !turnstileToken || !emailIsValid}
-            className="w-full"
+            className="group inline-flex items-center gap-2 self-start border-b border-foreground/40 pb-1 text-sm uppercase tracking-[0.15em] text-foreground transition-colors hover:border-foreground disabled:cursor-not-allowed disabled:border-foreground/40 disabled:opacity-40"
           >
             {submitting ? (
               <>
@@ -125,37 +131,43 @@ export function Contact() {
               "Verify CAPTCHA"
             ) : (
               <>
-                Send Message <ArrowRight className="h-4 w-4" />
+                Send Message{" "}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </>
             )}
-          </GradientButton>
+          </button>
           <div aria-live="polite">
             {status?.ok && (
-              <p className="flex items-center justify-center gap-2 text-sm text-emerald-400">
+              <p className="flex items-center gap-2 text-sm text-emerald-400">
                 <CheckCircle2 className="h-4 w-4" /> Thanks! Your message has been sent.
               </p>
             )}
             {status && !status.ok && (
-              <p role="alert" className="text-center text-sm text-red-400">
+              <p role="alert" className="text-sm text-red-400">
                 {status.error || "Something went wrong."}
               </p>
             )}
           </div>
         </form>
-        <div className="glass card-gradient-border flex flex-col items-center justify-center rounded-2xl p-6 text-center">
-          <div className="font-heading mb-2 text-lg font-medium">Prefer a live chat?</div>
-          <p className="mb-5 max-w-sm text-muted">
+
+        <div className="flex flex-col md:border-l md:border-border md:pl-16">
+          <h3 className="font-[family-name:var(--font-fraunces)] text-2xl font-normal text-foreground">
+            Prefer a live chat?
+          </h3>
+          <p className="mt-4 max-w-sm leading-relaxed text-muted">
             Book a free 30-minute consultation call to discuss your needs.
           </p>
-          <GradientButton
+          <a
             href="https://calendar.app.google/cNPgb76hCUcz6vsr8"
             target="_blank"
             rel="noopener noreferrer"
+            className="group mt-7 inline-flex items-center gap-2 self-start border-b border-foreground/30 pb-1 text-sm uppercase tracking-[0.15em] text-foreground transition-colors hover:border-foreground"
           >
-            Book a call <ArrowRight className="h-4 w-4" />
-          </GradientButton>
+            Book a call{" "}
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </a>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
