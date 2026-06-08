@@ -89,6 +89,15 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${dmSans.variable} ${fraunces.variable} ${montserrat.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
+        {/* subtle purple wash (ties to the splash); behind all content */}
+        <div
+          aria-hidden
+          className="pointer-events-none fixed inset-0 -z-10"
+          style={{
+            background:
+              "radial-gradient(110% 70% at 50% 0%, rgba(124,58,237,0.18), transparent 70%)",
+          }}
+        />
         <Providers>{children}</Providers>
         <script
           type="application/ld+json"
