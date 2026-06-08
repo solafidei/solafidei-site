@@ -5,7 +5,7 @@ import { Stats } from "./components/Stats";
 import { TechStack } from "./components/TechStack";
 import { Services } from "./components/Services";
 import { CaseStudies } from "./components/CaseStudies";
-import { ExperienceWidgets } from "./components/ExperienceWidgets";
+import { Team } from "./components/Team";
 import { Process } from "./components/Process";
 import { Benefits } from "./components/Benefits";
 import { Testimonials } from "./components/Testimonials";
@@ -29,7 +29,7 @@ export default function SolafideiLanding() {
         <TechStack />
         <Services />
         <CaseStudies />
-        <ExperienceWidgets />
+        <Team />
         <Process />
         <Benefits />
         <Testimonials />
