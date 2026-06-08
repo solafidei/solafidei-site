@@ -55,24 +55,34 @@ const steps = [
 export function Process() {
   return (
     <section id="about" className="relative isolate overflow-hidden">
-      {/* full-bleed light-streak backdrop — darkened for legibility and masked
-          to transparent at top/bottom so the section edges reveal the same
-          page background (base + purple wash) as the neighbouring sections */}
+      {/* full-bleed light-streak backdrop, masked to transparent at top/bottom
+          so the section edges reveal the same page background (base + purple
+          wash) as the neighbouring sections */}
       <div
         aria-hidden
         className="absolute inset-0 -z-10"
         style={{
-          backgroundImage:
-            "linear-gradient(rgba(10,8,16,0.82), rgba(10,8,16,0.82)), url(/streaks.jpg)",
-          backgroundSize: "100% 100%, 100% 50%",
-          backgroundRepeat: "no-repeat, repeat-y",
-          backgroundPosition: "center, center",
           WebkitMaskImage:
             "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
           maskImage:
             "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
         }}
-      />
+      >
+        {/* tiled streak image, graded down: highlights pulled back and shadows
+            deepened so the bright streaks read as a moodier, lower-key glow */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "url(/streaks.jpg)",
+            backgroundSize: "100% 50%",
+            backgroundRepeat: "repeat-y",
+            backgroundPosition: "center",
+            filter: "brightness(0.7) contrast(1.3)",
+          }}
+        />
+        {/* dark wash over the graded image for text legibility */}
+        <div className="absolute inset-0 bg-[rgba(10,8,16,0.82)]" />
+      </div>
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
         <SectionHeading
           eyebrow="Process"
