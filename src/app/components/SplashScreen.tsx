@@ -32,18 +32,30 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
           style={{ backgroundColor: "var(--bg-base)" }}
         >
           <div className="relative flex items-center justify-center">
-            {/* slow rotating dotted ring */}
-            <motion.div
+            {/* slow rotating dotted ring (fewer, bigger round dots) */}
+            <motion.svg
               aria-hidden
-              className="pointer-events-none absolute aspect-square w-[clamp(16rem,42vw,22rem)] rounded-full border-2 border-dotted border-foreground/20"
+              viewBox="0 0 100 100"
+              className="pointer-events-none absolute aspect-square w-[clamp(16rem,42vw,22rem)] text-foreground/25"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1, rotate: 360 }}
               transition={{
                 opacity: { duration: 1, ease: EASE },
                 scale: { duration: 1, ease: EASE },
-                rotate: { repeat: Infinity, ease: "linear", duration: 28 },
+                rotate: { repeat: Infinity, ease: "linear", duration: 30 },
               }}
-            />
+            >
+              <circle
+                cx="50"
+                cy="50"
+                r="48"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeDasharray="0.1 12.5"
+              />
+            </motion.svg>
             <motion.span
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
