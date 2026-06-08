@@ -63,7 +63,7 @@ export function Process() {
         className="absolute inset-0 -z-10"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(10,8,16,0.82), rgba(10,8,16,0.82)), url(/process.jpg)",
+            "linear-gradient(rgba(10,8,16,0.82), rgba(10,8,16,0.82)), url(/streaks.jpg)",
           backgroundSize: "100% 100%, 100% 50%",
           backgroundRepeat: "no-repeat, repeat-y",
           backgroundPosition: "center, center",

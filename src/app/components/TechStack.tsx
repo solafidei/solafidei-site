@@ -19,7 +19,7 @@ export function TechStack() {
         className="absolute inset-0 -z-10 bg-cover bg-center"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(10,8,16,0.84), rgba(10,8,16,0.84)), url(/stack.jpg)",
+            "linear-gradient(rgba(10,8,16,0.84), rgba(10,8,16,0.84)), url(/particles.jpg)",
           WebkitMaskImage:
             "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
           maskImage:

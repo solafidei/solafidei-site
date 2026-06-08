@@ -43,7 +43,7 @@ export function Team() {
         className="absolute inset-0 -z-10 rotate-180 bg-cover bg-center"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(10,8,16,0.82), rgba(10,8,16,0.82)), url(/team.jpg)",
+            "linear-gradient(rgba(10,8,16,0.82), rgba(10,8,16,0.82)), url(/streaks.jpg)",
           WebkitMaskImage:
             "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
           maskImage:
