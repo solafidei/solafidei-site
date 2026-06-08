@@ -33,7 +33,11 @@ export function SplashScreen({ durationMs = 2800 }: SplashScreenProps) {
           exit={{ opacity: 0, transition: { duration: 1.8, ease: [0.8, 0, 1, 1] } }}
           transition={{ duration: 0.9, ease: EASE }}
           className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-cover bg-center"
-          style={{ backgroundImage: "url(/intro.jpg)", backgroundColor: "var(--bg-deep)" }}
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(5,5,7,0.5), rgba(5,5,7,0.5)), url(/intro.jpg)",
+            backgroundColor: "var(--bg-deep)",
+          }}
         >
 
           {/* logo inside a spinning gradient ring — on exit it zooms up toward
