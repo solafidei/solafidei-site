@@ -58,20 +58,6 @@ export function Contact() {
 
   return (
     <section id="contact" className="relative isolate overflow-hidden">
-      {/* subtle particle backdrop — heavily darkened + masked to transparent
-          at top/bottom so it's just a faint glow and the edges blend */}
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-10 bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(10,8,16,0.9), rgba(10,8,16,0.9)), url(/particles.jpg)",
-          WebkitMaskImage:
-            "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
-          maskImage:
-            "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
-        }}
-      />
       {/* lift the muted text just for this section (cascades to every
           text-muted inside: eyebrow, subtitle, labels, placeholders, copy) */}
       <div

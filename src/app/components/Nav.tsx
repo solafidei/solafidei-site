@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useScroll } from "framer-motion";
 
 const links = [
   { href: "#home", label: "Home" },
-  { href: "#about", label: "About" },
   { href: "#services", label: "Services" },
+  { href: "#work", label: "Work" },
+  { href: "#about", label: "About" },
   { href: "#benefits", label: "Benefits" },
   { href: "#contact", label: "Contact" },
 ];
@@ -18,6 +19,7 @@ const CALENDAR_URL = "https://calendar.app.google/cNPgb76hCUcz6vsr8";
 export function Nav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { scrollYProgress } = useScroll();
 
   // transparent at the top, solid blurred bar once the page is scrolled
   useEffect(() => {
@@ -86,6 +88,13 @@ export function Nav() {
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
+
+      {/* 1px scroll-progress beam along the bottom edge of the bar */}
+      <motion.div
+        aria-hidden
+        style={{ scaleX: scrollYProgress }}
+        className="absolute bottom-0 left-0 right-0 h-px origin-left bg-accent-bright/60"
+      />
 
       <AnimatePresence>
         {open && (

@@ -36,20 +36,6 @@ const people = [
 export function Team() {
   return (
     <section id="team" className="relative isolate overflow-hidden">
-      {/* full-bleed light-streak backdrop (flipped); darkened + masked to
-          transparent at top/bottom so the edges reveal the page background */}
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-10 rotate-180 bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(10,8,16,0.82), rgba(10,8,16,0.82)), url(/streaks.jpg)",
-          WebkitMaskImage:
-            "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
-          maskImage:
-            "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
-        }}
-      />
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
         <SectionHeading eyebrow="Team" title="The people behind the" highlight="work." />
 

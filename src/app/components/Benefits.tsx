@@ -33,19 +33,6 @@ export function Benefits() {
 
   return (
     <section id="benefits" className="relative isolate overflow-hidden">
-      {/* full-bleed particle backdrop — darkened + masked at edges to blend */}
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-10 bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(10,8,16,0.84), rgba(10,8,16,0.84)), url(/particles.jpg)",
-          WebkitMaskImage:
-            "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
-          maskImage:
-            "linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%)",
-        }}
-      />
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
         <SectionHeading eyebrow="Why us" title="Benefits of" highlight="working with us" />
       <motion.div

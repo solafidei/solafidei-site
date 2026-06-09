@@ -41,16 +41,16 @@ export function SectionHeading({
       {eyebrow && (
         <motion.span
           variants={fadeInUp}
-          className="text-xs uppercase tracking-[0.25em] text-icon"
+          className="font-mono text-[0.7rem] uppercase tracking-[0.35em] text-accent-deep"
         >
           {eyebrow}
         </motion.span>
       )}
       <motion.h2
         variants={fadeInUp}
-        className="mt-5 font-[family-name:var(--font-fraunces)] text-3xl font-light leading-[1.1] tracking-tight text-foreground md:text-5xl"
+        className="mt-5 font-[family-name:var(--font-space-grotesk)] text-3xl font-medium leading-[1.1] tracking-tight text-foreground md:text-5xl"
       >
-        {title} {highlight && <em className="font-light italic">{highlight}</em>}
+        {title} {highlight && <span className="text-accent-bright">{highlight}</span>}
       </motion.h2>
       {subtitle && (
         <motion.p variants={fadeInUp} className="mt-5 max-w-xl leading-relaxed text-muted">

@@ -21,19 +21,13 @@ const columns = [
 export function Footer() {
   return (
     <footer className="relative isolate overflow-hidden">
-      {/* full-bleed particle backdrop for the bottom of the site */}
+      {/* faint cyan floor glow — the page's quiet sign-off */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-20 bg-cover bg-center"
-        style={{ backgroundImage: "url(/footer.jpg)" }}
-      />
-      {/* fade in from the page background + legibility scrim */}
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-10"
+        className="absolute inset-0 -z-10 border-t border-border"
         style={{
           background:
-            "linear-gradient(180deg, var(--bg-base) 0%, rgba(10,8,16,0.6) 38%, rgba(10,8,16,0.55) 100%)",
+            "radial-gradient(80% 60% at 50% 110%, rgba(34,211,238,0.08), transparent 65%)",
         }}
       />
       <div className="mx-auto max-w-7xl px-6 py-20 md:py-28">

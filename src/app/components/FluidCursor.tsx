@@ -1,16 +1,28 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import SplashCursor from "@/components/SplashCursor";
 
 /**
- * Cursor-driven WebGL fluid overlay (react-bits SplashCursor).
- * Fixed, pointer-events-none, so it never blocks interaction. Disabled for
- * users who prefer reduced motion. Responds to mouse + touch drags.
+ * Cursor-driven WebGL fluid overlay (react-bits SplashCursor), tuned to the
+ * single cyan accent. Fixed and pointer-events-none so it never blocks
+ * interaction. Mounted only while the hero is in view (see Hero.tsx),
+ * desktop pointers only, and disabled for reduced motion.
  */
 export function FluidCursor() {
   const reduce = useReducedMotion();
-  if (reduce) return null;
+  const [finePointer, setFinePointer] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(pointer: fine)");
+    const update = () => setFinePointer(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  if (reduce || !finePointer) return null;
 
   return (
     <SplashCursor
@@ -22,8 +34,8 @@ export function FluidCursor() {
       SPLAT_FORCE={6000}
       COLOR_UPDATE_SPEED={28}
       SHADING
-      RAINBOW_MODE
-      COLOR="#A855F7"
+      RAINBOW_MODE={false}
+      COLOR="#22d3ee"
     />
   );
 }

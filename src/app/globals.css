@@ -1,35 +1,67 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ----------------------------------------------------------------------
+   Solafidei design tokens — dark-only, "engineered, not decorated".
+   One accent (cyan), near-black base, everything else grayscale.
+   See docs/intent/futuristic-redesign.md
+   --------------------------------------------------------------------- */
 
 :root {
   color-scheme: dark;
 
-  /* Surfaces (never pure black) — darker / cinematic */
-  --bg-deep: #050507;
-  --bg-base: #0a0810;
-  --surface: rgba(255, 255, 255, 0.05);
-  --surface-hover: rgba(255, 255, 255, 0.08);
+  /* Surfaces — near-black with a slight blue cast, never pure black */
+  --bg-deep: #030507;
+  --bg-base: #050709;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-hover: rgba(255, 255, 255, 0.07);
   --border: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.14);
 
-  /* Brand / aurora */
-  --brand-start: #22d3ee; /* cyan-400 */
-  --brand-end: #a78bfa; /* violet-300 */
-  --aurora-3: #f0abfc; /* pink/fuchsia accent */
-  --accent-glow: rgba(94, 106, 210, 0.25);
+  /* The accent — cyan, used sparingly */
+  --accent-bright: #22d3ee; /* cyan-400: glows, beams, active states */
+  --accent-deep: #0e7d86; /* dark cyan-teal: eyebrows, numbers, quiet accents */
+
+  /* Legacy aliases (existing components reference these; keep in-family) */
+  --brand-start: #22d3ee;
+  --brand-end: #0891b2; /* cyan-600 — gradients stay monochrome-cyan */
+  --aurora-3: #67e8f9; /* cyan-300 — was pink; now in-family */
+  --accent-glow: rgba(34, 211, 238, 0.18);
+  --icon: #0e7d86;
 
   /* Text */
-  --background: var(--bg-base);
-  --foreground: #ededef;
-  --foreground-muted: #b6bbc4;
+  --foreground-muted: #9aa3ad;
 
-  /* Icon accent — dark cyan-teal */
-  --icon: #0e7d86;
+  /* shadcn semantic tokens, mapped to the dark system (dark-only site) */
+  --background: var(--bg-base);
+  --foreground: #e8eaed;
+  --card: #0a0d12;
+  --card-foreground: #e8eaed;
+  --popover: #0d1117;
+  --popover-foreground: #e8eaed;
+  --primary: #22d3ee;
+  --primary-foreground: #04181c;
+  --secondary: rgba(255, 255, 255, 0.06);
+  --secondary-foreground: #e8eaed;
+  --muted: rgba(255, 255, 255, 0.06);
+  --muted-foreground: #9aa3ad;
+  --accent: rgba(34, 211, 238, 0.12);
+  --accent-foreground: #a5f3fc;
+  --destructive: #f87171;
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: rgba(34, 211, 238, 0.5);
+  --radius: 0.625rem;
 }
+
+/* dark-only site: .dark inherits :root values (html carries the class) */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-muted: var(--foreground-muted);
+  --color-muted: var(--foreground-muted); /* legacy: text-muted = muted text */
   --color-icon: var(--icon);
   --color-surface: var(--surface);
   --color-surface-hover: var(--surface-hover);
@@ -38,21 +70,47 @@
   --color-brand-start: var(--brand-start);
   --color-brand-end: var(--brand-end);
   --color-aurora-3: var(--aurora-3);
+  --color-accent-bright: var(--accent-bright);
+  --color-accent-deep: var(--accent-deep);
 
-  /* Montserrat everywhere — every font token resolves to it */
-  --font-sans: var(--font-montserrat), system-ui, sans-serif;
-  --font-heading: var(--font-montserrat), system-ui, sans-serif;
-  --font-serif: var(--font-montserrat), system-ui, sans-serif;
-  --font-mono: var(--font-montserrat), ui-monospace, monospace;
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-destructive: var(--destructive);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Type system: Space Grotesk headings, Inter body, JetBrains Mono details */
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-heading: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-serif: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 body {
   background: var(--bg-base);
-  color: var(--foreground);
-  /* alias the directly-referenced font vars so every usage is Montserrat */
-  --font-fraunces: var(--font-montserrat);
-  --font-geist-mono: var(--font-montserrat);
-  font-family: var(--font-montserrat), system-ui, -apple-system, sans-serif;
+  /* legacy font aliases — components that referenced the old vars resolve
+     into the new system (headings → Grotesk, mono → JetBrains) */
+  --font-fraunces: var(--font-space-grotesk);
+  --font-geist-mono: var(--font-jetbrains-mono);
+  --font-montserrat: var(--font-inter);
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
 }
 
 h1,
@@ -61,7 +119,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-montserrat), system-ui, sans-serif;
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
 }
 
 /* ---------- Reusable primitives ---------- */
@@ -90,7 +148,7 @@ h6 {
       rgba(255, 255, 255, 0.5) 55%,
       transparent 100%
     ),
-    linear-gradient(110deg, var(--gst-from, #67e8f9), var(--gst-to, #1e40af));
+    linear-gradient(110deg, var(--gst-from, #67e8f9), var(--gst-to, #0891b2));
   background-repeat: no-repeat;
   background-size:
     50% 100%,
@@ -117,34 +175,29 @@ h6 {
   }
 }
 
-/* Card surface: dark purple radial fill with a static cyan -> navy
-   gradient border. */
+/* Card surface: dark fill with a static cyan gradient border. */
 .card-gradient-border {
   border: 1px solid transparent;
   background:
-    radial-gradient(130% 110% at 0% 0%, rgba(34, 16, 52, 0.85), rgba(16, 13, 32, 0.85) 70%) padding-box,
-    linear-gradient(120deg, rgba(103, 232, 249, 0.45), rgba(30, 64, 175, 0.45)) border-box;
-}
-
-/* Slow Ken-Burns zoom + drift for the cinematic hero background. */
-.hero-zoom {
-  animation: heroZoom 22s ease-in-out infinite alternate;
-  will-change: transform;
-}
-
-@keyframes heroZoom {
-  from {
-    transform: scale(1.04) translate3d(0, 0, 0);
-  }
-  to {
-    transform: scale(1.16) translate3d(-2.5%, -1.8%, 0);
-  }
+    radial-gradient(130% 110% at 0% 0%, rgba(10, 16, 22, 0.9), rgba(6, 10, 14, 0.9) 70%) padding-box,
+    linear-gradient(120deg, rgba(103, 232, 249, 0.4), rgba(8, 145, 178, 0.35)) border-box;
 }
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .gradient-shimmer-text,
-  .hero-zoom {
+  .gradient-shimmer-text {
     animation: none !important;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
   }
 }

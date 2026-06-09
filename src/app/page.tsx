@@ -1,21 +1,22 @@
 "use client";
 import { Nav } from "./components/Nav";
 import { Hero } from "./components/Hero";
-import { Stats } from "./components/Stats";
 import { TechStack } from "./components/TechStack";
 import { Services } from "./components/Services";
 import { CaseStudies } from "./components/CaseStudies";
-import { Team } from "./components/Team";
 import { Process } from "./components/Process";
+import { Stats } from "./components/Stats";
 import { Benefits } from "./components/Benefits";
+import { Team } from "./components/Team";
 import { Testimonials } from "./components/Testimonials";
+import { CTASection } from "./components/CTASection";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
 
-// Solafidei — landing page inspired by Xtract's layout and IA
-// Reference: https://plum-words-798095.framer.app/
-
-// Shared animation variants moved to `components/animations.ts`
+// Solafidei — "engineered, not decorated" experience site.
+// Narrative: arrive → what we work with → what we build → proof → how we
+// work → numbers → who we are → what clients say → talk to us.
+// Design system: docs/intent/futuristic-redesign.md
 
 export default function SolafideiLanding() {
   return (
@@ -23,14 +24,15 @@ export default function SolafideiLanding() {
       <div className="relative z-10">
         <Nav />
         <Hero />
-        <Stats />
         <TechStack />
         <Services />
         <CaseStudies />
-        <Team />
         <Process />
+        <Stats />
         <Benefits />
+        <Team />
         <Testimonials />
+        <CTASection />
         <Contact />
         <Footer />
       </div>
