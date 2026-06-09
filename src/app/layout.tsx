@@ -3,6 +3,7 @@ import { DM_Sans, Fraunces, Montserrat, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { SplashScreen } from "./components/SplashScreen";
+import { FluidCursor } from "./components/FluidCursor";
 
 const dmSans = DM_Sans({
   variable: "--font-sans",
@@ -92,6 +93,8 @@ export default function RootLayout({
       <body className={`${dmSans.variable} ${fraunces.variable} ${montserrat.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
         {/* full-screen intro splash with the logo; sits above all content */}
         <SplashScreen durationMs={1200} />
+        {/* cursor-driven fluid overlay (disabled for reduced-motion) */}
+        <FluidCursor />
         {/* subtle purple wash (ties to the splash); behind all content */}
         <div
           aria-hidden
