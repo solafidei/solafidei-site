@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -17,13 +17,31 @@ const CALENDAR_URL = "https://calendar.app.google/cNPgb76hCUcz6vsr8";
 
 export function Nav() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  // transparent at the top, solid blurred bar once the page is scrolled
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50">
-      {/* subtle scrim so the nav stays legible over imagery/content */}
+    <header
+      className={`sticky top-0 z-50 border-b transition-all duration-300 ${
+        scrolled
+          ? "border-white/10 bg-[var(--bg-base)]/85 backdrop-blur-md"
+          : "border-transparent bg-transparent"
+      }`}
+    >
+      {/* subtle scrim so the nav stays legible over the hero imagery at the
+          top; fades out as the solid bar fades in on scroll */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[var(--bg-base)]/85 to-transparent"
+        className={`pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[var(--bg-base)]/85 to-transparent transition-opacity duration-300 ${
+          scrolled ? "opacity-0" : "opacity-100"
+        }`}
       />
 
       <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
