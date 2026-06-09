@@ -1,14 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Fraunces, Montserrat, Geist_Mono } from "next/font/google";
+import { DM_Sans, Fraunces, Montserrat, Geist_Mono, Geist } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { SplashScreen } from "./components/SplashScreen";
+import { cn } from "@/lib/utils";
 
-const dmSans = DM_Sans({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-});
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -88,8 +85,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${dmSans.variable} ${fraunces.variable} ${montserrat.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
+    <html lang="en" className={cn("dark", "font-sans", geist.variable)}>
+      <body className={`${geist.variable} ${fraunces.variable} ${montserrat.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
         {/* full-screen intro splash with the logo; sits above all content */}
         <SplashScreen durationMs={1200} />
         {/* subtle purple wash (ties to the splash); behind all content */}
