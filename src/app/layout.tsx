@@ -93,15 +93,10 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased bg-background text-foreground`}
       >
-<<<<<<< Updated upstream
         {/* short branded ident, once per session; hero entrance waits for it
             (?splash=on / ?splash=off to force either mode) */}
-        <SplashScreen durationMs={900} />
-=======
-        {/* full-screen intro splash with the logo; sits above all content */}
         <Analytics />
-        <SplashScreen durationMs={1200} />
->>>>>>> Stashed changes
+        <SplashScreen durationMs={900} />
         <SmoothScroll />
         <Providers>{children}</Providers>
         <script
