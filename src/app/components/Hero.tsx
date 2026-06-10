@@ -13,6 +13,7 @@ import { ArrowRight } from "lucide-react";
 import BlurText from "@/components/BlurText";
 import DecryptedText from "@/components/DecryptedText";
 import { FluidCursor } from "./FluidCursor";
+import { SPLASH_DONE_EVENT, splashEnabled } from "./splash-state";
 
 // WebGL — desktop-only set piece, loaded lazily so mobile never pays for it
 const LightRays = dynamic(() => import("@/components/LightRays"), { ssr: false });
@@ -38,6 +39,25 @@ export function Hero() {
   const reduce = useReducedMotion();
   const desktop = useFinePointerDesktop();
   const inView = useInView(ref, { amount: 0.15 });
+
+  // entrance is sequenced after the splash so the text assembly is actually
+  // seen (the splash is an overlay — without this, in-view animations fire
+  // and finish behind it)
+  const [go, setGo] = useState(false);
+  useEffect(() => {
+    if (!splashEnabled()) {
+      setGo(true);
+      return;
+    }
+    const onDone = () => setGo(true);
+    window.addEventListener(SPLASH_DONE_EVENT, onDone);
+    // safety net: never leave the hero hidden if the event is missed
+    const fallback = setTimeout(() => setGo(true), 4000);
+    return () => {
+      window.removeEventListener(SPLASH_DONE_EVENT, onDone);
+      clearTimeout(fallback);
+    };
+  }, []);
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   // Content lags the scroll (parallax) and fades as the hero leaves.
@@ -100,31 +120,41 @@ export function Hero() {
         className="mx-auto w-full max-w-5xl px-6 pb-28 pt-40 text-center"
       >
         <p className="mb-8 font-mono text-[0.7rem] uppercase tracking-[0.35em] text-accent-deep md:text-xs">
-          <DecryptedText
-            text="Software Design & Development Studio"
-            animateOn="view"
-            sequential
-            speed={40}
-            className="text-accent-deep"
-            encryptedClassName="text-muted/60"
-          />
+          {go ? (
+            <DecryptedText
+              text="Software Design & Development Studio"
+              animateOn="view"
+              sequential
+              speed={40}
+              className="text-accent-deep"
+              encryptedClassName="text-muted/60"
+            />
+          ) : (
+            <span className="opacity-0">Software Design &amp; Development Studio</span>
+          )}
         </p>
 
         <h1 className="sr-only">{HEADLINE}</h1>
         <div aria-hidden>
-          <BlurText
-            text={HEADLINE}
-            animateBy="words"
-            direction="top"
-            delay={90}
-            stepDuration={0.4}
-            className="justify-center font-[family-name:var(--font-space-grotesk)] text-[clamp(2.75rem,6.5vw,5.5rem)] font-medium leading-[1.05] tracking-tight text-foreground"
-          />
+          {go ? (
+            <BlurText
+              text={HEADLINE}
+              animateBy="words"
+              direction="top"
+              delay={90}
+              stepDuration={0.4}
+              className="justify-center font-[family-name:var(--font-space-grotesk)] text-[clamp(2.75rem,6.5vw,5.5rem)] font-medium leading-[1.05] tracking-tight text-foreground"
+            />
+          ) : (
+            <p className="flex flex-wrap justify-center font-[family-name:var(--font-space-grotesk)] text-[clamp(2.75rem,6.5vw,5.5rem)] font-medium leading-[1.05] tracking-tight text-foreground opacity-0">
+              {HEADLINE}
+            </p>
+          )}
         </div>
 
         <motion.p
           initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={go ? { opacity: 1, y: 0 } : undefined}
           transition={{ duration: 0.7, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-muted"
         >
@@ -135,7 +165,7 @@ export function Hero() {
             original site, restyled to the mono/cyan system */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={go ? { opacity: 1, y: 0 } : undefined}
           transition={{ duration: 0.6, delay: 0.85, ease: [0.16, 1, 0.3, 1] }}
           className="mt-10 flex justify-center"
         >
@@ -150,7 +180,7 @@ export function Hero() {
 
         <motion.div
           initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={go ? { opacity: 1, y: 0 } : undefined}
           transition={{ duration: 0.7, delay: 1.0, ease: [0.16, 1, 0.3, 1] }}
           className="mt-7 flex flex-wrap items-center justify-center gap-4"
         >
@@ -175,7 +205,7 @@ export function Hero() {
       {/* scroll cue */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        animate={go ? { opacity: 1 } : undefined}
         transition={{ delay: 1.6, duration: 0.8 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
         aria-hidden

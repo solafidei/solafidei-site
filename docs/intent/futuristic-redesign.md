@@ -58,8 +58,14 @@ Real build SHIPPED on branch `alpha` (uncommitted):
 - All sections rebuilt per the locked picks; page order: Nav → Hero → TechStack (LogoLoop strip) → Services (BorderGlow bento) → CaseStudies (ContainerScroll flagship window) → Process (pinned reveal × beam; mobile gets flowing beam variant) → Stats (CountUp) → Benefits → Team → Testimonials → CTASection (beams + MovingBorder) → Contact → Footer.
 - Nav gained a Work link + 1px scroll-progress beam. Photographic backdrops (particles/streaks/footer/hero jpgs) removed — sections sit on the calm near-black base.
 
+Post-build decisions (2026-06-10, owner-confirmed):
+- Process scroll: fixed sticky-pinning bug (ancestor `overflow-hidden` → `overflow-x-clip`); verified in headless Chromium (scripts/verify-process-*.mjs).
+- Mobile: CTA beams repositioned as width fractions (were hardcoded px, bunched left); hero Light Rays now run on mobile too (reduced-motion gets static glow).
+- Adapted from main branch: hero availability badge, audience marquee row in trust strip, FAQ section (#faq, rewritten quote-based copy; in nav + footer).
+- Splash screen KEPT (owner's call): shortened cyan ident (900ms + window-zoom exit), once per session, no progress bar; hero entrance sequenced after splash via splash-state.ts events. `?splash=on|off` override exists as dev convenience.
+- `/sampler` route deleted.
+
 Remaining / deferred:
-- `/sampler` route still exists (winner already ported into Process.tsx) — delete once owner confirms the real section.
-- Contact form + FAQ restyle with Origin UI primitives (FAQs/Pricing components are currently not on the page at all).
-- Visual QA pass: mobile 375px, reduced-motion, Lighthouse.
-- public/ images now unused by the page: hero.jpg, particles.jpg, streaks.jpg, footer.jpg.
+- Contact form restyle with Origin UI primitives (Pricing component still unused/orphaned).
+- Lighthouse / perf pass.
+- public/ images now unused by the page: hero.jpg, particles.jpg, streaks.jpg, footer.jpg, intro.jpg.
