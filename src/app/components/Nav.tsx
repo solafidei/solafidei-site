@@ -62,7 +62,7 @@ export function Nav() {
           </span>
         </a>
 
-        <nav className="hidden items-center gap-9 text-xs uppercase tracking-[0.18em] text-muted md:flex">
+        <nav className="hidden items-center gap-9 text-xs uppercase tracking-[0.18em] text-muted min-[910px]:flex">
           {links.map((l) => (
             <a key={l.href} className="transition-colors hover:text-foreground" href={l.href}>
               {l.label}
@@ -74,7 +74,7 @@ export function Nav() {
           href={CALENDAR_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden border-b border-foreground/30 pb-0.5 text-xs uppercase tracking-[0.18em] text-foreground transition-colors hover:border-foreground md:inline-block"
+          className="hidden border-b border-foreground/30 pb-0.5 text-xs uppercase tracking-[0.18em] text-foreground transition-colors hover:border-foreground min-[910px]:inline-block"
         >
           Book a call
         </a>
@@ -84,7 +84,7 @@ export function Nav() {
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          className="inline-flex h-10 w-10 items-center justify-center text-foreground md:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center text-foreground min-[910px]:hidden"
         >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
@@ -104,7 +104,7 @@ export function Nav() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="relative overflow-hidden border-t border-border bg-[var(--bg-base)]/95 backdrop-blur-md md:hidden"
+            className="relative overflow-hidden border-t border-border bg-[var(--bg-base)]/95 backdrop-blur-md min-[910px]:hidden"
           >
             <div className="mx-auto flex max-w-7xl flex-col px-6 py-3">
               {links.map((l) => (
