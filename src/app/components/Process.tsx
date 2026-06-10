@@ -84,7 +84,10 @@ function StepItems({ items }: { items: string[] }) {
   return (
     <ul className="mt-6 space-y-4">
       {items.map((item) => (
-        <li key={item} className="flex gap-3 text-sm leading-relaxed text-muted">
+        <li
+          key={item}
+          className="flex gap-3 text-sm leading-relaxed text-muted"
+        >
           <span className="select-none" style={{ color: ACCENT }}>
             —
           </span>
@@ -98,16 +101,25 @@ function StepItems({ items }: { items: string[] }) {
 /* Desktop: pinned step list + drawn beam + crossfading detail panel */
 function PinnedProcess() {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end end"],
+  });
   const [active, setActive] = useState(0);
   const beamHeight = useTransform(scrollYProgress, [0, 0.92], ["0%", "100%"]);
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
-    setActive(Math.min(steps.length - 1, Math.max(0, Math.floor(v * steps.length))));
+    setActive(
+      Math.min(steps.length - 1, Math.max(0, Math.floor(v * steps.length))),
+    );
   });
 
   return (
-    <div ref={ref} className="relative" style={{ height: `${steps.length * 100}vh` }}>
+    <div
+      ref={ref}
+      className="relative"
+      style={{ height: `${steps.length * 100}vh` }}
+    >
       <div className="sticky top-0 flex h-screen items-center overflow-hidden">
         <div className="mx-auto grid w-full max-w-6xl gap-20 px-6 md:grid-cols-2">
           {/* step list with beam rail */}
@@ -122,7 +134,10 @@ function PinnedProcess() {
             >
               <div
                 className="absolute -bottom-1 -left-[3.5px] h-2 w-2 rounded-full"
-                style={{ background: ACCENT, boxShadow: `0 0 14px 4px ${ACCENT}66` }}
+                style={{
+                  background: ACCENT,
+                  boxShadow: `0 0 14px 4px ${ACCENT}66`,
+                }}
               />
             </motion.div>
 
@@ -137,7 +152,8 @@ function PinnedProcess() {
                   style={{
                     borderColor: i <= active ? ACCENT : "rgba(255,255,255,0.2)",
                     background: i <= active ? ACCENT : "var(--bg-base)",
-                    boxShadow: i === active ? `0 0 12px 3px ${ACCENT}55` : "none",
+                    boxShadow:
+                      i === active ? `0 0 12px 3px ${ACCENT}55` : "none",
                   }}
                 />
                 <StepNumber index={i} />
@@ -186,7 +202,10 @@ function PinnedProcess() {
 /* Mobile / reduced-motion: beam + steps in normal flow */
 function FlowingProcess({ reduce }: { reduce: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 75%", "end 75%"] });
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start 75%", "end 75%"],
+  });
   const beamHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
@@ -202,7 +221,10 @@ function FlowingProcess({ reduce }: { reduce: boolean }) {
         >
           <div
             className="absolute -bottom-1 -left-[3.5px] h-2 w-2 rounded-full"
-            style={{ background: ACCENT, boxShadow: `0 0 14px 4px ${ACCENT}66` }}
+            style={{
+              background: ACCENT,
+              boxShadow: `0 0 14px 4px ${ACCENT}66`,
+            }}
           />
         </motion.div>
       )}
@@ -246,12 +268,16 @@ export function Process() {
         <SectionHeading
           eyebrow="Process"
           title="Simple, smart, and"
-          highlight="scalable"
+          highlight="scalable."
           subtitle="Our process for app design and development, from idea to launch."
         />
       </div>
       <div className="pb-24 md:pb-0">
-        {desktop && !reduce ? <PinnedProcess /> : <FlowingProcess reduce={reduce} />}
+        {desktop && !reduce ? (
+          <PinnedProcess />
+        ) : (
+          <FlowingProcess reduce={reduce} />
+        )}
       </div>
     </section>
   );

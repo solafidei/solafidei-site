@@ -21,7 +21,11 @@ export function Testimonials() {
   ];
   return (
     <section className="mx-auto max-w-7xl px-6 py-24 md:py-32">
-      <SectionHeading eyebrow="Testimonials" title="Why teams choose" highlight="Solafidei" />
+      <SectionHeading
+        eyebrow="Testimonials"
+        title="Why teams choose"
+        highlight="Solafidei."
+      />
       <motion.div
         variants={stagger}
         initial="hidden"
@@ -40,7 +44,9 @@ export function Testimonials() {
             </blockquote>
             <figcaption className="mt-8">
               <div className="text-sm text-foreground">{t.author}</div>
-              <div className="mt-1 text-xs uppercase tracking-[0.15em] text-muted">{t.role}</div>
+              <div className="mt-1 text-xs uppercase tracking-[0.15em] text-muted">
+                {t.role}
+              </div>
             </figcaption>
           </motion.figure>
         ))}

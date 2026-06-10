@@ -12,14 +12,17 @@ export function Contact() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [status, setStatus] = useState<null | { ok: boolean; error?: string }>(null);
+  const [status, setStatus] = useState<null | { ok: boolean; error?: string }>(
+    null,
+  );
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileKey, setTurnstileKey] = useState(0);
   const [emailTouched, setEmailTouched] = useState(false);
   const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 
   function isValidEmail(value: string): boolean {
-    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
+    const emailRegex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
     return emailRegex.test(value.trim());
   }
   const emailIsValid = isValidEmail(email);
@@ -67,7 +70,7 @@ export function Contact() {
         <SectionHeading
           eyebrow="Contact"
           title="Let’s build"
-          highlight="something great"
+          highlight="something great."
           subtitle="Ready to start? Fill out the form or book a call to discuss your project."
         />
         <motion.div
@@ -76,106 +79,120 @@ export function Contact() {
           whileInView="show"
           viewport={{ once: true, margin: "-80px" }}
           className="mt-16 grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-16"
-      >
-        <form onSubmit={onSubmit} className="flex flex-col gap-7">
-          <label className="flex flex-col gap-2">
-            <span className="text-xs uppercase tracking-[0.18em] text-muted">Name</span>
-            <input
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className={inputClass}
-              placeholder="Your name"
-              autoComplete="name"
-            />
-          </label>
-          <label className="flex flex-col gap-2">
-            <span className="text-xs uppercase tracking-[0.18em] text-muted">Email</span>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onBlur={() => setEmailTouched(true)}
-              aria-invalid={emailShowError}
-              aria-describedby={emailShowError ? "email-error" : undefined}
-              className={inputClass}
-              placeholder="you@company.com"
-              inputMode="email"
-              autoComplete="email"
-            />
-            {emailShowError && (
-              <p id="email-error" role="alert" className="text-xs text-red-400">
-                Please enter a valid email address.
-              </p>
-            )}
-          </label>
-          <label className="flex flex-col gap-2">
-            <span className="text-xs uppercase tracking-[0.18em] text-muted">Message</span>
-            <textarea
-              required
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              className={`${inputClass} min-h-[96px] resize-y`}
-              placeholder="How can we help you?"
-            />
-          </label>
-          <div className="flex justify-start">
-            <Turnstile key={turnstileKey} siteKey={turnstileSiteKey} onVerify={setTurnstileToken} />
-          </div>
-          <button
-            type="submit"
-            disabled={submitting || !turnstileToken || !emailIsValid}
-            className="group inline-flex items-center gap-2 self-start border-b border-foreground/40 pb-1 text-sm uppercase tracking-[0.15em] text-foreground transition-colors hover:border-foreground disabled:cursor-not-allowed disabled:border-foreground/40 disabled:opacity-40"
-          >
-            {submitting ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" /> Sending…
-              </>
-            ) : !turnstileToken ? (
-              "Verify CAPTCHA"
-            ) : (
-              <>
-                Send Message{" "}
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </>
-            )}
-          </button>
-          <div aria-live="polite">
-            {status?.ok && (
-              <p className="flex items-center gap-2 text-sm text-emerald-400">
-                <CheckCircle2 className="h-4 w-4" /> Thanks! Your message has been sent.
-              </p>
-            )}
-            {status && !status.ok && (
-              <p role="alert" className="text-sm text-red-400">
-                {status.error || "Something went wrong."}
-              </p>
-            )}
-          </div>
-        </form>
+        >
+          <form onSubmit={onSubmit} className="flex flex-col gap-7">
+            <label className="flex flex-col gap-2">
+              <span className="text-xs uppercase tracking-[0.18em] text-muted">
+                Name
+              </span>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className={inputClass}
+                placeholder="Your name"
+                autoComplete="name"
+              />
+            </label>
+            <label className="flex flex-col gap-2">
+              <span className="text-xs uppercase tracking-[0.18em] text-muted">
+                Email
+              </span>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => setEmailTouched(true)}
+                aria-invalid={emailShowError}
+                aria-describedby={emailShowError ? "email-error" : undefined}
+                className={inputClass}
+                placeholder="you@company.com"
+                inputMode="email"
+                autoComplete="email"
+              />
+              {emailShowError && (
+                <p
+                  id="email-error"
+                  role="alert"
+                  className="text-xs text-red-400"
+                >
+                  Please enter a valid email address.
+                </p>
+              )}
+            </label>
+            <label className="flex flex-col gap-2">
+              <span className="text-xs uppercase tracking-[0.18em] text-muted">
+                Message
+              </span>
+              <textarea
+                required
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className={`${inputClass} min-h-[96px] resize-y`}
+                placeholder="How can we help you?"
+              />
+            </label>
+            <div className="flex justify-start">
+              <Turnstile
+                key={turnstileKey}
+                siteKey={turnstileSiteKey}
+                onVerify={setTurnstileToken}
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={submitting || !turnstileToken || !emailIsValid}
+              className="group inline-flex items-center gap-2 self-start border-b border-foreground/40 pb-1 text-sm uppercase tracking-[0.15em] text-foreground transition-colors hover:border-foreground disabled:cursor-not-allowed disabled:border-foreground/40 disabled:opacity-40"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" /> Sending…
+                </>
+              ) : !turnstileToken ? (
+                "Verify CAPTCHA"
+              ) : (
+                <>
+                  Send Message{" "}
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </>
+              )}
+            </button>
+            <div aria-live="polite">
+              {status?.ok && (
+                <p className="flex items-center gap-2 text-sm text-emerald-400">
+                  <CheckCircle2 className="h-4 w-4" /> Thanks! Your message has
+                  been sent.
+                </p>
+              )}
+              {status && !status.ok && (
+                <p role="alert" className="text-sm text-red-400">
+                  {status.error || "Something went wrong."}
+                </p>
+              )}
+            </div>
+          </form>
 
-        <div className="flex flex-col md:border-l md:border-border md:pl-16">
-          <h3 className="font-[family-name:var(--font-fraunces)] text-2xl font-normal text-foreground">
-            Prefer a live chat?
-          </h3>
-          <p className="mt-4 max-w-sm leading-relaxed text-muted">
-            Book a free 30-minute consultation call to discuss your needs.
-          </p>
-          <a
-            href="https://calendar.app.google/cNPgb76hCUcz6vsr8"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group mt-7 inline-flex items-center gap-2 self-start border-b border-foreground/30 pb-1 text-sm uppercase tracking-[0.15em] text-foreground transition-colors hover:border-foreground"
-          >
-            Book a call{" "}
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </a>
-        </div>
-      </motion.div>
+          <div className="flex flex-col md:border-l md:border-border md:pl-16">
+            <h3 className="font-[family-name:var(--font-fraunces)] text-2xl font-normal text-foreground">
+              Prefer a live chat?
+            </h3>
+            <p className="mt-4 max-w-sm leading-relaxed text-muted">
+              Book a free 30-minute consultation call to discuss your needs.
+            </p>
+            <a
+              href="https://calendar.app.google/cNPgb76hCUcz6vsr8"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group mt-7 inline-flex items-center gap-2 self-start border-b border-foreground/30 pb-1 text-sm uppercase tracking-[0.15em] text-foreground transition-colors hover:border-foreground"
+            >
+              Book a call{" "}
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </a>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
 }
-

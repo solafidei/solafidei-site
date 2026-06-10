@@ -11,7 +11,9 @@ const CALENDAR_URL = "https://calendar.app.google/cNPgb76hCUcz6vsr8";
 export function CTASection() {
   return (
     <section className="relative isolate overflow-hidden">
-      <BackgroundBeamsWithCollision className="md:h-[36rem]">
+      {/* h-auto on mobile: the component's fixed h-96 clips the stacked
+          content (overflow-hidden) — only desktop gets the fixed stage */}
+      <BackgroundBeamsWithCollision className="h-auto min-h-96 md:h-[36rem]">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -27,8 +29,9 @@ export function CTASection() {
             <span className="text-accent-bright"> outlasts the hype.</span>
           </h2>
           <p className="mx-auto mt-6 max-w-xl leading-relaxed text-muted">
-            Every project is scoped and quoted individually — tell us what you&apos;re building
-            and we&apos;ll come back with a clear plan and a number.
+            Every project is scoped and quoted individually — tell us what
+            you&apos;re building and we&apos;ll come back with a clear plan and
+            a number.
           </p>
           <div className="mt-12 flex flex-wrap items-center justify-center gap-5">
             <MovingBorderButton

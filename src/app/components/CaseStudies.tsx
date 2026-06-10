@@ -39,7 +39,7 @@ export function CaseStudies() {
               Case studies
             </p>
             <h2 className="mx-auto mt-4 max-w-3xl font-[family-name:var(--font-space-grotesk)] text-4xl font-medium tracking-tight text-foreground md:text-6xl">
-              Real-world impact for our clients
+              Real-world impact for our clients.
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-muted">
               See how Solafidei delivers measurable outcomes.
@@ -80,7 +80,9 @@ export function CaseStudies() {
               </div>
               <div className="mt-8 flex items-center gap-2.5">
                 <Logo src={flagship.logo} alt={`${flagship.client} logo`} />
-                <span className="text-sm text-foreground">{flagship.client}</span>
+                <span className="text-sm text-foreground">
+                  {flagship.client}
+                </span>
               </div>
             </div>
             <div className="relative max-w-lg">
@@ -133,7 +135,9 @@ export function CaseStudies() {
               <h3 className="font-[family-name:var(--font-space-grotesk)] text-xl font-normal leading-snug text-foreground md:text-2xl">
                 {second.title}
               </h3>
-              <p className="mt-5 leading-relaxed text-muted">{second.summary}</p>
+              <p className="mt-5 leading-relaxed text-muted">
+                {second.summary}
+              </p>
             </div>
           </motion.article>
         </motion.div>

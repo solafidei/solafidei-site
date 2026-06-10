@@ -12,7 +12,7 @@ type Plan = {
   desc: string;
   features: string[];
   popular?: boolean;
-} & (| { custom: true } | { custom?: false; monthly: number });
+} & ({ custom: true } | { custom?: false; monthly: number });
 
 export function Pricing() {
   const [annual, setAnnual] = useState(true);
@@ -71,7 +71,11 @@ export function Pricing() {
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
-      <SectionHeading eyebrow="Pricing" title="Plans that" highlight="scale with you" />
+      <SectionHeading
+        eyebrow="Pricing"
+        title="Plans that"
+        highlight="scale with you."
+      />
 
       <div className="mt-8 flex justify-center">
         <div className="glass inline-flex items-center gap-1 rounded-full p-1">
@@ -86,7 +90,9 @@ export function Pricing() {
             key={p.name}
             reveal={false}
             className={`flex flex-col p-6 ${
-              p.popular ? "border-[var(--brand-end)]/50 ring-1 ring-[var(--brand-end)]/40" : ""
+              p.popular
+                ? "border-[var(--brand-end)]/50 ring-1 ring-[var(--brand-end)]/40"
+                : ""
             }`}
           >
             <div className="flex items-center justify-between">
@@ -100,7 +106,9 @@ export function Pricing() {
             <p className="mt-1 text-sm text-muted">{p.desc}</p>
             <div className="mt-4">
               {"custom" in p && p.custom ? (
-                <div className="font-heading text-3xl font-semibold">Custom</div>
+                <div className="font-heading text-3xl font-semibold">
+                  Custom
+                </div>
               ) : (
                 <motion.div
                   key={annual ? "annual" : "monthly"}
@@ -121,12 +129,15 @@ export function Pricing() {
               variant={p.popular ? "primary" : "ghost"}
               className="mt-5 w-full"
             >
-              {"custom" in p && p.custom ? "Schedule a call" : "Choose this plan"}
+              {"custom" in p && p.custom
+                ? "Schedule a call"
+                : "Choose this plan"}
             </GradientButton>
             <ul className="mt-5 space-y-2 text-sm">
               {p.features.map((f) => (
                 <li key={f} className="flex items-center gap-2 text-muted">
-                  <Check className="h-4 w-4 shrink-0 text-[var(--brand-start)]" /> {f}
+                  <Check className="h-4 w-4 shrink-0 text-[var(--brand-start)]" />{" "}
+                  {f}
                 </li>
               ))}
             </ul>
