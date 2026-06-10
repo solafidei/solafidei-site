@@ -9,6 +9,7 @@ import { Stats } from "./components/Stats";
 import { Benefits } from "./components/Benefits";
 import { Team } from "./components/Team";
 import { Testimonials } from "./components/Testimonials";
+import { FAQs } from "./components/FAQs";
 import { CTASection } from "./components/CTASection";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
@@ -32,6 +33,7 @@ export default function SolafideiLanding() {
         <Benefits />
         <Team />
         <Testimonials />
+        <FAQs />
         <CTASection />
         <Contact />
         <Footer />

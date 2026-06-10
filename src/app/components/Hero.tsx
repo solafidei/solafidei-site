@@ -44,7 +44,9 @@ export function Hero() {
   const y = useTransform(scrollYProgress, [0, 1], [0, 110]);
   const opacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
 
-  const showRays = desktop && !reduce;
+  // rays run on mobile too (OGL caps DPR at 2 and pauses off-screen);
+  // only reduced-motion users get the static gradient alone
+  const showRays = !reduce;
 
   return (
     <section
@@ -52,14 +54,14 @@ export function Hero() {
       id="home"
       className="relative isolate flex min-h-screen items-center overflow-hidden"
     >
-      {/* static glow — the mobile/reduced-motion fallback, and the base the
-          rays sit on so the WebGL load never causes a visual pop */}
+      {/* static glow — the reduced-motion fallback, and the base the rays
+          sit on so the WebGL load never causes a visual pop */}
       <div
         aria-hidden
         className="absolute inset-0 -z-20"
         style={{
           background:
-            "radial-gradient(90% 55% at 50% -10%, rgba(34,211,238,0.13), transparent 65%), var(--bg-deep)",
+            "radial-gradient(90% 55% at 50% -10%, rgba(34,211,238,0.17), transparent 65%), var(--bg-deep)",
         }}
       />
 
@@ -74,7 +76,7 @@ export function Hero() {
             rayLength={1.5}
             fadeDistance={1.0}
             saturation={0.9}
-            followMouse
+            followMouse={desktop}
             mouseInfluence={0.08}
             noiseAmount={0.06}
             distortion={0.04}
@@ -129,11 +131,28 @@ export function Hero() {
           We help innovative companies launch and scale digital products with confidence.
         </motion.p>
 
+        {/* availability badge — scarcity signal carried over from the
+            original site, restyled to the mono/cyan system */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.85, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-10 flex justify-center"
+        >
+          <span className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted">
+            <span className="relative flex h-1.5 w-1.5" aria-hidden>
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-bright opacity-60" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent-bright" />
+            </span>
+            Availability for 2 new projects this month
+          </span>
+        </motion.div>
+
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-12 flex flex-wrap items-center justify-center gap-4"
+          transition={{ duration: 0.7, delay: 1.0, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-7 flex flex-wrap items-center justify-center gap-4"
         >
           <a
             href={CALENDAR_URL}

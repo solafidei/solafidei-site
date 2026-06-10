@@ -13,58 +13,32 @@ export const BackgroundBeamsWithCollision = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const parentRef = useRef<HTMLDivElement>(null);
 
-  const beams = [
-    {
-      initialX: 10,
-      translateX: 10,
-      duration: 7,
-      repeatDelay: 3,
-      delay: 2,
-    },
-    {
-      initialX: 600,
-      translateX: 600,
-      duration: 3,
-      repeatDelay: 3,
-      delay: 4,
-    },
-    {
-      initialX: 100,
-      translateX: 100,
-      duration: 7,
-      repeatDelay: 7,
-      className: "h-6",
-    },
-    {
-      initialX: 400,
-      translateX: 400,
-      duration: 5,
-      repeatDelay: 14,
-      delay: 4,
-    },
-    {
-      initialX: 800,
-      translateX: 800,
-      duration: 11,
-      repeatDelay: 2,
-      className: "h-20",
-    },
-    {
-      initialX: 1000,
-      translateX: 1000,
-      duration: 4,
-      repeatDelay: 2,
-      className: "h-12",
-    },
-    {
-      initialX: 1200,
-      translateX: 1200,
-      duration: 6,
-      repeatDelay: 4,
-      delay: 2,
-      className: "h-6",
-    },
+  // beam X positions as fractions of the container width so they spread
+  // across any viewport (the upstream version hardcodes 10–1200px, which
+  // bunches every beam on the left on mobile)
+  const [containerWidth, setContainerWidth] = useState(0);
+  useEffect(() => {
+    const update = () => setContainerWidth(parentRef.current?.offsetWidth ?? 0);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  const beamConfigs = [
+    { x: 0.02, duration: 7, repeatDelay: 3, delay: 2 },
+    { x: 0.14, duration: 7, repeatDelay: 7, className: "h-6" },
+    { x: 0.3, duration: 5, repeatDelay: 14, delay: 4 },
+    { x: 0.46, duration: 3, repeatDelay: 3, delay: 4 },
+    { x: 0.62, duration: 11, repeatDelay: 2, className: "h-20" },
+    { x: 0.78, duration: 4, repeatDelay: 2, className: "h-12" },
+    { x: 0.94, duration: 6, repeatDelay: 4, delay: 2, className: "h-6" },
   ];
+
+  const beams = beamConfigs.map(({ x, ...rest }) => ({
+    ...rest,
+    initialX: Math.round(x * containerWidth),
+    translateX: Math.round(x * containerWidth),
+  }));
 
   return (
     <div
@@ -75,14 +49,15 @@ export const BackgroundBeamsWithCollision = ({
         className
       )}
     >
-      {beams.map((beam) => (
-        <CollisionMechanism
-          key={beam.initialX + "beam-idx"}
-          beamOptions={beam}
-          containerRef={containerRef}
-          parentRef={parentRef}
-        />
-      ))}
+      {containerWidth > 0 &&
+        beams.map((beam, idx) => (
+          <CollisionMechanism
+            key={`${beam.initialX}-${idx}-beam`}
+            beamOptions={beam}
+            containerRef={containerRef}
+            parentRef={parentRef}
+          />
+        ))}
 
       {children}
       <div

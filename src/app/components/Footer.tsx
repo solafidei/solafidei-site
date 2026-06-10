@@ -6,6 +6,7 @@ const columns = [
       { label: "Benefits", href: "#benefits" },
       { label: "Process", href: "#about" },
       { label: "Case studies", href: "#work" },
+      { label: "FAQ", href: "#faq" },
     ],
   },
   {
