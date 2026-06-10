@@ -37,6 +37,7 @@
     "eslint-config-next": "^15.5.19",
     "playwright": "^1.60.0",
     "postcss": "^8.5.6",
+    "prettier": "^3.8.4",
     "tailwindcss": "^4.1.11",
     "typescript": "^5"
   }
