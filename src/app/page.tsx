@@ -13,6 +13,7 @@ import { FAQs } from "./components/FAQs";
 import { CTASection } from "./components/CTASection";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
+import { ScrollToTop } from "./components/ScrollToTop";
 
 // Solafidei — "engineered, not decorated" experience site.
 // Narrative: arrive → what we work with → what we build → proof → how we
@@ -37,6 +38,7 @@ export default function SolafideiLanding() {
         <CTASection />
         <Contact />
         <Footer />
+        <ScrollToTop />
       </div>
     </main>
   );

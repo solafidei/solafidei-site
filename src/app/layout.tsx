@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { SplashScreen } from "./components/SplashScreen";
 import { SmoothScroll } from "./components/SmoothScroll";
+import { Analytics } from "@vercel/analytics/next"
 
 // Type system: Space Grotesk headings, Inter body, JetBrains Mono details
 // (see globals.css for the token mapping)
@@ -92,9 +93,15 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased bg-background text-foreground`}
       >
+<<<<<<< Updated upstream
         {/* short branded ident, once per session; hero entrance waits for it
             (?splash=on / ?splash=off to force either mode) */}
         <SplashScreen durationMs={900} />
+=======
+        {/* full-screen intro splash with the logo; sits above all content */}
+        <Analytics />
+        <SplashScreen durationMs={1200} />
+>>>>>>> Stashed changes
         <SmoothScroll />
         <Providers>{children}</Providers>
         <script
