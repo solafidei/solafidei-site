@@ -1,25 +1,17 @@
 "use client";
 import { Nav } from "./components/Nav";
 import { Hero } from "./components/Hero";
-import { TechStack } from "./components/TechStack";
 import { Services } from "./components/Services";
-import { CaseStudies } from "./components/CaseStudies";
+import { Proof } from "./components/Proof";
 import { Process } from "./components/Process";
-import { Stats } from "./components/Stats";
-import { Benefits } from "./components/Benefits";
-import { Team } from "./components/Team";
-import { Testimonials } from "./components/Testimonials";
-import { FAQs } from "./components/FAQs";
-import { CTASection } from "./components/CTASection";
-import { Contact } from "./components/Contact";
+import { Talk } from "./components/Talk";
 import { Footer } from "./components/Footer";
 import { ScrollToTop } from "./components/ScrollToTop";
 import StarField from "./components/StarField";
 
-// Solafidei — "engineered, not decorated" experience site.
-// Narrative: arrive → what we work with → what we build → proof → how we
-// work → numbers → who we are → what clients say → talk to us.
-// Design system: docs/intent/futuristic-redesign.md
+// Solafidei — all-out experience site (beta rebuild).
+// Scenes: arrive → what we build → proof → how we work → talk to us.
+// Design intent: docs/intent/experience-rebuild.md
 
 export default function SolafideiLanding() {
   return (
@@ -29,17 +21,10 @@ export default function SolafideiLanding() {
       <div className="relative z-10">
         <Nav />
         <Hero />
-        <TechStack />
         <Services />
-        <CaseStudies />
+        <Proof />
         <Process />
-        <Stats />
-        <Benefits />
-        <Team />
-        <Testimonials />
-        <FAQs />
-        <CTASection />
-        <Contact />
+        <Talk />
         <Footer />
         <ScrollToTop />
       </div>

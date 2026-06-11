@@ -210,6 +210,13 @@ h6 {
   html {
     @apply font-sans;
   }
+  /* keyboard focus — accent ring, visible on the near-black base; mouse
+     clicks don't trigger it (focus-visible only) */
+  :focus-visible {
+    outline: 2px solid var(--accent-bright);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
 }
 
 /* Smooth anchor scrolling where Lenis doesn't run (touch devices).

@@ -12,7 +12,7 @@ There is no test suite. Verification is done with throwaway Playwright scripts i
 
 ## What this is
 
-Single-page marketing site for Solafidei (Next.js 15 App Router, React 19, Tailwind 4, TypeScript). The design direction, component picks, and build status are documented in **`docs/intent/futuristic-redesign.md`** — that file is the source of truth for design decisions ("engineered, not decorated"; decisions there are owner-confirmed and locked). Read it before changing layout, effects, or visual style.
+Single-page marketing site for Solafidei (Next.js 15 App Router, React 19, Tailwind 4, TypeScript). On branch `beta` the design direction is **`docs/intent/experience-rebuild.md`** (owner-confirmed 2026-06-11): a full experience-site rebuild where heavy animation _is_ the site. It supersedes `docs/intent/futuristic-redesign.md`, which still governs `alpha`/`main` while they remain live. Read the active intent doc before changing layout, effects, or visual style. The architecture notes below describe the code as it currently stands (inherited from `alpha`); the old motion restrictions (WebGL hero-only, effect hierarchy) are unlocked on `beta` per the new intent doc — `prefers-reduced-motion` support and the mobile contact funnel remain non-negotiable.
 
 ## Architecture
 
@@ -32,6 +32,7 @@ Single-page marketing site for Solafidei (Next.js 15 App Router, React 19, Tailw
 **Splash screen sequencing:** `splash-state.ts` coordinates a once-per-session branded splash with the hero entrance — the hero waits for the `solafidei:splash-done` event instead of animating behind the splash. `?splash=on|off` query param forces either mode (useful when testing, and verification scripts must wait out the splash).
 
 **Server side:** two API routes, both emailing via Resend:
+
 - `src/app/api/contact/route.ts` — contact form, gated by Cloudflare Turnstile.
 - `src/app/api/awareness/events/route.ts` — phishing-awareness campaign tracking (paired with the `/letter` page). Links are HMAC-signed (`sig` = hex hmac_sha256 of `JSON.stringify([rid, campaign, to, from])` with `AWARENESS_EVENT_SECRET`); requests are IP rate-limited in memory. Notification emails deliberately omit IP/user-agent/screen data — keep it that way.
 

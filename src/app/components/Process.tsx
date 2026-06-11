@@ -9,13 +9,77 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import { SectionHeading } from "./ui/SectionHeading";
+import { Clock, User, Layers, MessageCircle } from "lucide-react";
+import { SceneHeading } from "./ui/SceneHeading";
+import { gsap, ScrollTrigger, useGSAP } from "./gsap";
 
-// Process set piece: Sticky Scroll Reveal × Tracing Beam (the /sampler winner).
-// Desktop pins the step list while a beam draws down the rail and the detail
-// panel crossfades; mobile keeps the beam + steps in normal flow (no pinning).
+// "How we work" act (experience-rebuild): the Process set piece (Sticky
+// Scroll Reveal × Tracing Beam, the /sampler winner) plus the absorbed
+// Benefits ("why us") and Team beats. The pinned set piece stays framer —
+// it works and GSAP must never touch framer-animated nodes; the beats and
+// headings are GSAP-scrubbed.
 
 const ACCENT = "#22d3ee";
+
+const benefits = [
+  {
+    icon: Clock,
+    title: "Faster Time-to-Market",
+    description:
+      "Our agile approach gets your app into users’ hands quickly without compromising quality.",
+  },
+  {
+    icon: User,
+    title: "User-Centric Design",
+    description:
+      "We design with your users in mind, delivering intuitive and engaging experiences.",
+  },
+  {
+    icon: Layers,
+    title: "Scalable Architecture",
+    description:
+      "We build apps that grow with your business, avoiding costly rebuilds.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Transparent Collaboration",
+    description:
+      "Frequent updates, clear timelines, and open communication at every stage.",
+  },
+];
+
+const people = [
+  {
+    name: "Solomon Razaq",
+    role: "Founder",
+    skills: "TypeScript, JavaScript, C#, SQL, GCP",
+  },
+  {
+    name: "Innocent Munyadziwa",
+    role: "Tech Lead",
+    skills: "TypeScript, JavaScript, C#, SQL, Java, AWS, Azure, Terraform",
+  },
+  {
+    name: "Muema Kamba",
+    role: "Tech Lead",
+    skills: "TypeScript, JavaScript, Java, Python, Go, Rust, AWS",
+  },
+  {
+    name: "Daniel Jorge",
+    role: "Mobile Developer",
+    skills: "Flutter, React Native, Node.js, AWS, Firebase, Code Magic",
+  },
+  {
+    name: "Den Radkevich",
+    role: "Developer",
+    skills: "TypeScript, JavaScript, React, React Native, NodeJS, SQL",
+  },
+  {
+    name: "Nathan Boyega",
+    role: "Product Strategy & Design",
+    skills: "Product Strategy, Product Design, Design Systems",
+  },
+];
 
 const steps = [
   {
@@ -259,13 +323,75 @@ function FlowingProcess({ reduce }: { reduce: boolean }) {
 export function Process() {
   const desktop = useIsDesktop();
   const reduce = useReducedMotion() ?? false;
+  const ref = useRef<HTMLElement>(null);
+
+  // beats after the set piece — scrubbed reveals on plain (non-framer) nodes
+  useGSAP(
+    () => {
+      const section = ref.current;
+      if (!section) return;
+      const cards = gsap.utils.toArray<HTMLElement>(".hww-card", section);
+      const rows = gsap.utils.toArray<HTMLElement>(".hww-row", section);
+
+      const mm = gsap.matchMedia();
+      mm.add(
+        {
+          desktop:
+            "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
+          mobile:
+            "(max-width: 767px) and (prefers-reduced-motion: no-preference)",
+        },
+        (ctx) => {
+          const desk = !!(ctx.conditions as { desktop: boolean }).desktop;
+
+          cards.forEach((card) => {
+            gsap.from(card, {
+              y: desk ? 70 : 40,
+              autoAlpha: 0,
+              ease: "none",
+              scrollTrigger: {
+                trigger: card,
+                start: "top 92%",
+                end: "top 60%",
+                scrub: true,
+              },
+            });
+          });
+
+          rows.forEach((row) => {
+            gsap.from(row, {
+              x: desk ? -50 : 0,
+              y: desk ? 0 : 30,
+              autoAlpha: 0,
+              ease: "none",
+              scrollTrigger: {
+                trigger: row,
+                start: "top 94%",
+                end: "top 68%",
+                scrub: true,
+              },
+            });
+          });
+        },
+      );
+      // the desktop/mobile process swap changes the act's height by ~3
+      // viewports; every trigger measured before the swap is stale
+      ScrollTrigger.refresh();
+
+      return () => mm.revert();
+    },
+    // re-run when the set-piece variant swaps (useIsDesktop flips after
+    // mount), otherwise the beats' trigger positions are computed against
+    // the wrong layout and they reveal thousands of px too early
+    { scope: ref, dependencies: [desktop, reduce], revertOnUpdate: true },
+  );
 
   return (
     // overflow-x-clip (NOT overflow-hidden): a hidden-overflow ancestor
     // becomes the scrollport for position:sticky and kills the pinning
-    <section id="about" className="relative isolate overflow-x-clip">
+    <section ref={ref} id="about" className="relative isolate overflow-x-clip">
       <div className="mx-auto max-w-7xl px-6 pt-24 md:pt-32">
-        <SectionHeading
+        <SceneHeading
           eyebrow="Process"
           title="Simple, smart, and"
           highlight="scalable."
@@ -278,6 +404,57 @@ export function Process() {
         ) : (
           <FlowingProcess reduce={reduce} />
         )}
+      </div>
+
+      {/* why us beat — absorbed from the old Benefits section */}
+      <div id="benefits" className="mx-auto max-w-7xl px-6 pt-24 md:pt-32">
+        <SceneHeading
+          eyebrow="Why us"
+          title="Benefits of"
+          highlight="working with us."
+        />
+        <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-4">
+          {benefits.map(({ icon: Icon, title, description }) => (
+            <div
+              key={title}
+              className="hww-card flex flex-col border-t border-border pt-8"
+            >
+              <span className="text-icon">
+                <Icon size={22} strokeWidth={1.5} />
+              </span>
+              <h3 className="mt-7 font-[family-name:var(--font-fraunces)] text-xl font-normal text-foreground">
+                {title}
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-muted">
+                {description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* team beat — the people who run the process */}
+      <div id="team" className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+        <SceneHeading
+          eyebrow="Team"
+          title="The people behind the"
+          highlight="work."
+        />
+        <div className="mt-16 flex flex-col">
+          {people.map((p) => (
+            <div key={p.name} className="hww-row border-t border-border py-6">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+                <h3 className="font-[family-name:var(--font-fraunces)] text-xl font-normal text-foreground">
+                  {p.name}
+                </h3>
+                <span className="text-xs uppercase tracking-[0.18em] text-muted">
+                  {p.role}
+                </span>
+              </div>
+              <p className="mt-2 text-sm text-muted">{p.skills}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
