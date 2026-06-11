@@ -1,12 +1,26 @@
 @import "tailwindcss";
 
+/*
+ * Design system tokens.
+ * Light theme is the default (`:root`); dark-mode variants live under `.dark`,
+ * which next-themes toggles on the <html> element. `prefers-color-scheme` is
+ * honoured on first load and the user's choice is persisted in localStorage.
+ */
 :root {
-  color-scheme: dark;
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  /* Brand colors (update these to match your logo) */
-  --brand-start: #22d3ee; /* cyan-400 */
-  --brand-end: #a78bfa;   /* violet-300 */
+  color-scheme: light;
+
+  /* Core tokens */
+  --bg: #ffffff;
+  --text: #0a0a0a;
+  --accent: #7c3aed; /* violet-600 */
+
+  /* Mapped aliases used across the app + Tailwind theme */
+  --background: var(--bg);
+  --foreground: var(--text);
+
+  /* Brand gradient colors */
+  --brand-start: #06b6d4; /* cyan-500 */
+  --brand-end: #7c3aed; /* violet-600 */
 }
 
 @theme inline {
@@ -16,12 +30,19 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* Support class-based dark mode (next-themes) */
+/* Dark-mode variants (class-based, toggled by next-themes) */
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --brand-start: #22d3ee;
-  --brand-end: #a78bfa;
+  color-scheme: dark;
+
+  --bg: #0a0a0a;
+  --text: #ededed;
+  --accent: #a78bfa; /* violet-300 */
+
+  --background: var(--bg);
+  --foreground: var(--text);
+
+  --brand-start: #22d3ee; /* cyan-400 */
+  --brand-end: #a78bfa; /* violet-300 */
 }
 
 body {

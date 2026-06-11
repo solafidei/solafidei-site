@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
+import { ArrowRight, Moon, Sun } from "lucide-react";
 
 export function Nav() {
   return (
@@ -19,7 +21,7 @@ export function Nav() {
           <a className="hover:text-white" href="#contact">Contact</a>
         </nav>
         <div className="flex items-center gap-2">
-          {/* <ThemeToggle /> */}
+          <ThemeToggle />
           <a
             href="https://calendar.app.google/cNPgb76hCUcz6vsr8"
             target="_blank"
@@ -34,32 +36,26 @@ export function Nav() {
   );
 }
 
-/*
 function ThemeToggle() {
-  const { theme, resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+
+  // Only render the theme-dependent icon after mount to avoid a hydration
+  // mismatch (the resolved theme is unknown during SSR).
   useEffect(() => setMounted(true), []);
-  if (!mounted) {
-    return (
-      <button
-        aria-label="Toggle theme"
-        className="rounded-xl border border-black/10 bg-white px-2.5 py-2 text-sm text-black/70"
-      >
-        <Sun className="h-4 w-4" />
-      </button>
-    );
-  }
-  const current = resolvedTheme || theme;
-  const next = current === "dark" ? "light" : "dark";
+
+  const isDark = resolvedTheme === "dark";
+  const next = isDark ? "light" : "dark";
+
   return (
     <button
-      aria-label={`Switch to ${next} theme`}
+      type="button"
+      aria-label={mounted ? `Switch to ${next} theme` : "Toggle theme"}
       onClick={() => setTheme(next)}
-      className="inline-flex items-center gap-2 rounded-xl border border-black/10 bg-white px-2.5 py-2 text-sm text-black/70 hover:bg-white/80"
+      className="inline-flex items-center justify-center rounded-xl border border-foreground/15 bg-foreground/5 px-2.5 py-2 text-sm text-foreground/80 transition hover:bg-foreground/10"
     >
-      {current === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      {mounted && !isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+      <span className="sr-only">Toggle dark mode</span>
     </button>
   );
 }
-*/
-
