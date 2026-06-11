@@ -14,6 +14,7 @@ import { CTASection } from "./components/CTASection";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
 import { ScrollToTop } from "./components/ScrollToTop";
+import StarField from "./components/StarField";
 
 // Solafidei — "engineered, not decorated" experience site.
 // Narrative: arrive → what we work with → what we build → proof → how we
@@ -23,6 +24,8 @@ import { ScrollToTop } from "./components/ScrollToTop";
 export default function SolafideiLanding() {
   return (
     <main className="relative min-h-screen text-white selection:bg-cyan-500/20">
+      {/* ambient star layer — only visible in the calm near-black stretches */}
+      <StarField />
       <div className="relative z-10">
         <Nav />
         <Hero />
