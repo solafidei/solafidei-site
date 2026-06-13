@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BackToTop } from "../components/BackToTop";
 
 import { countWords, readingTime } from "@/lib/readingTime";
 import { posts } from "./posts";
 
 export const metadata: Metadata = {
   title: "Blog",
-  description: "Notes on engineering, design, and the products we build.",
+  description:
+    "Articles, notes, and updates from the Solafidei team on building products, automation, and the web.",
   robots: { index: true, follow: true },
   alternates: { canonical: "https://solafidei.com/blog" },
 };
@@ -25,29 +27,36 @@ export default function BlogIndexPage() {
         Blog
       </h1>
       <p className="mt-2 text-sm text-foreground/50">
-        Notes on engineering, design, and the products we build.
+        Notes on building products, automation, and the web.
       </p>
 
       <ul className="mt-10 space-y-8">
         {posts.map((post) => (
-          <li
-            key={post.slug}
-            className="rounded-xl border border-foreground/10 p-6 transition hover:border-foreground/20"
-          >
-            <Link href={`/blog/${post.slug}`} className="group block">
-              <h2 className="text-xl font-semibold transition group-hover:text-[var(--brand-start)]">
-                {post.title}
+          <li key={post.slug}>
+            <article>
+              <p className="text-xs uppercase tracking-wide text-foreground/40">
+                {post.date}
+              </p>
+              <h2 className="mt-1 text-xl font-semibold">
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="transition hover:text-[var(--brand-start)]"
+                >
+                  {post.title}
+                </Link>
               </h2>
               <p className="mt-1 text-sm text-foreground/50">
                 {readingTime(countWords(post.body))}
               </p>
-              <p className="mt-3 text-foreground/80 leading-relaxed">
+              <p className="mt-2 text-foreground/80 leading-relaxed">
                 {post.excerpt}
               </p>
-            </Link>
+            </article>
           </li>
         ))}
       </ul>
+
+      <BackToTop />
     </main>
   );
 }
