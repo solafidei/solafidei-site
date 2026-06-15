@@ -68,6 +68,17 @@ export default function DataDeletionPage() {
           where required by law (for example, financial records), and we will
           tell you if this applies.
         </p>
+        <p className="mt-4 text-foreground/80 leading-relaxed">
+          Your booking records may be retained in anonymised form (no longer
+          linked to your name or number) where we need them for accounting or
+          legal record-keeping — we will tell you if this applies.
+        </p>
+        <p className="mt-4 text-foreground/80 leading-relaxed">
+          If you booked through a business that uses our platform, that business
+          remains responsible for your customer relationship and may need to
+          verify your identity before we can process a deletion request. We may
+          contact the business to confirm and action your request.
+        </p>
       </section>
 
       <section className="mt-10">

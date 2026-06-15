@@ -69,18 +69,47 @@ export default function PrivacyPolicyPage() {
       </section>
 
       <section className="mt-10">
-        <h2 className="text-xl font-semibold">Data retention</h2>
+        <h2 className="text-xl font-semibold">How long we keep your data</h2>
         <p className="mt-4 text-foreground/80 leading-relaxed">
-          We keep your personal data only for as long as necessary to provide
-          our services and to meet legal requirements. You can ask us to delete
-          your data at any time — see our{" "}
+          We keep your personal data only for as long as we need it, and no
+          longer:
+        </p>
+        <ul className="mt-4 list-disc space-y-2 pl-5 text-foreground/80 leading-relaxed">
+          <li>
+            <strong>Messages you send us on WhatsApp</strong> — kept for up to
+            24 months after your last contact with the business, then deleted.
+          </li>
+          <li>
+            <strong>Booking records (dates, services, notes)</strong> — kept
+            while you are a customer and for up to 5 years afterwards to meet
+            accounting and tax record-keeping obligations. After this period, or
+            after a deletion request, these records are kept only in anonymised
+            form (the booking remains for the business&rsquo;s records but is no
+            longer linked to you).
+          </li>
+          <li>
+            <strong>Your name and WhatsApp number</strong> are kept while you
+            are an active customer. If you stop using the service, we will
+            remove or anonymise this information after 24 months of inactivity
+            unless we are required to retain it for legal, accounting,
+            fraud-prevention, or security purposes.
+          </li>
+        </ul>
+        <p className="mt-4 text-foreground/80 leading-relaxed">
+          You can ask us to delete your data at any time — see our{" "}
           <Link
             href="/data-deletion"
             className="text-[var(--brand-start)] underline underline-offset-4"
           >
             Data Deletion Instructions
           </Link>
-          .
+          . We action verified requests within 30 days.
+        </p>
+        <p className="mt-4 text-foreground/80 leading-relaxed">
+          Note that Meta Platforms, Inc. (which operates the WhatsApp Business
+          Platform) keeps its own copy of messages sent over WhatsApp, under its
+          own privacy policy and retention periods, which are outside our
+          control.
         </p>
       </section>
 
