@@ -1,65 +1,135 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { AnimatePresence, motion, useScroll } from "framer-motion";
+
+const links = [
+  { href: "#home", label: "Home" },
+  { href: "#services", label: "Services" },
+  { href: "#work", label: "Work" },
+  { href: "#about", label: "About" },
+  { href: "#benefits", label: "Benefits" },
+  { href: "#faq", label: "FAQ" },
+  { href: "#contact", label: "Contact" },
+];
+
+const CALENDAR_URL = "https://calendar.app.google/cNPgb76hCUcz6vsr8";
 
 export function Nav() {
-  return (
-    <div className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-black/40 border-b border-white/10">
-      <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Image src="/logo_opaque_smaller.png" alt="Solafidei logo" height={28} width={28} className="h-7 w-auto rounded" priority />
-          <span className="font-semibold tracking-wide">SOLAFIDEI</span>
-        </div>
-        <nav className="hidden sm:flex items-center gap-6 text-sm text-white/70">
-          <a className="hover:text-white" href="#home">Home</a>
-          <a className="hover:text-white" href="#about">About</a>
-          <a className="hover:text-white" href="#services">Services</a>
-          <a className="hover:text-white" href="#benefits">Benefits</a>
-          <a className="hover:text-white" href="#contact">Contact</a>
-        </nav>
-        <div className="flex items-center gap-2">
-          {/* <ThemeToggle /> */}
-          <a
-            href="https://calendar.app.google/cNPgb76hCUcz6vsr8"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group inline-flex items-center gap-2 rounded-xl border border-white/10 bg-black text-white px-3 py-2 text-sm hover:bg-black/90"
-          >
-            Book a call <ArrowRight className="h-4 w-4 transition -translate-x-0.5 group-hover:translate-x-0" />
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const { scrollYProgress } = useScroll();
 
-/*
-function ThemeToggle() {
-  const { theme, resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  if (!mounted) {
-    return (
-      <button
-        aria-label="Toggle theme"
-        className="rounded-xl border border-black/10 bg-white px-2.5 py-2 text-sm text-black/70"
-      >
-        <Sun className="h-4 w-4" />
-      </button>
-    );
-  }
-  const current = resolvedTheme || theme;
-  const next = current === "dark" ? "light" : "dark";
+  // transparent at the top, solid blurred bar once the page is scrolled
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <button
-      aria-label={`Switch to ${next} theme`}
-      onClick={() => setTheme(next)}
-      className="inline-flex items-center gap-2 rounded-xl border border-black/10 bg-white px-2.5 py-2 text-sm text-black/70 hover:bg-white/80"
+    <header
+      className={`sticky top-0 z-[60] border-b transition-all duration-300 ${
+        scrolled
+          ? "border-white/10 bg-[var(--bg-base)]/85 backdrop-blur-md"
+          : "border-transparent bg-transparent"
+      }`}
     >
-      {current === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-    </button>
+      {/* subtle scrim so the nav stays legible over the hero imagery at the
+          top; fades out as the solid bar fades in on scroll */}
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[var(--bg-base)]/85 to-transparent transition-opacity duration-300 ${
+          scrolled ? "opacity-0" : "opacity-100"
+        }`}
+      />
+
+      <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+        <a href="#home" className="flex items-center gap-2.5">
+          <Image
+            src="/logo_opaque_smaller.png"
+            alt="Solafidei logo"
+            height={24}
+            width={24}
+            className="h-6 w-auto rounded"
+            priority
+          />
+          <span className="text-sm font-medium uppercase tracking-[0.22em] text-foreground">
+            Solafidei
+          </span>
+        </a>
+
+        <nav className="hidden items-center gap-9 text-xs uppercase tracking-[0.18em] text-muted min-[910px]:flex">
+          {links.map((l) => (
+            <a key={l.href} className="transition-colors hover:text-foreground" href={l.href}>
+              {l.label}
+            </a>
+          ))}
+        </nav>
+
+        <a
+          href={CALENDAR_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden border-b border-foreground/30 pb-0.5 text-xs uppercase tracking-[0.18em] text-foreground transition-colors hover:border-foreground min-[910px]:inline-block"
+        >
+          Book a call
+        </a>
+
+        <button
+          type="button"
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+          className="inline-flex h-10 w-10 items-center justify-center text-foreground min-[910px]:hidden"
+        >
+          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+      </div>
+
+      {/* 1px scroll-progress beam along the bottom edge of the bar */}
+      <motion.div
+        aria-hidden
+        style={{ scaleX: scrollYProgress }}
+        className="absolute bottom-0 left-0 right-0 h-px origin-left bg-accent-bright/60"
+      />
+
+      <AnimatePresence>
+        {open && (
+          <motion.nav
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="relative overflow-hidden border-t border-border bg-[var(--bg-base)]/95 backdrop-blur-md min-[910px]:hidden"
+          >
+            <div className="mx-auto flex max-w-7xl flex-col px-6 py-3">
+              {links.map((l) => (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  className="py-3 text-sm uppercase tracking-[0.18em] text-muted transition-colors hover:text-foreground"
+                >
+                  {l.label}
+                </a>
+              ))}
+              <a
+                href={CALENDAR_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setOpen(false)}
+                className="py-3 text-sm uppercase tracking-[0.18em] text-foreground"
+              >
+                Book a call
+              </a>
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
+    </header>
   );
 }
-*/
-

@@ -1,48 +1,82 @@
-"use client";
-import Image from "next/image";
-import Link from "next/link";
+const columns = [
+  {
+    heading: "Links",
+    links: [
+      { label: "Services", href: "#services" },
+      { label: "Benefits", href: "#benefits" },
+      { label: "Process", href: "#about" },
+      { label: "Case studies", href: "#work" },
+      { label: "FAQ", href: "#faq" },
+    ],
+  },
+  {
+    heading: "Pages",
+    links: [
+      { label: "Home", href: "#home" },
+      { label: "About", href: "#about" },
+      { label: "Contact", href: "#contact" },
+    ],
+  },
+];
 
 export function Footer() {
   return (
-    <footer className="mx-auto max-w-7xl px-4 py-12">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <Link href="#home" className="flex items-center gap-2">
-            <Image src="/logo_opaque_smaller.png" alt="Solafidei" width={28} height={28} className="h-7 w-auto rounded" />
-            <span className="font-semibold tracking-wide">SOLAFIDEI</span>
-          </Link>
-          <p className="mt-2 text-sm text-white/70">We design and build modern, intuitive web and mobile apps to help you launch and scale with confidence.</p>
+    <footer className="relative isolate overflow-hidden">
+      {/* faint cyan floor glow — the page's quiet sign-off */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 border-t border-border"
+        style={{
+          background:
+            "radial-gradient(80% 60% at 50% 110%, rgba(34,211,238,0.08), transparent 65%)",
+        }}
+      />
+      <div className="mx-auto max-w-7xl px-6 py-20 md:py-28">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
+          <div>
+            <a
+              href="#home"
+              className="font-[family-name:var(--font-fraunces)] text-2xl font-normal text-foreground"
+            >
+              Solafidei
+            </a>
+            <p className="mt-5 max-w-xs text-sm leading-relaxed text-muted">
+              We design and build modern, intuitive web and mobile apps to help you launch and scale
+              with confidence.
+            </p>
+          </div>
+
+          {columns.map((col) => (
+            <div key={col.heading}>
+              <div className="text-xs uppercase tracking-[0.18em] text-muted">{col.heading}</div>
+              <ul className="mt-5 space-y-3 text-sm">
+                {col.links.map((l) => (
+                  <li key={l.label}>
+                    <a className="text-muted transition-colors hover:text-foreground" href={l.href}>
+                      {l.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
-        <div>
-          <div className="font-medium">Links</div>
-          <ul className="mt-2 space-y-1 text-sm text-white/70">
-            <li><a className="hover:text-white" href="#services">Services</a></li>
-            <li><a className="hover:text-white" href="#benefits">Benefits</a></li>
-            <li><a className="hover:text-white" href="#about">Process</a></li>
-            <li><a className="hover:text-white" href="#work">Case studies</a></li>
-          </ul>
-        </div>
-        <div>
-          <div className="font-medium">Pages</div>
-          <ul className="mt-2 space-y-1 text-sm text-white/70">
-            <li><a className="hover:text-white" href="#home">Home</a></li>
-            <li><a className="hover:text-white" href="#about">About</a></li>
-          
-            <li><a className="hover:text-white" href="#contact">Contact</a></li>
-          </ul>
-        </div>
-      </div>
-      <div className="mt-8 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
-      <div className="mt-4 flex flex-col md:flex-row items-center justify-between gap-3 text-white/50 text-sm">
-        <div>© {new Date().getFullYear()} Solafidei. All rights reserved.</div>
-        <div className="flex items-center gap-4">
-          <a className="hover:text-white" href="mailto:info@solafidei.com">info@solafidei.com</a>
-          <Link className="hover:text-white" href="/privacy">Privacy</Link>
-          <Link className="hover:text-white" href="/terms">Terms</Link>
+
+        <div className="mt-16 flex flex-col gap-4 border-t border-border pt-8 text-xs text-muted md:flex-row md:items-center md:justify-between">
+          <div>© {new Date().getFullYear()} Solafidei. All rights reserved.</div>
+          <div className="flex items-center gap-6">
+            <a className="transition-colors hover:text-foreground" href="mailto:info@solafidei.com">
+              info@solafidei.com
+            </a>
+            <a className="transition-colors hover:text-foreground" href="#">
+              Privacy
+            </a>
+            <a className="transition-colors hover:text-foreground" href="#">
+              Terms
+            </a>
+          </div>
         </div>
       </div>
     </footer>
   );
 }
-
-

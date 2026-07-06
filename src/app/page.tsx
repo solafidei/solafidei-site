@@ -1,38 +1,32 @@
 "use client";
 import { Nav } from "./components/Nav";
 import { Hero } from "./components/Hero";
-import { LogosBar } from "./components/LogosBar";
 import { Services } from "./components/Services";
-import { CaseStudies } from "./components/CaseStudies";
-import { ExperienceWidgets } from "./components/ExperienceWidgets";
+import { Proof } from "./components/Proof";
 import { Process } from "./components/Process";
-import { Benefits } from "./components/Benefits";
-import { Testimonials } from "./components/Testimonials";
-import { Contact } from "./components/Contact";
+import { Talk } from "./components/Talk";
 import { Footer } from "./components/Footer";
-import { SplashScreen } from "./components/SplashScreen";
+import { ScrollToTop } from "./components/ScrollToTop";
+import StarField from "./components/StarField";
 
-// Solafidei — landing page inspired by Xtract's layout and IA
-// Reference: https://plum-words-798095.framer.app/
-
-// Shared animation variants moved to `components/animations.ts`
+// Solafidei — all-out experience site (beta rebuild).
+// Scenes: arrive → what we build → proof → how we work → talk to us.
+// Design intent: docs/intent/experience-rebuild.md
 
 export default function SolafideiLanding() {
   return (
     <main className="relative min-h-screen text-white selection:bg-cyan-500/20">
-      <SplashScreen durationMs={2800} />
+      {/* ambient star layer — only visible in the calm near-black stretches */}
+      <StarField />
       <div className="relative z-10">
         <Nav />
         <Hero />
-        <LogosBar />
         <Services />
-        <CaseStudies />
-        <ExperienceWidgets />
+        <Proof />
         <Process />
-        <Benefits />
-        <Testimonials />
-        <Contact />
+        <Talk />
         <Footer />
+        <ScrollToTop />
       </div>
     </main>
   );
