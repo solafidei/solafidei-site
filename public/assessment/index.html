@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IKM Practice Tests — Kandua Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --base:#1e1e2e; --mantle:#181825; --crust:#11111b;
+    --s0:#313244; --s1:#45475a; --s2:#585b70;
+    --text:#cdd6f4; --sub:#a6adc8; --overlay:#6c7086;
+    --mauve:#cba6f7; --blue:#89b4fa; --green:#a6e3a1; --red:#f38ba8;
+    --peach:#fab387; --yellow:#f9e2af; --teal:#94e2d5; --sky:#89dceb;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--base);color:var(--text);font-family:Montserrat,system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  code,.mono{font-family:'JetBrains Mono',monospace;font-size:.92em;background:var(--crust);padding:.08em .35em;border-radius:4px;color:var(--sky)}
+  .wrap{max-width:820px;margin:0 auto;padding:24px 18px 80px}
+  header.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px}
+  .brand{font-weight:800;font-size:1.15rem;letter-spacing:-.01em}
+  .brand span{color:var(--mauve)}
+  .tag{font-size:.78rem;color:var(--sub);background:var(--mantle);border:1px solid var(--s0);padding:4px 10px;border-radius:999px}
+  h1{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:6px}
+  .lead{color:var(--sub);font-size:.95rem;margin-bottom:22px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .card{background:var(--mantle);border:1px solid var(--s0);border-radius:14px;padding:18px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
+  .card:hover{border-color:var(--mauve);transform:translateY(-2px)}
+  .card .dot{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;margin-bottom:12px;color:var(--crust)}
+  .card h3{font-size:1.02rem;font-weight:700;margin-bottom:4px}
+  .card p{font-size:.8rem;color:var(--sub)}
+  .card .count{position:absolute;top:16px;right:16px;font-size:.75rem;color:var(--overlay);font-weight:600}
+  .hidden{display:none!important}
+  .qhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+  .qhead .sub{font-weight:700}
+  .bar{height:6px;background:var(--s0);border-radius:99px;overflow:hidden;margin-bottom:22px}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--mauve),var(--blue));transition:.3s}
+  .qmeta{font-size:.8rem;color:var(--sub);margin-bottom:6px;display:flex;gap:10px;align-items:center}
+  .pill{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:3px 8px;border-radius:6px}
+  .pill.multi{background:rgba(250,179,135,.16);color:var(--peach)}
+  .pill.single{background:rgba(137,180,250,.16);color:var(--blue)}
+  .qtext{font-size:1.12rem;font-weight:600;margin:4px 0 18px;line-height:1.45}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+  .opt{display:flex;gap:12px;align-items:flex-start;background:var(--mantle);border:1.5px solid var(--s0);border-radius:11px;padding:13px 15px;cursor:pointer;transition:.12s;font-size:.95rem}
+  .opt:hover{border-color:var(--s2)}
+  .opt .box{flex:none;width:20px;height:20px;border:2px solid var(--s2);border-radius:5px;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--crust)}
+  .opt.radio .box{border-radius:50%}
+  .opt.sel{border-color:var(--mauve)}
+  .opt.sel .box{background:var(--mauve);border-color:var(--mauve)}
+  .opt.correct{border-color:var(--green);background:rgba(166,227,161,.08)}
+  .opt.correct .box{background:var(--green);border-color:var(--green)}
+  .opt.wrong{border-color:var(--red);background:rgba(243,139,168,.08)}
+  .opt.wrong .box{background:var(--red);border-color:var(--red)}
+  .opt.locked{cursor:default;pointer-events:none}
+  .exp{background:var(--crust);border-left:3px solid var(--blue);border-radius:8px;padding:12px 15px;font-size:.88rem;color:var(--sub);margin-bottom:20px}
+  .exp b{color:var(--text)}
+  .row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  button{font-family:inherit;font-weight:600;border:none;border-radius:10px;padding:12px 22px;cursor:pointer;font-size:.92rem;transition:.15s}
+  .primary{background:var(--mauve);color:var(--crust)}
+  .primary:hover{filter:brightness(1.08)}
+  .primary:disabled{opacity:.4;cursor:not-allowed}
+  .ghost{background:transparent;color:var(--sub);border:1.5px solid var(--s0)}
+  .ghost:hover{border-color:var(--s2);color:var(--text)}
+  .score{text-align:center;padding:20px 0}
+  .score .big{font-size:3.4rem;font-weight:800;letter-spacing:-.03em}
+  .score .band{font-weight:700;font-size:1.1rem;margin-top:2px}
+  .score .sub{color:var(--sub);font-size:.9rem;margin-top:6px}
+  .rev{margin-top:26px;display:flex;flex-direction:column;gap:10px}
+  .rev .item{background:var(--mantle);border:1px solid var(--s0);border-radius:10px;padding:12px 14px;font-size:.86rem}
+  .rev .item .qn{font-weight:600;margin-bottom:4px}
+  .rev .item .mark{font-weight:700}
+  .ok{color:var(--green)} .no{color:var(--red)}
+  footer{margin-top:40px;color:var(--overlay);font-size:.75rem;text-align:center}
+  @media(max-width:520px){.wrap{padding:18px 14px 70px}.qtext{font-size:1.04rem}.score .big{font-size:2.8rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">IKM <span>Practice</span> · Kandua Engineer</div>
+    <div class="tag" id="modeTag">7 subjects · 50 questions each</div>
+  </header>
+
+  <!-- HOME -->
+  <section id="home">
+    <h1>Pick a subject to drill</h1>
+    <p class="lead">Practice questions that mirror IKM's style — single-answer and select-all-that-apply. Answers lock on submit (no back-nav, like the real thing), with an explanation after each. These are practice items I wrote, not the actual IKM questions.</p>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="qhead">
+      <div class="sub" id="qSubject"></div>
+      <button class="ghost" id="quitBtn">Exit</button>
+    </div>
+    <div class="bar"><i id="progBar"></i></div>
+    <div class="qmeta">
+      <span id="qCount"></span>
+      <span class="pill" id="qType"></span>
+    </div>
+    <div class="qtext" id="qText"></div>
+    <div class="opts" id="qOpts"></div>
+    <div class="exp hidden" id="qExp"></div>
+    <div class="row">
+      <span id="scoreLive" style="color:var(--sub);font-size:.85rem"></span>
+      <div style="display:flex;gap:10px">
+        <button class="primary" id="submitBtn" disabled>Submit</button>
+        <button class="primary hidden" id="nextBtn">Next</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="hidden">
+    <div class="score">
+      <div class="big" id="rPct"></div>
+      <div class="band" id="rBand"></div>
+      <div class="sub" id="rSub"></div>
+    </div>
+    <div class="row" style="justify-content:center;gap:10px">
+      <button class="primary" id="retryBtn">Retake</button>
+      <button class="ghost" id="homeBtn">All subjects</button>
+    </div>
+    <div class="rev" id="review"></div>
+  </section>
+
+  <footer>Study aid for IKM prep · practice questions only, not the live assessment · built for Solomon / Solafidei</footer>
+</div>
+
+<script>
+const META = {
+  react:{name:"React.js",color:"#61dafb",blurb:"Hooks, rendering, R18"},
+  node:{name:"Node.js",color:"#a6e3a1",blurb:"Event loop, streams, modules"},
+  api:{name:"Web APIs & Microservices",color:"#89b4fa",blurb:"REST, HTTP, patterns"},
+  devops:{name:"DevOps with Tools",color:"#fab387",blurb:"Docker, K8s, CI/CD, IaC"},
+  gcp:{name:"Google Cloud Platform",color:"#f9e2af",blurb:"Compute, data, IAM"},
+  data:{name:"Data Management",color:"#f38ba8",blurb:"SQL, normalization, warehousing"},
+  ai:{name:"AI-Augmented Programming",color:"#cba6f7",blurb:"LLMs, RAG, agents, risks"}
+};
+
+const QUIZ = {
+"react":[
+{q:`Which statement about the Rules of Hooks is correct?`,o:[`Hooks may be called inside loops if the count is constant`,`Hooks must be called at the top level of a component or custom hook`,`Hooks can be called from any regular JavaScript function`,`Hooks may be called conditionally as long as the condition is stable`],a:[1],e:`Hooks must run in the same order every render, so they must be called at the top level — never in loops, conditions, or nested functions, and only from components or custom hooks.`},
+{q:`What does the dependency array of <code>useEffect</code> control?`,o:[`The order effects run in`,`When the effect re-runs — it re-runs when a listed value changes`,`Whether the effect is memoized`,`The cleanup timing only`],a:[1],e:`The effect re-runs after render whenever a value in the dependency array changes; <code>[]</code> runs it once on mount.`},
+{q:`A <code>useEffect</code> with no dependency array will:`,o:[`Run once on mount`,`Never run`,`Run after every render`,`Run only on unmount`],a:[2],e:`Omitting the array entirely runs the effect after every render — a common cause of performance issues and loops.`},
+{q:`What is returned from a useEffect callback used for?`,o:[`The next state value`,`A cleanup function run before re-run and on unmount`,`The list of dependencies`,`A memoized value`],a:[1],e:`Returning a function registers cleanup, which runs before the effect re-runs and when the component unmounts.`},
+{q:`Select all that apply: which cause an infinite re-render loop.`,o:[`Setting state unconditionally in the render body`,`Passing a new object literal as a useEffect dependency each render`,`Using an empty dependency array`,`Calling setState inside an event handler`],a:[0,1],m:true,e:`Setting state during render loops immediately; a fresh object/array reference each render makes useEffect see a "changed" dep every time. Empty deps and handler updates are fine.`},
+{q:`<code>useMemo</code> vs <code>useCallback</code>: which is true?`,o:[`useMemo memoizes a function, useCallback a value`,`useMemo memoizes a computed value, useCallback memoizes a function reference`,`They are identical`,`Both memoize only primitives`],a:[1],e:`<code>useMemo(fn,deps)</code> caches the return value; <code>useCallback(fn,deps)</code> caches the function itself (equivalent to useMemo returning fn).`},
+{q:`What is the main purpose of <code>useRef</code>?`,o:[`Trigger a re-render when its value changes`,`Hold a mutable value that persists across renders without causing re-renders`,`Replace useState entirely`,`Memoize expensive calculations`],a:[1],e:`useRef gives a stable <code>.current</code> box that persists between renders and does not trigger a re-render when mutated; also used for DOM references.`},
+{q:`Why prefer <code>setCount(c => c + 1)</code> over <code>setCount(count + 1)</code>?`,o:[`It is faster`,`It avoids stale state when updates are batched or async`,`It skips re-rendering`,`It is required by React 18`],a:[1],e:`The functional updater receives the latest state, avoiding stale-closure bugs when multiple updates batch together.`},
+{q:`In React, keys in a list should be:`,o:[`The array index`,`Stable, unique identifiers tied to the data`,`Randomly generated each render`,`Always numeric`],a:[1],e:`Keys must be stable and unique per item; using the array index breaks identity when the list reorders or items are inserted/removed.`},
+{q:`Error boundaries in React can be implemented with:`,o:[`Any function component using useEffect`,`Only class components implementing componentDidCatch / getDerivedStateFromError`,`The useError hook`,`Try/catch in JSX`],a:[1],e:`There is no hook equivalent yet — error boundaries must be class components using getDerivedStateFromError and/or componentDidCatch.`},
+{q:`What does <code>React.memo</code> do?`,o:[`Memoizes a value inside a component`,`Skips re-rendering a component when its props are shallow-equal`,`Caches API responses`,`Prevents state updates`],a:[1],e:`React.memo is a HOC that bails out of re-rendering when props haven't changed by shallow comparison.`},
+{q:`A controlled input in React is one whose value is:`,o:[`Managed by the DOM`,`Driven by React state via value + onChange`,`Set only once on mount`,`Read through a ref`],a:[1],e:`Controlled components have their value bound to state and updated through onChange; uncontrolled components rely on the DOM and are read via refs.`},
+{q:`What does React's reconciliation / virtual DOM do?`,o:[`Renders directly to the real DOM every time`,`Diffs the new element tree against the previous one to apply minimal DOM updates`,`Caches network requests`,`Runs effects synchronously`],a:[1],e:`React builds a virtual tree, diffs it against the prior one, and commits only the necessary real-DOM changes.`},
+{q:`Select all that apply: valid uses of <code>useContext</code>.`,o:[`Avoiding prop drilling`,`Sharing theme or auth state broadly`,`Guaranteeing zero re-renders of consumers`,`Providing values down a subtree`],a:[0,1,3],m:true,e:`Context avoids prop drilling and shares values down a subtree, but every consumer re-renders when the context value changes — it does not prevent re-renders.`},
+{q:`What triggers a re-render of a component consuming a context?`,o:[`Any state change anywhere`,`A change to the context provider's value`,`Only prop changes`,`Only a forced update`],a:[1],e:`Consumers re-render whenever the provider's value changes (by reference), which is why memoizing context values matters.`},
+{q:`<code>lazy</code> and <code>Suspense</code> are used for:`,o:[`Global state management`,`Code-splitting and showing a fallback while a component loads`,`Error handling`,`Form validation`],a:[1],e:`React.lazy defers loading a component; Suspense renders a fallback until it resolves.`},
+{q:`What does a React Portal do?`,o:[`Renders children into a DOM node outside the parent hierarchy`,`Creates a new React root`,`Lazy-loads a route`,`Shares state between trees`],a:[0],e:`createPortal renders children into a different DOM node (e.g. document.body) while keeping them in the React tree for events/context.`},
+{q:`Why use a React Fragment (<code>&lt;&gt;...&lt;/&gt;</code>)?`,o:[`To add a wrapper div`,`To return multiple elements without an extra DOM node`,`To memoize children`,`To create a portal`],a:[1],e:`Fragments group siblings without introducing an extra DOM element.`},
+{q:`What does StrictMode do in development?`,o:[`Enables production optimizations`,`Double-invokes renders and effects to surface side effects`,`Disables hooks`,`Enforces TypeScript`],a:[1],e:`StrictMode intentionally double-invokes certain functions in dev (not prod) to help catch impure renders and missing cleanup.`},
+{q:`Which is a React 18 concurrent feature?`,o:[`componentWillMount`,`useTransition`,`findDOMNode`,`PropTypes`],a:[1],e:`useTransition (and useDeferredValue) mark non-urgent updates so React can keep the UI responsive — part of concurrent rendering.`},
+{q:`Automatic batching in React 18 means:`,o:[`Effects run in batches`,`Multiple state updates in the same tick are grouped into one re-render, including in promises/timeouts`,`Components render in alphabetical order`,`Context updates are throttled`],a:[1],e:`React 18 batches state updates even inside promises, timeouts, and native handlers, not just React event handlers.`},
+{q:`Directly mutating state like <code>state.items.push(x)</code> is wrong because:`,o:[`It is slower`,`React relies on new references to detect changes; mutation may skip re-render`,`It throws an error`,`It disables hooks`],a:[1],e:`State must be treated as immutable — React compares references, so mutating in place can cause missed updates.`},
+{q:`What is a custom hook?`,o:[`A class method`,`A function starting with "use" that composes other hooks to share logic`,`A built-in React API`,`A context provider`],a:[1],e:`Custom hooks are functions named useX that call other hooks to encapsulate and reuse stateful logic.`},
+{q:`<code>useReducer</code> is preferable to useState when:`,o:[`State is a single boolean`,`State transitions are complex or the next state depends on the previous in structured ways`,`You never update state`,`You need refs`],a:[1],e:`useReducer centralizes complex state logic and multiple related sub-values into a reducer function.`},
+{q:`What are synthetic events in React?`,o:[`Native DOM events only`,`A cross-browser wrapper around native events`,`Events that never fire`,`Server-side events`],a:[1],e:`React wraps native events in SyntheticEvent for consistent cross-browser behavior and delegation.`},
+{q:`Select all that apply: valid ways to pass a DOM ref to a child.`,o:[`forwardRef`,`Passing ref as a normal prop named "ref" to a function component (pre-19)`,`useImperativeHandle to customize the exposed ref`,`Via context in all cases`],a:[0,2],m:true,e:`forwardRef lets a function component receive a ref; useImperativeHandle customizes what it exposes. A plain "ref" prop isn't forwarded automatically in function components (pre-React 19).`},
+{q:`What does the <code>children</code> prop represent?`,o:[`Child component state`,`Whatever JSX is nested between a component's tags`,`The parent component`,`The DOM tree`],a:[1],e:`children is the content passed between opening and closing tags of a component.`},
+{q:`Conditional rendering with <code>{cond &amp;&amp; &lt;X/&gt;}</code> has a subtle bug when cond is:`,o:[`true`,`the number 0 (renders "0")`,`a string`,`undefined`],a:[1],e:`0 is falsy but a valid React child, so <code>{0 && ...}</code> renders "0". Use a boolean check like <code>{count > 0 && ...}</code>.`},
+{q:`When does a parent re-render cause a child to re-render by default?`,o:[`Never`,`Always, unless the child is memoized`,`Only if props change`,`Only on context change`],a:[1],e:`By default a re-rendering parent re-renders its children; React.memo or structural changes are needed to skip it.`},
+{q:`What is the correct signature of a reducer?`,o:[`(action) => state`,`(state, action) => newState`,`(state) => action`,`() => state`],a:[1],e:`A reducer takes the current state and an action and returns the new state.`},
+{q:`Lifting state up means:`,o:[`Moving state into a ref`,`Moving shared state to the closest common ancestor of components that need it`,`Using global variables`,`Deleting state`],a:[1],e:`When siblings need the same state, you move it up to their common parent and pass it down.`},
+{q:`Which lifecycle pair replaced componentWillMount patterns in modern React?`,o:[`useMemo/useCallback`,`constructor + useEffect (or componentDidMount)`,`useRef/useContext`,`getSnapshotBeforeUpdate only`],a:[1],e:`Setup formerly in componentWillMount moves to the constructor or componentDidMount / useEffect.`},
+{q:`Select all that apply: true about <code>key</code> props.`,o:[`Changing a key forces React to remount the element`,`Keys are passed to the component as a prop`,`Keys help React match elements between renders`,`Keys must be globally unique across the whole app`],a:[0,2],m:true,e:`Keys guide reconciliation and changing one remounts the element. They are NOT accessible as a prop and only need to be unique among siblings.`},
+{q:`What does <code>useLayoutEffect</code> differ from <code>useEffect</code> in?`,o:[`It runs on the server`,`It fires synchronously after DOM mutations, before the browser paints`,`It never cleans up`,`It ignores dependencies`],a:[1],e:`useLayoutEffect runs synchronously after DOM writes but before paint — use for measurements to avoid flicker.`},
+{q:`A "stale closure" bug in hooks typically comes from:`,o:[`Using too many components`,`An effect or callback capturing an outdated variable due to missing dependencies`,`Rendering lists`,`Using fragments`],a:[1],e:`When a function closes over a value but the dependency array omits it, it keeps referencing the old value.`},
+{q:`What is prop drilling?`,o:[`A performance optimization`,`Passing props through many intermediate components that don't use them`,`A hook`,`A CSS technique`],a:[1],e:`Prop drilling is threading data through layers of components that only forward it — often a signal to use context or composition.`},
+{q:`Which is true about JSX?`,o:[`It is HTML`,`It compiles to React.createElement (or the automatic runtime) calls`,`It runs in the browser natively`,`It replaces JavaScript`],a:[1],e:`JSX is syntactic sugar compiled to createElement/jsx() calls; it is not HTML and needs a transform.`},
+{q:`Why must you not call setState in the render body unconditionally?`,o:[`It is deprecated`,`It causes an infinite render loop`,`It disables hooks`,`It mutates props`],a:[1],e:`Each setState triggers a re-render, which runs render again, which calls setState again — an infinite loop.`},
+{q:`What does <code>useDeferredValue</code> help with?`,o:[`Deferring a value so urgent updates (like typing) stay responsive`,`Delaying all renders`,`Caching network data`,`Server rendering`],a:[0],e:`useDeferredValue lets you show a lagging copy of a value so heavy re-renders don't block urgent input.`},
+{q:`Select all that apply: characteristics of React Server Components.`,o:[`They run on the server and can access server resources directly`,`Their code isn't shipped to the client bundle`,`They can use useState and browser APIs`,`They can reduce client bundle size`],a:[0,1,3],m:true,e:`RSCs run on the server, keep their code off the client, and cut bundle size — but they can't use client-only hooks like useState or browser APIs.`},
+{q:`Uncontrolled components read their value via:`,o:[`state`,`a ref to the DOM node`,`context`,`props`],a:[1],e:`Uncontrolled inputs keep their value in the DOM; you read it with a ref (e.g. inputRef.current.value).`},
+{q:`What happens if you forget the dependency array entirely in useMemo?`,o:[`It memoizes forever`,`It recomputes every render, defeating the purpose`,`It throws`,`It caches once`],a:[1],e:`Without deps, useMemo recomputes on every render, so it provides no memoization benefit.`},
+{q:`The correct way to render a list is:`,o:[`items.forEach(i => <X/>)`,`items.map(i => <X key={i.id}/>)`,`for loop returning JSX`,`items.reduce`],a:[1],e:`map returns an array of elements (each with a stable key); forEach returns undefined.`},
+{q:`Which is a valid reason a component doesn't update after setState?`,o:[`State was mutated in place instead of replaced`,`React is broken`,`Hooks are disabled`,`JSX is invalid`],a:[0],e:`Mutating the existing object/array keeps the same reference, so React may not detect a change.`},
+{q:`What does <code>flushSync</code> do (React 18)?`,o:[`Batches more updates`,`Forces a state update to apply synchronously, opting out of batching`,`Clears the cache`,`Runs effects later`],a:[1],e:`flushSync forces React to flush updates synchronously — used rarely when you need the DOM updated immediately.`},
+{q:`A ref callback (<code>ref={node => ...}</code>) is called:`,o:[`Once ever`,`With the node on mount and null on unmount`,`Only on click`,`Never`],a:[1],e:`Callback refs receive the DOM node when attached and null when detached.`},
+{q:`Select all that apply: legitimate reasons to memoize a value passed via context.`,o:[`To avoid re-creating the object every render`,`To prevent all consumers from re-rendering needlessly`,`Because context values must be primitives`,`To keep the value's reference stable`],a:[0,1,3],m:true,e:`A fresh object each render changes the context reference and re-renders all consumers; memoizing keeps the reference stable. Context values need not be primitives.`},
+{q:`What is the difference between an element and a component?`,o:[`They are the same`,`A component is a function/class; an element is the object it returns describing UI`,`Elements are mutable`,`Components render HTML strings`],a:[1],e:`A component is a blueprint (function/class); an element is a lightweight immutable description of what to render.`},
+{q:`When rendering conditionally, returning <code>null</code> from a component:`,o:[`Throws an error`,`Renders nothing`,`Renders "null" text`,`Unmounts the parent`],a:[1],e:`Returning null renders nothing while keeping the component mounted.`},
+{q:`The <code>dangerouslySetInnerHTML</code> prop exists to:`,o:[`Improve performance`,`Inject raw HTML, with XSS risk if unsanitized`,`Set component state`,`Enable SSR`],a:[1],e:`It sets raw HTML directly; the name warns about XSS if the content isn't sanitized.`}
+],
+"node":[
+{q:`Node.js executes JavaScript on:`,o:[`Multiple threads by default`,`A single main thread, with a libuv thread pool for some I/O`,`One thread per request`,`The GPU`],a:[1],e:`Node runs your JS on one main thread; libuv provides a thread pool used for certain operations (fs, crypto, DNS) under the hood.`},
+{q:`Which best describes Node's I/O model?`,o:[`Blocking and synchronous`,`Non-blocking and event-driven`,`Multi-process only`,`Polling every millisecond`],a:[1],e:`Node uses non-blocking, event-driven I/O so a single thread can handle many concurrent connections.`},
+{q:`Which runs first?`,o:[`setTimeout(fn,0)`,`process.nextTick(fn)`,`setImmediate(fn)`,`They are equal`],a:[1],e:`process.nextTick callbacks run before Promise microtasks and before any timer/immediate phase — earliest of the group.`},
+{q:`In an ordinary script, which typically wins?`,o:[`Promise.then before process.nextTick`,`process.nextTick before Promise.then`,`They never both run`,`setImmediate before both`],a:[1],e:`The nextTick queue drains before the Promise microtask queue.`},
+{q:`Excessive <code>process.nextTick</code> recursion can cause:`,o:[`Faster I/O`,`Starvation of the event loop (I/O never gets to run)`,`Memory leaks only`,`A syntax error`],a:[1],e:`Because nextTick callbacks run before the loop continues, recursive scheduling can starve I/O.`},
+{q:`Select all that apply: phases of the libuv event loop.`,o:[`Timers`,`Poll`,`Check`,`Render`],a:[0,1,2],m:true,e:`Phases include timers, pending callbacks, poll, check (setImmediate), and close. "Render" is a browser concept, not Node.`},
+{q:`Inside an I/O callback, which fires first?`,o:[`setTimeout(fn,0)`,`setImmediate(fn)`,`Always setTimeout`,`Undefined behavior`],a:[1],e:`Within an I/O callback, setImmediate (check phase) runs before timers on the next iteration.`},
+{q:`A CommonJS module exports via:`,o:[`export default`,`module.exports / exports`,`window.exports`,`return`],a:[1],e:`CommonJS uses module.exports (and the exports alias); ESM uses export/export default.`},
+{q:`In ES modules, which is NOT available?`,o:[`import.meta.url`,`__dirname and __filename`,`top-level await`,`import statements`],a:[1],e:`ESM has no __dirname/__filename; derive paths from import.meta.url instead.`},
+{q:`Node caches a required module so that:`,o:[`It reloads on every require`,`Subsequent require calls return the same cached exports`,`It never runs the module code`,`It duplicates state`],a:[1],e:`Module code runs once; later requires return the cached exports object (a form of singleton).`},
+{q:`Select all that apply: Node stream types.`,o:[`Readable`,`Writable`,`Transform`,`Immutable`],a:[0,1,2],m:true,e:`The four stream types are Readable, Writable, Duplex, and Transform. "Immutable" is not a stream type.`},
+{q:`<code>.pipe()</code> between streams automatically handles:`,o:[`Encryption`,`Backpressure`,`Compression`,`Authentication`],a:[1],e:`pipe manages backpressure, pausing the source when the destination can't keep up.`},
+{q:`Backpressure occurs when:`,o:[`A readable produces faster than a writable can consume`,`The CPU is idle`,`Too many modules load`,`A promise rejects`],a:[0],e:`Backpressure is the mechanism to slow a fast producer so a slower consumer isn't overwhelmed.`},
+{q:`A <code>Buffer</code> in Node represents:`,o:[`A stream`,`A fixed-length sequence of raw bytes`,`A promise`,`An event`],a:[1],e:`Buffer handles binary data as raw bytes, useful for files, network, and crypto.`},
+{q:`EventEmitter is used to:`,o:[`Parse JSON`,`Register and emit named events with listeners`,`Manage the event loop`,`Create streams only`],a:[1],e:`EventEmitter provides .on() to subscribe and .emit() to fire named events; many core objects extend it.`},
+{q:`The classic Node error-first callback signature is:`,o:[`(data, err)`,`(err, data)`,`(result)`,`(err) only`],a:[1],e:`Convention is (err, data) — check err first, then use data.`},
+{q:`Select all that apply: differences between <code>cluster</code> and <code>worker_threads</code>.`,o:[`cluster forks separate processes`,`worker_threads share memory via SharedArrayBuffer`,`worker_threads are better for CPU-bound work`,`cluster shares a single V8 heap across workers`],a:[0,1,2],m:true,e:`cluster forks processes (no shared heap) to use multiple cores for I/O; worker_threads run true threads that can share memory and suit CPU-bound tasks.`},
+{q:`To scale a CPU-bound computation, prefer:`,o:[`process.nextTick`,`worker_threads`,`setTimeout`,`A bigger Buffer`],a:[1],e:`Offload CPU-heavy work to worker_threads so the main event loop stays responsive.`},
+{q:`Blocking the event loop with a long synchronous loop causes:`,o:[`Faster responses`,`All other requests to stall until it finishes`,`Automatic threading`,`A memory leak`],a:[1],e:`Synchronous CPU work blocks the single thread, delaying every pending callback.`},
+{q:`<code>process.env</code> holds:`,o:[`Command-line arguments`,`Environment variables`,`The module cache`,`Stack traces`],a:[1],e:`process.env exposes environment variables; process.argv holds CLI args.`},
+{q:`In Express, error-handling middleware is identified by:`,o:[`Its name`,`Having four arguments (err, req, res, next)`,`A special decorator`,`Returning false`],a:[1],e:`Express recognizes error middleware by its arity of four: (err, req, res, next).`},
+{q:`Express middleware executes:`,o:[`In random order`,`In the order it is registered, calling next() to continue`,`Only after the response`,`In parallel`],a:[1],e:`Middleware runs sequentially in registration order; each calls next() to pass control.`},
+{q:`<code>npx</code> differs from <code>npm</code> in that it:`,o:[`Installs globally always`,`Runs a package binary without a permanent global install`,`Publishes packages`,`Removes node_modules`],a:[1],e:`npx executes a package's binary (fetching temporarily if needed) instead of installing it globally.`},
+{q:`Select all that apply: true about unhandled errors.`,o:[`'uncaughtException' catches synchronous errors that bubble up`,`'unhandledRejection' fires for promises rejected with no catch`,`After uncaughtException the process is guaranteed safe to continue`,`Async errors in callbacks won't be caught by a surrounding try/catch`],a:[0,1,3],m:true,e:`uncaughtException and unhandledRejection are last-resort hooks, and try/catch can't catch errors thrown in later async callbacks. After uncaughtException the state is undefined — you should log and exit.`},
+{q:`Which core module handles file system access?`,o:[`http`,`fs`,`path`,`os`],a:[1],e:`The fs module reads/writes files; path manipulates paths; os gives system info.`},
+{q:`<code>path.join</code> is preferred over string concatenation because:`,o:[`It's faster`,`It normalizes separators across platforms`,`It caches paths`,`It validates permissions`],a:[1],e:`path.join builds cross-platform paths, handling separators and redundant segments.`},
+{q:`The <code>crypto</code> module provides:`,o:[`Only random numbers`,`Hashing, HMAC, ciphers, and key generation`,`JSON parsing`,`HTTP requests`],a:[1],e:`crypto offers hashing (createHash), HMAC, encryption/decryption, and key operations.`},
+{q:`<code>__dirname</code> in CommonJS refers to:`,o:[`The current working directory`,`The directory of the current module file`,`The project root`,`The entry file`],a:[1],e:`__dirname is the directory containing the current module, regardless of where node was launched.`},
+{q:`<code>process.cwd()</code> returns:`,o:[`The module directory`,`The current working directory of the process`,`The Node install path`,`The home directory`],a:[1],e:`cwd() is where the process was started, which may differ from __dirname.`},
+{q:`Select all that apply: ways to read a large file efficiently.`,o:[`fs.readFileSync into memory`,`Streaming with fs.createReadStream`,`Piping the read stream to a writable`,`Reading it byte by byte synchronously in a loop`],a:[1,2],m:true,e:`Streaming and piping process the file in chunks with backpressure; readFileSync loads it all into memory and blocking byte-by-byte reads are slow.`},
+{q:`An <code>async function</code> always returns:`,o:[`undefined`,`A Promise`,`A Buffer`,`A callback`],a:[1],e:`async functions wrap their return value in a resolved (or rejected) Promise.`},
+{q:`To handle rejection in <code>await</code> code, use:`,o:[`.then only`,`try/catch around the await`,`process.exit`,`A Buffer`],a:[1],e:`try/catch around await captures rejected promises just like synchronous throws.`},
+{q:`<code>Promise.all</code> rejects when:`,o:[`All promises reject`,`Any single promise rejects`,`Never`,`The first resolves`],a:[1],e:`Promise.all rejects immediately if any input rejects; use Promise.allSettled to wait for all outcomes.`},
+{q:`Which waits for all results regardless of failures?`,o:[`Promise.all`,`Promise.allSettled`,`Promise.race`,`Promise.any`],a:[1],e:`allSettled resolves after every promise settles, giving each status/value or reason.`},
+{q:`<code>Promise.race</code> settles when:`,o:[`All settle`,`The first promise settles (resolve or reject)`,`Only on resolve`,`Never`],a:[1],e:`race adopts the outcome of whichever promise settles first, success or failure.`},
+{q:`The <code>global</code> object in Node is analogous to:`,o:[`document in browsers`,`window in browsers`,`localStorage`,`the DOM`],a:[1],e:`globalThis/global in Node plays the role window plays in browsers.`},
+{q:`Which is a global available without require?`,o:[`fs`,`process`,`http`,`crypto`],a:[1],e:`process (and console, Buffer, setTimeout, __dirname in CJS) are available globally; fs/http/crypto must be required.`},
+{q:`Select all that apply: valid package.json fields.`,o:[`main`,`type`,`scripts`,`middleware`],a:[0,1,2],m:true,e:`main (entry), type (module/commonjs), and scripts are standard; "middleware" is not a package.json field.`},
+{q:`Setting <code>"type":"module"</code> in package.json makes .js files:`,o:[`CommonJS`,`ES modules by default`,`TypeScript`,`Ignored`],a:[1],e:`It flips the default so .js is treated as ESM; use .cjs for CommonJS then.`},
+{q:`<code>require()</code> is:`,o:[`Asynchronous`,`Synchronous`,`A promise`,`Streamed`],a:[1],e:`CommonJS require loads modules synchronously; ESM import is asynchronous under the hood.`},
+{q:`The best place for secrets/config is:`,o:[`Hard-coded in source`,`Environment variables (process.env), often via a .env not committed`,`In the README`,`In a Buffer`],a:[1],e:`Keep secrets in environment variables outside source control.`},
+{q:`<code>Buffer.from('text')</code> defaults to which encoding?`,o:[`hex`,`utf-8`,`base64`,`ascii only`],a:[1],e:`Buffer.from defaults to UTF-8 when given a string.`},
+{q:`A memory leak in a long-running Node process often comes from:`,o:[`Using const`,`Unbounded growth of arrays/maps or unremoved event listeners`,`Async/await`,`Streaming`],a:[1],e:`Accumulating references (caches, listeners) that are never released grows the heap over time.`},
+{q:`Select all that apply: idiomatic ways to run async work concurrently.`,o:[`Await each call sequentially in a loop`,`Promise.all over an array of promises`,`Kick off promises then await them together`,`Use worker_threads for CPU-bound parallelism`],a:[1,2,3],m:true,e:`Promise.all and starting promises before awaiting run I/O concurrently; worker_threads add real parallelism for CPU work. Awaiting sequentially serializes them.`},
+{q:`<code>server.listen(3000)</code> does what?`,o:[`Sends a request`,`Binds the HTTP server to a port to accept connections`,`Closes the server`,`Parses the body`],a:[1],e:`listen binds and starts accepting connections on the given port/host.`},
+{q:`Streams operate in two modes:`,o:[`Sync and async`,`Flowing and paused`,`Open and closed`,`Hot and cold`],a:[1],e:`Readable streams are in flowing (data pushed via events) or paused (pulled via read()) mode.`},
+{q:`<code>fs.promises</code> vs callback fs:`,o:[`No difference`,`Promise-based API for async/await instead of callbacks`,`Synchronous only`,`Browser only`],a:[1],e:`fs.promises exposes the same operations returning promises for use with async/await.`},
+{q:`Which exit code convention signals success?`,o:[`1`,`0`,`-1`,`255`],a:[1],e:`process.exit(0) means success; non-zero indicates an error.`},
+{q:`The Node module system wraps each file in a function providing:`,o:[`window, document`,`exports, require, module, __filename, __dirname`,`fetch`,`nothing`],a:[1],e:`Each CommonJS module is wrapped so those five variables are in scope.`},
+{q:`Select all that apply: reasons to use streams over buffering whole payloads.`,o:[`Lower memory footprint`,`Start processing before the whole input arrives`,`Automatic backpressure`,`Guaranteed encryption`],a:[0,1,2],m:true,e:`Streams reduce memory use, allow incremental processing, and manage backpressure. They don't provide encryption by themselves.`}
+],
+"api":[
+{q:`Select all that apply: which HTTP methods are idempotent?`,o:[`GET`,`PUT`,`DELETE`,`POST`],a:[0,1,2],m:true,e:`GET, PUT, DELETE (and HEAD/OPTIONS) are idempotent — repeating them yields the same result. POST is not.`},
+{q:`Which HTTP methods are considered "safe" (no side effects)?`,o:[`POST and PUT`,`GET, HEAD, OPTIONS`,`DELETE`,`PATCH`],a:[1],e:`Safe methods don't modify server state: GET, HEAD, OPTIONS.`},
+{q:`PUT vs PATCH:`,o:[`PUT partially updates, PATCH replaces`,`PUT replaces the whole resource, PATCH applies a partial update`,`They are identical`,`PATCH is idempotent, PUT is not`],a:[1],e:`PUT is a full replacement (idempotent); PATCH is a partial modification (not necessarily idempotent).`},
+{q:`Which status code means the request succeeded and created a resource?`,o:[`200`,`201`,`204`,`302`],a:[1],e:`201 Created is returned when a new resource is created, often with a Location header.`},
+{q:`204 No Content means:`,o:[`Resource not found`,`Success with no response body`,`Server error`,`Redirect`],a:[1],e:`204 indicates success but there's nothing to return in the body (e.g. after a DELETE).`},
+{q:`The difference between 401 and 403 is:`,o:[`401 = forbidden, 403 = unauthenticated`,`401 = not authenticated, 403 = authenticated but not permitted`,`They are the same`,`403 means server error`],a:[1],e:`401 means "who are you?" (authenticate); 403 means "I know who you are, but you can't."`},
+{q:`Which code indicates the client sent too many requests?`,o:[`409`,`429`,`422`,`503`],a:[1],e:`429 Too Many Requests is used for rate limiting.`},
+{q:`Select all that apply: 5xx status codes.`,o:[`500 Internal Server Error`,`502 Bad Gateway`,`404 Not Found`,`503 Service Unavailable`],a:[0,1,3],m:true,e:`500/502/503/504 are server errors; 404 is a client (4xx) error.`},
+{q:`301 vs 302 redirects:`,o:[`301 temporary, 302 permanent`,`301 permanent, 302 found/temporary`,`Both permanent`,`Both change the method`],a:[1],e:`301 is a permanent move (cacheable); 302 is a temporary redirect.`},
+{q:`Which redirect status preserves the HTTP method?`,o:[`301/302`,`307/308`,`303`,`300`],a:[1],e:`307 (temporary) and 308 (permanent) preserve the original method and body; 301/302 historically could switch to GET.`},
+{q:`409 Conflict typically indicates:`,o:[`A missing resource`,`A request conflicting with current state (e.g. duplicate, version clash)`,`Authentication failure`,`Rate limiting`],a:[1],e:`409 signals the request conflicts with the resource's current state.`},
+{q:`An ETag combined with If-None-Match enables:`,o:[`Compression`,`Conditional requests returning 304 Not Modified when unchanged`,`Authentication`,`Load balancing`],a:[1],e:`ETags let the client validate its cache; unchanged resources return 304 with no body.`},
+{q:`What does statelessness in REST mean?`,o:[`The server stores session per client`,`Each request contains all information needed; the server keeps no client session state`,`Clients cannot cache`,`No cookies allowed`],a:[1],e:`Each request is self-contained; the server doesn't rely on stored client context between requests.`},
+{q:`HATEOAS refers to:`,o:[`A caching strategy`,`Responses containing links guiding the client to next actions`,`A security protocol`,`A database pattern`],a:[1],e:`Hypermedia As The Engine Of Application State — responses include links to related actions/resources.`},
+{q:`GraphQL's main advantage over REST is:`,o:[`It is always faster`,`Clients request exactly the fields they need, avoiding over/under-fetching`,`It requires no schema`,`It removes the need for a server`],a:[1],e:`GraphQL lets clients specify the shape of the response from a single endpoint.`},
+{q:`gRPC typically uses:`,o:[`JSON over HTTP/1.1`,`Protocol Buffers over HTTP/2`,`XML over SMTP`,`GraphQL`],a:[1],e:`gRPC uses binary protobuf messages over HTTP/2, supporting streaming and strong contracts.`},
+{q:`An API Gateway in microservices provides:`,o:[`A database`,`A single entry point handling routing, auth, and rate limiting`,`Container orchestration`,`Source control`],a:[1],e:`The gateway fronts services, centralizing cross-cutting concerns like routing, auth, and throttling.`},
+{q:`The Circuit Breaker pattern:`,o:[`Retries forever`,`Stops calling a failing service temporarily to prevent cascading failures`,`Encrypts traffic`,`Balances load`],a:[1],e:`It "opens" after failures to fail fast and give the downstream service time to recover.`},
+{q:`The Saga pattern manages:`,o:[`Caching`,`Distributed transactions via a sequence of local transactions with compensating actions`,`Authentication`,`Logging`],a:[1],e:`Sagas coordinate a multi-service transaction using compensating actions to roll back on failure, since 2PC doesn't scale.`},
+{q:`CQRS stands for and does:`,o:[`A caching protocol`,`Command Query Responsibility Segregation — separate read and write models`,`A queue system`,`A security standard`],a:[1],e:`CQRS splits the write (command) model from the read (query) model, often optimized independently.`},
+{q:`Event Sourcing stores:`,o:[`Only current state`,`The full sequence of events, deriving state by replay`,`Nothing`,`Just logs`],a:[1],e:`Instead of persisting current state, event sourcing records every state-changing event as the source of truth.`},
+{q:`Select all that apply: benefits of async messaging (queues) between services.`,o:[`Decoupling producers from consumers`,`Buffering load spikes`,`Improved fault tolerance if a consumer is down`,`Guaranteed synchronous responses`],a:[0,1,2],m:true,e:`Message queues decouple, buffer, and add resilience — but they're inherently asynchronous, not synchronous request/response.`},
+{q:`The CAP theorem states that during a network partition you must choose between:`,o:[`Cost and Performance`,`Consistency and Availability`,`Caching and Persistence`,`Concurrency and Parallelism`],a:[1],e:`Under a partition (P), a distributed system trades off Consistency vs Availability.`},
+{q:`"At-least-once" delivery requires consumers to be:`,o:[`Stateless`,`Idempotent, because messages may be delivered more than once`,`Synchronous`,`Encrypted`],a:[1],e:`Duplicates are possible, so consumers must handle repeats safely — often via idempotency keys.`},
+{q:`An idempotency key is used to:`,o:[`Encrypt payloads`,`Ensure a repeated request (e.g. retried payment) isn't processed twice`,`Compress data`,`Rate limit`],a:[1],e:`The server records the key so a retried request produces the same single effect.`},
+{q:`A JWT is structured as:`,o:[`A single encrypted blob`,`header.payload.signature, base64url-encoded`,`XML`,`A cookie only`],a:[1],e:`JWTs have three dot-separated base64url parts: header, payload (claims), and signature.`},
+{q:`True about JWT payloads:`,o:[`They are encrypted and safe for secrets`,`They are only base64-encoded and readable by anyone with the token`,`They cannot be tampered with even without a signature`,`They store server sessions`],a:[1],e:`The payload is encoded, not encrypted — never put secrets in it. The signature only verifies integrity.`},
+{q:`OAuth2 vs OIDC:`,o:[`OIDC is authorization, OAuth2 is authentication`,`OAuth2 handles authorization; OIDC adds an identity/authentication layer on top`,`They are unrelated`,`OIDC replaces OAuth2`],a:[1],e:`OAuth2 grants access (authorization); OpenID Connect layers authentication (who the user is) over it.`},
+{q:`Select all that apply: characteristics of a stateless JWT-based auth.`,o:[`No server-side session storage needed`,`Token carries claims`,`Easy immediate revocation of a single token`,`Scales horizontally without sticky sessions`],a:[0,1,3],m:true,e:`Stateless tokens avoid session storage and scale well, but immediate revocation is hard — you need denylists or short expiry.`},
+{q:`CORS is a mechanism that:`,o:[`Encrypts requests`,`Controls which origins a browser may call cross-origin`,`Load balances`,`Caches responses`],a:[1],e:`CORS uses response headers to tell browsers which cross-origin requests are permitted.`},
+{q:`Rate limiting protects an API by:`,o:[`Encrypting traffic`,`Capping requests per client/time window to prevent abuse/overload`,`Compressing data`,`Load balancing`],a:[1],e:`It restricts how many requests a client can make in a window, often returning 429 when exceeded.`},
+{q:`The Sidecar pattern (service mesh) means:`,o:[`One giant service`,`A helper process alongside each service handling cross-cutting concerns like mTLS, retries, telemetry`,`A database replica`,`A gateway`],a:[1],e:`A sidecar (e.g. Envoy) runs next to each service to handle networking concerns transparently.`},
+{q:`A bounded context (DDD) in microservices means:`,o:[`A shared database for all services`,`Each service owns a well-defined domain boundary and its data`,`No boundaries`,`A network subnet`],a:[1],e:`Services are organized around bounded contexts, each owning its model and data.`},
+{q:`The Strangler Fig pattern is used to:`,o:[`Delete a system instantly`,`Incrementally replace a legacy system by routing features to new services over time`,`Encrypt legacy data`,`Scale a database`],a:[1],e:`New functionality gradually takes over from the monolith until it can be retired.`},
+{q:`Distributed tracing helps by:`,o:[`Encrypting logs`,`Following a request across services via correlation/trace IDs`,`Rate limiting`,`Caching`],a:[1],e:`A trace ID propagated across services lets you reconstruct the full request path and latency.`},
+{q:`Select all that apply: 12-factor app principles.`,o:[`Store config in the environment`,`Treat backing services as attached resources`,`Keep processes stateless`,`Store session state in local memory`],a:[0,1,2],m:true,e:`12-factor favors env config, attached backing services, and stateless processes; storing state locally violates it.`},
+{q:`Eventual consistency means:`,o:[`Data is always immediately consistent`,`Replicas converge to the same state given no new updates, but may differ temporarily`,`Data is never consistent`,`Only one replica exists`],a:[1],e:`Given time and no new writes, all replicas eventually agree, though reads may be stale in between.`},
+{q:`Content negotiation uses which header for the desired format?`,o:[`Content-Type`,`Accept`,`Authorization`,`Host`],a:[1],e:`Clients send Accept to request a representation; servers respond with Content-Type.`},
+{q:`API versioning is commonly done via:`,o:[`Never versioning`,`URI path (/v1/) or headers`,`Changing the port only`,`Renaming the domain each release`],a:[1],e:`Common strategies are URI versioning (/v1/...) and header-based (Accept/custom) versioning.`},
+{q:`A 400 Bad Request indicates:`,o:[`Server crashed`,`The request was malformed or invalid`,`Authentication needed`,`Resource moved`],a:[1],e:`400 means the server can't process the request due to a client-side error (bad syntax/params).`},
+{q:`422 Unprocessable Entity is used when:`,o:[`Syntax is wrong`,`Syntax is fine but semantic validation fails`,`Rate limit hit`,`Server error`],a:[1],e:`422 signals the request is well-formed but semantically invalid (e.g. validation rules failed).`},
+{q:`Select all that apply: reasons to return 503 Service Unavailable.`,o:[`Server temporarily overloaded`,`Scheduled maintenance`,`Client sent bad JSON`,`Downstream dependency unavailable`],a:[0,1,3],m:true,e:`503 is temporary server-side unavailability (overload, maintenance, dependency down). Bad JSON is a 400.`},
+{q:`gRPC supports which streaming modes?`,o:[`None`,`Unary, server-streaming, client-streaming, bidirectional`,`Only unary`,`Only bidirectional`],a:[1],e:`gRPC supports four call types thanks to HTTP/2 multiplexing.`},
+{q:`Service discovery solves:`,o:[`Encryption`,`Locating dynamic service instances (IP/port) without hard-coding`,`Caching`,`Versioning`],a:[1],e:`As instances scale up/down, discovery (e.g. Consul, DNS, registry) lets callers find healthy endpoints.`},
+{q:`A 502 Bad Gateway usually means:`,o:[`The client is unauthorized`,`An upstream/proxy received an invalid response from another server`,`Rate limit`,`Resource created`],a:[1],e:`502 indicates a gateway/proxy got a bad response from the upstream server.`},
+{q:`The Bulkhead pattern:`,o:[`Merges all services`,`Isolates resources (e.g. thread pools) so one failure doesn't sink everything`,`Encrypts data`,`Caches responses`],a:[1],e:`Like ship compartments, it partitions resources so a failure is contained.`},
+{q:`REST resources should be identified by:`,o:[`Verbs in the URL (/getUser)`,`Nouns/resources (/users/123)`,`Random IDs only`,`Query strings only`],a:[1],e:`REST models resources as nouns; the HTTP method conveys the action.`},
+{q:`Select all that apply: valid API security measures.`,o:[`TLS/HTTPS`,`Input validation`,`Rate limiting`,`Putting API keys in the URL query string of every request`],a:[0,1,2],m:true,e:`TLS, validation, and rate limiting are sound. Keys in query strings leak via logs/history — use headers.`},
+{q:`Which best decouples a slow downstream call in a user-facing request?`,o:[`Blocking synchronously`,`Publishing to a queue and processing asynchronously`,`Retrying in a tight loop`,`Increasing the timeout only`],a:[1],e:`Offloading to async processing keeps the user request fast and resilient to downstream slowness.`},
+{q:`Which status code should a successful DELETE with no body return?`,o:[`200 with body`,`204 No Content`,`404`,`500`],a:[1],e:`204 is idiomatic for a successful action with nothing to return, though 200 with a body is also acceptable.`}
+],
+"devops":[
+{q:`Continuous Delivery vs Continuous Deployment:`,o:[`They are identical`,`Delivery keeps the app always releasable with a manual release gate; Deployment auto-releases to prod`,`Deployment requires manual approval, Delivery doesn't`,`Neither involves automation`],a:[1],e:`Continuous Delivery stops at a deployable artifact awaiting a manual trigger; Continuous Deployment pushes every passing change to production automatically.`},
+{q:`In Docker, an image vs a container is:`,o:[`Image is running, container is the template`,`Image is the immutable template; container is a running instance of it`,`They are the same`,`Container is stored in a registry`],a:[1],e:`An image is a read-only template; a container is a runnable instance created from it.`},
+{q:`CMD vs ENTRYPOINT in a Dockerfile:`,o:[`CMD sets the executable, ENTRYPOINT sets default args`,`ENTRYPOINT sets the executable; CMD supplies default args overridable at run`,`They are interchangeable`,`Only one can appear ever`],a:[1],e:`ENTRYPOINT defines the command to run; CMD provides default arguments that docker run can override.`},
+{q:`COPY vs ADD in a Dockerfile:`,o:[`ADD only copies local files`,`COPY copies local files; ADD also fetches URLs and auto-extracts tar archives`,`They are identical`,`COPY can extract archives`],a:[1],e:`Prefer COPY for plain copies; ADD has extra magic (remote URLs, tar extraction) that's usually unwanted.`},
+{q:`Why order Dockerfile instructions carefully?`,o:[`Aesthetics`,`Each instruction is a cached layer — put rarely-changing steps first to maximize cache hits`,`It changes the base image`,`It sets the entrypoint`],a:[1],e:`Layers are cached; changing an early layer invalidates all later ones, so put stable steps (deps) before volatile ones (source).`},
+{q:`A multi-stage build is used to:`,o:[`Run multiple containers`,`Build in one stage and copy only artifacts into a slim final image`,`Create multiple images per line`,`Skip caching`],a:[1],e:`Multi-stage builds keep build tools out of the final image, producing smaller, more secure images.`},
+{q:`Select all that apply: true about Docker volumes.`,o:[`They persist data beyond the container lifecycle`,`They can be shared between containers`,`Data in a container's writable layer is lost when the container is removed`,`Volumes are stored in the image`],a:[0,1,2],m:true,e:`Volumes persist and can be shared; the container's writable layer is ephemeral. Volumes are managed by Docker, not baked into images.`},
+{q:`docker-compose is used to:`,o:[`Build a single image`,`Define and run multi-container applications from a YAML file`,`Push to a registry`,`Orchestrate across many nodes in production`],a:[1],e:`Compose describes multi-container apps (services, networks, volumes) for local/dev; Kubernetes handles multi-node orchestration.`},
+{q:`The smallest deployable unit in Kubernetes is a:`,o:[`Container`,`Pod`,`Node`,`Service`],a:[1],e:`A Pod wraps one or more containers sharing network/storage; it's the smallest schedulable unit.`},
+{q:`A Kubernetes Deployment manages:`,o:[`A single pod only`,`ReplicaSets to maintain a desired number of pods and handle rolling updates`,`Cluster networking`,`Persistent storage`],a:[1],e:`A Deployment declaratively manages ReplicaSets, enabling scaling and rolling updates/rollbacks.`},
+{q:`Liveness vs Readiness probes:`,o:[`Liveness removes from load balancer; readiness restarts the pod`,`Liveness restarts an unhealthy container; readiness gates traffic until the pod is ready`,`They are identical`,`Both restart the pod`],a:[1],e:`A failing liveness probe restarts the container; a failing readiness probe removes the pod from service endpoints (no restart).`},
+{q:`Select all that apply: Kubernetes Service types.`,o:[`ClusterIP`,`NodePort`,`LoadBalancer`,`Ingress`],a:[0,1,2],m:true,e:`ClusterIP, NodePort, and LoadBalancer are Service types. Ingress is a separate resource for HTTP routing, not a Service type.`},
+{q:`ClusterIP service exposes a service:`,o:[`To the public internet`,`Only within the cluster (internal)`,`On every node's port`,`Via cloud LB`],a:[1],e:`ClusterIP is the default and only reachable inside the cluster.`},
+{q:`ConfigMap vs Secret:`,o:[`Both are encrypted`,`ConfigMap stores non-sensitive config; Secret holds sensitive data (base64-encoded)`,`Secret stores plain config, ConfigMap encrypts`,`They are the same`],a:[1],e:`ConfigMaps hold plain config; Secrets hold sensitive values (base64, and can be encrypted at rest).`},
+{q:`A StatefulSet is preferred over a Deployment when:`,o:[`Pods are stateless`,`Pods need stable identities and persistent per-pod storage (e.g. databases)`,`You want random pod names`,`You need only one pod`],a:[1],e:`StatefulSets give ordered, stable network IDs and persistent volumes per pod for stateful workloads.`},
+{q:`A DaemonSet ensures:`,o:[`One pod runs on every (or selected) node`,`Exactly one pod cluster-wide`,`Pods run only on the master`,`Autoscaling`],a:[0],e:`DaemonSets run a copy of a pod on each node — useful for log/metric agents.`},
+{q:`Helm is:`,o:[`A monitoring tool`,`A package manager for Kubernetes using charts`,`A container runtime`,`A CI server`],a:[1],e:`Helm packages k8s manifests into reusable, templated charts.`},
+{q:`Horizontal Pod Autoscaler scales based on:`,o:[`Disk size`,`Observed metrics like CPU/memory or custom metrics`,`Node count only`,`Time of day`],a:[1],e:`HPA adjusts the number of pod replicas based on metrics such as CPU utilization.`},
+{q:`git merge vs git rebase:`,o:[`Merge rewrites history, rebase preserves it`,`Merge creates a merge commit preserving history; rebase replays commits for a linear history`,`They are identical`,`Rebase is safe on shared branches`],a:[1],e:`Merge keeps branch history with a merge commit; rebase rewrites commits onto a new base (avoid on shared branches).`},
+{q:`Select all that apply: effects of git reset flags.`,o:[`--soft keeps changes staged`,`--mixed keeps changes but unstaged (default)`,`--hard discards working changes`,`--soft deletes commits and files`],a:[0,1,2],m:true,e:`--soft moves HEAD but keeps changes staged; --mixed unstages them; --hard discards them entirely.`},
+{q:`git revert differs from git reset in that it:`,o:[`Deletes history`,`Creates a new commit that undoes a previous one (safe on shared branches)`,`Only works locally`,`Rewrites the branch`],a:[1],e:`revert adds an inverse commit, preserving history — safe to push to shared branches.`},
+{q:`git cherry-pick does what?`,o:[`Merges two branches`,`Applies a specific commit from one branch onto another`,`Deletes a commit`,`Stashes changes`],a:[1],e:`cherry-pick copies an individual commit onto the current branch.`},
+{q:`Terraform is:`,o:[`Imperative and cloud-specific`,`Declarative, cloud-agnostic IaC that tracks state`,`A container runtime`,`A monitoring tool`],a:[1],e:`Terraform declares desired infrastructure across providers and reconciles via its state file.`},
+{q:`Terraform's <code>plan</code> command:`,o:[`Applies changes immediately`,`Shows the changes it would make without applying them`,`Deletes state`,`Initializes providers`],a:[1],e:`plan previews the diff between desired config and current state; apply executes it.`},
+{q:`Why does Terraform keep a state file?`,o:[`For logging only`,`To map config to real resources and detect drift`,`To store secrets safely by default`,`It doesn't`],a:[1],e:`State tracks which real resources correspond to config, enabling diffs and updates. Protect it — it can contain sensitive data.`},
+{q:`Ansible is:`,o:[`Agent-based and pull-model`,`Agentless (over SSH), push-model, idempotent playbooks`,`A container orchestrator`,`A CI server`],a:[1],e:`Ansible pushes changes over SSH with no agent, using idempotent YAML playbooks.`},
+{q:`Push vs pull config management:`,o:[`Puppet/Chef push, Ansible pulls`,`Ansible pushes; Puppet/Chef agents pull from a central server`,`All push`,`All pull`],a:[1],e:`Ansible is push-based; Puppet and Chef use agents that pull desired state.`},
+{q:`Declarative vs imperative IaC:`,o:[`Declarative lists steps; imperative describes desired state`,`Declarative describes the desired end state; imperative specifies the steps to get there`,`They are identical`,`Imperative is always better`],a:[1],e:`Declarative (Terraform, k8s manifests) says what you want; imperative says how to do it step by step.`},
+{q:`Prometheus collects metrics via:`,o:[`Push from apps only`,`A pull model — scraping targets' metrics endpoints`,`Log files`,`SNMP only`],a:[1],e:`Prometheus scrapes (pulls) metrics from instrumented targets on a schedule; PromQL queries them.`},
+{q:`Grafana is primarily used for:`,o:[`Storing metrics`,`Visualizing metrics/logs in dashboards`,`Running containers`,`Source control`],a:[1],e:`Grafana builds dashboards over data sources like Prometheus; it visualizes rather than stores.`},
+{q:`Select all that apply: components of the ELK stack.`,o:[`Elasticsearch`,`Logstash`,`Kibana`,`Kubernetes`],a:[0,1,2],m:true,e:`ELK = Elasticsearch (store/search), Logstash (ingest/transform), Kibana (visualize). Kubernetes is unrelated.`},
+{q:`The three pillars of observability are:`,o:[`CPU, memory, disk`,`Metrics, logs, traces`,`Build, test, deploy`,`Pods, services, nodes`],a:[1],e:`Observability rests on metrics (numbers), logs (events), and traces (request flows).`},
+{q:`Blue-green deployment:`,o:[`Gradually replaces instances`,`Runs two identical environments and switches traffic, enabling instant rollback`,`Routes a small % to new version`,`Requires downtime`],a:[1],e:`Blue-green keeps two environments; you flip traffic to the new one and can flip back instantly.`},
+{q:`Canary deployment:`,o:[`Switches all traffic at once`,`Routes a small percentage to the new version first, then ramps up`,`Requires two full environments`,`Has no rollback`],a:[1],e:`Canary exposes the new version to a subset of users to catch issues before full rollout.`},
+{q:`Rolling update strategy:`,o:[`Kills all pods then recreates (downtime)`,`Replaces instances incrementally so the service stays available`,`Runs two environments`,`Only for stateful sets`],a:[1],e:`Rolling updates replace pods gradually, maintaining availability; Recreate causes downtime.`},
+{q:`GitHub Actions structure is:`,o:[`Pipelines > phases`,`Workflows > jobs > steps, run by runners`,`Stages > tasks`,`Playbooks > roles`],a:[1],e:`A workflow contains jobs; each job has steps executed on a runner.`},
+{q:`Jenkins pipelines are defined in:`,o:[`.gitlab-ci.yml`,`A Jenkinsfile`,`docker-compose.yml`,`main.tf`],a:[1],e:`Jenkins declarative/scripted pipelines live in a Jenkinsfile.`},
+{q:`GitLab CI reads its pipeline from:`,o:[`Jenkinsfile`,`.gitlab-ci.yml`,`workflow.yml`,`ansible.cfg`],a:[1],e:`GitLab CI uses .gitlab-ci.yml with stages, jobs, and runners.`},
+{q:`Select all that apply: artifact repository tools.`,o:[`Nexus`,`Artifactory`,`Prometheus`,`GitHub Packages`],a:[0,1,3],m:true,e:`Nexus, Artifactory, and GitHub Packages store build artifacts. Prometheus is a metrics system.`},
+{q:`An Ingress in Kubernetes provides:`,o:[`Pod-to-pod networking`,`HTTP/HTTPS routing (host/path) to services from outside the cluster`,`Persistent storage`,`Autoscaling`],a:[1],e:`Ingress defines external HTTP routing rules; it needs an ingress controller to work.`},
+{q:`A namespace in Kubernetes is for:`,o:[`Encrypting secrets`,`Logically isolating and grouping resources within a cluster`,`Networking only`,`Scaling`],a:[1],e:`Namespaces partition a cluster for multi-tenancy, quotas, and organization.`},
+{q:`kubectl is:`,o:[`A container runtime`,`The CLI to interact with the Kubernetes API server`,`A CI tool`,`A monitoring agent`],a:[1],e:`kubectl issues commands to the cluster's API server to manage resources.`},
+{q:`Why keep the same artifact across environments (build once, deploy many)?`,o:[`To save disk`,`To guarantee what's tested is exactly what's deployed`,`To speed builds only`,`It's not recommended`],a:[1],e:`Promoting a single immutable artifact ensures dev/staging/prod parity and avoids rebuild drift.`},
+{q:`Select all that apply: goals of CI (Continuous Integration).`,o:[`Merge changes frequently to a shared branch`,`Automatically build and run tests on each change`,`Catch integration issues early`,`Deploy directly to production every commit`],a:[0,1,2],m:true,e:`CI is about frequent integration plus automated build/test to surface issues early; auto-deploy to prod is Continuous Deployment.`},
+{q:`Immutable infrastructure means:`,o:[`Servers are patched in place`,`Servers are replaced rather than modified after provisioning`,`No servers exist`,`Config is manual`],a:[1],e:`Instead of mutating running servers, you build new images/instances and replace old ones, reducing drift.`},
+{q:`A container registry (e.g. Docker Hub, ECR, GCR) stores:`,o:[`Running containers`,`Container images for distribution`,`Source code`,`Metrics`],a:[1],e:`Registries host and distribute versioned images that hosts pull to run containers.`},
+{q:`The purpose of a readiness gate before adding a pod to a Service:`,o:[`To restart it`,`To avoid routing traffic to a pod that isn't ready to serve`,`To scale the cluster`,`To encrypt traffic`],a:[1],e:`Readiness ensures traffic only reaches pods that can handle it, preventing errors during startup.`},
+{q:`Select all that apply: valid rollback approaches.`,o:[`kubectl rollout undo on a Deployment`,`Flipping traffic back in blue-green`,`Reverting the IaC to the prior state and re-applying`,`Deleting the namespace`],a:[0,1,2],m:true,e:`Rollout undo, blue-green flip, and reverting IaC are safe rollbacks. Deleting the namespace destroys resources — not a rollback.`},
+{q:`git stash is used to:`,o:[`Commit changes`,`Temporarily shelve uncommitted changes to switch context`,`Delete branches`,`Merge`],a:[1],e:`stash saves your working changes so you can switch tasks and restore them later.`},
+{q:`A detached HEAD state means:`,o:[`You deleted a branch`,`HEAD points to a specific commit rather than a branch tip`,`The repo is corrupted`,`You're offline`],a:[1],e:`Checking out a commit (not a branch) detaches HEAD; new commits there aren't on any branch unless you create one.`}
+],
+"gcp":[
+{q:`Which GCP service is the equivalent of AWS EC2 (IaaS VMs)?`,o:[`Cloud Run`,`Compute Engine`,`App Engine`,`Cloud Functions`],a:[1],e:`Compute Engine provides configurable virtual machines — GCP's IaaS, analogous to EC2.`},
+{q:`The GCP equivalent of AWS S3 (object storage) is:`,o:[`Persistent Disk`,`Cloud Storage`,`Filestore`,`Bigtable`],a:[1],e:`Cloud Storage is GCP's object store with buckets and storage classes, like S3.`},
+{q:`Which is GCP's serverless function offering (like AWS Lambda)?`,o:[`Cloud Run`,`Cloud Functions`,`GKE`,`App Engine Flexible`],a:[1],e:`Cloud Functions is event-driven FaaS; Cloud Run is for containers.`},
+{q:`Cloud Run is best described as:`,o:[`Managed VMs`,`Serverless containers that scale to zero, request-driven`,`A NoSQL database`,`A message queue`],a:[1],e:`Cloud Run runs stateless containers, scaling automatically (including to zero) based on requests.`},
+{q:`Which GCP database is a globally-distributed, horizontally-scalable RELATIONAL database?`,o:[`Cloud SQL`,`Cloud Spanner`,`Firestore`,`Bigtable`],a:[1],e:`Cloud Spanner combines SQL/relational semantics with global horizontal scale and strong consistency.`},
+{q:`Cloud SQL is:`,o:[`A serverless data warehouse`,`Managed MySQL/PostgreSQL/SQL Server (regional, OLTP)`,`A NoSQL wide-column store`,`An object store`],a:[1],e:`Cloud SQL is a managed relational DB for standard transactional workloads.`},
+{q:`BigQuery is best suited for:`,o:[`High-frequency transactional writes`,`Serverless analytics/data-warehouse queries over huge datasets (OLAP)`,`Caching`,`Object storage`],a:[1],e:`BigQuery is a serverless OLAP warehouse — analytics, not transactional (OLTP) workloads.`},
+{q:`Bigtable is appropriate for:`,o:[`Ad-hoc SQL reporting`,`High-throughput, low-latency NoSQL wide-column workloads (time-series, IoT)`,`Relational transactions`,`Object storage`],a:[1],e:`Bigtable is a wide-column NoSQL store for massive throughput and low latency; it isn't for ad-hoc SQL.`},
+{q:`Firestore/Datastore is a:`,o:[`Relational database`,`NoSQL document database that auto-scales`,`Data warehouse`,`Block storage`],a:[1],e:`Firestore is a serverless document database well-suited to app/mobile data.`},
+{q:`Select all that apply: correct GCP database picks.`,o:[`Global relational at scale — Spanner`,`Serverless analytics warehouse — BigQuery`,`Managed Postgres for an app — Cloud SQL`,`Ad-hoc SQL analytics — Bigtable`],a:[0,1,2],m:true,e:`Spanner, BigQuery, and Cloud SQL map correctly. Bigtable is NOT for ad-hoc SQL analytics — that's BigQuery.`},
+{q:`GCP's managed Kubernetes service is:`,o:[`Cloud Run`,`GKE (Google Kubernetes Engine)`,`App Engine`,`Compute Engine`],a:[1],e:`GKE is GCP's managed Kubernetes, analogous to AWS EKS.`},
+{q:`App Engine Standard vs Flexible:`,o:[`Standard runs containers on VMs; Flexible is sandboxed`,`Standard is sandboxed with fast scale-to-zero; Flexible runs containers on VMs with more control`,`They are identical`,`Flexible scales to zero`],a:[1],e:`Standard uses a lightweight sandbox and scales to zero; Flexible runs Docker on managed VMs with more flexibility but no scale-to-zero.`},
+{q:`In GCP, a VPC network is:`,o:[`Regional`,`Global, with subnets that are regional`,`Zonal`,`Per-VM`],a:[1],e:`GCP VPCs are global resources; subnets are scoped to a region — a common AWS-to-GCP surprise.`},
+{q:`Which is GCP's equivalent of AWS Redshift?`,o:[`Cloud SQL`,`BigQuery`,`Bigtable`,`Dataproc`],a:[1],e:`BigQuery is the analytics warehouse comparable to Redshift.`},
+{q:`Pub/Sub is GCP's:`,o:[`Container registry`,`Global messaging/event-ingestion service (like SNS+SQS)`,`Data warehouse`,`Load balancer`],a:[1],e:`Pub/Sub is a scalable async messaging service for event ingestion and decoupling.`},
+{q:`Dataflow is used for:`,o:[`Managed Spark/Hadoop`,`Unified stream and batch data processing (Apache Beam)`,`Object storage`,`DNS`],a:[1],e:`Dataflow runs Apache Beam pipelines for both streaming and batch transformations.`},
+{q:`Dataproc is:`,o:[`Serverless analytics`,`Managed Spark and Hadoop clusters`,`A NoSQL DB`,`A CDN`],a:[1],e:`Dataproc is GCP's managed Hadoop/Spark, good for lifting existing big-data jobs.`},
+{q:`Cloud Composer is managed:`,o:[`Kafka`,`Apache Airflow (workflow orchestration)`,`Spark`,`Redis`],a:[1],e:`Composer is managed Airflow for orchestrating data pipelines.`},
+{q:`Select all that apply: GCP storage classes.`,o:[`Standard`,`Nearline`,`Coldline`,`Glacier`],a:[0,1,2],m:true,e:`GCP classes are Standard, Nearline, Coldline, and Archive. "Glacier" is an AWS S3 class.`},
+{q:`Coldline storage is designed for data accessed:`,o:[`Constantly`,`At most about once a quarter (90-day minimum)`,`Never`,`Every second`],a:[1],e:`Coldline suits infrequent access (~quarterly) with a 90-day minimum storage duration; Archive is for yearly.`},
+{q:`GCP's resource hierarchy is:`,o:[`Project > Org > Folder`,`Organization > Folder > Project > Resource`,`Resource > Project only`,`Folder > Org > Project`],a:[1],e:`Policies flow down Organization → Folder → Project → Resource.`},
+{q:`Primitive IAM roles (Owner/Editor/Viewer) are:`,o:[`Recommended for production least-privilege`,`Broad and discouraged in favor of predefined/custom roles`,`Per-service`,`The only roles available`],a:[1],e:`Primitive roles are coarse; predefined or custom roles give least-privilege granularity.`},
+{q:`A service account is:`,o:[`A human user account`,`An identity for workloads/apps to authenticate and be authorized`,`A billing account`,`A support plan`],a:[1],e:`Service accounts let applications and VMs act with defined permissions, not tied to a person.`},
+{q:`Which GCP service maps to AWS DynamoDB for document data?`,o:[`Cloud SQL`,`Firestore`,`BigQuery`,`Memorystore`],a:[1],e:`Firestore (document NoSQL) is the closest to DynamoDB; Bigtable maps to DynamoDB's wide-column style.`},
+{q:`Memorystore provides managed:`,o:[`PostgreSQL`,`Redis and Memcached (in-memory cache)`,`Kafka`,`Object storage`],a:[1],e:`Memorystore is GCP's managed in-memory cache (Redis/Memcached), like AWS ElastiCache.`},
+{q:`Vertex AI is GCP's:`,o:[`Container registry`,`Unified ML platform for training/deploying models`,`Data warehouse`,`Message bus`],a:[1],e:`Vertex AI is the managed ML platform, comparable to AWS SageMaker.`},
+{q:`Select all that apply: GCP pre-trained AI APIs.`,o:[`Vision API`,`Natural Language API`,`Speech-to-Text`,`Cloud Spanner`],a:[0,1,2],m:true,e:`Vision, Natural Language, and Speech are pre-trained APIs; Spanner is a database.`},
+{q:`Cloud Monitoring and Cloud Logging were formerly known as:`,o:[`CloudWatch`,`Stackdriver`,`Nagios`,`Grafana`],a:[1],e:`The former Stackdriver suite became Cloud Monitoring/Logging, GCP's ops tooling.`},
+{q:`Preemptible / Spot VMs are:`,o:[`Always-on premium VMs`,`Cheap VMs that can be reclaimed by GCP with short notice`,`Free forever`,`Serverless functions`],a:[1],e:`They offer big discounts for interruptible, fault-tolerant workloads.`},
+{q:`Sustained use discounts are:`,o:[`Manual commitments`,`Automatic discounts for running VMs a large portion of the month`,`Only for storage`,`Spot pricing`],a:[1],e:`SUDs apply automatically as usage increases; committed use discounts require a 1- or 3-year commitment.`},
+{q:`To run a stateless container that scales to zero with minimal ops, choose:`,o:[`Compute Engine`,`Cloud Run`,`Bigtable`,`Cloud SQL`],a:[1],e:`Cloud Run is the low-ops serverless-container choice with scale-to-zero.`},
+{q:`Which handles global HTTP(S) load balancing in GCP?`,o:[`Cloud DNS`,`Cloud Load Balancing`,`Cloud CDN`,`Pub/Sub`],a:[1],e:`Cloud Load Balancing offers global and regional LB; Cloud CDN caches at the edge.`},
+{q:`Cloud CDN is used to:`,o:[`Store objects`,`Cache content at edge locations to reduce latency`,`Route DNS`,`Process streams`],a:[1],e:`Cloud CDN caches responses near users, like AWS CloudFront.`},
+{q:`Cloud DNS is the equivalent of AWS:`,o:[`Route 53`,`S3`,`Lambda`,`RDS`],a:[0],e:`Cloud DNS is GCP's managed DNS, comparable to Route 53.`},
+{q:`Select all that apply: correct AWS→GCP mappings.`,o:[`Lambda → Cloud Functions`,`EKS → GKE`,`SQS/SNS → Pub/Sub`,`S3 → Cloud SQL`],a:[0,1,2],m:true,e:`The first three are correct. S3 maps to Cloud Storage, not Cloud SQL.`},
+{q:`Deployment Manager is GCP's native:`,o:[`Monitoring tool`,`Infrastructure-as-code service (like CloudFormation)`,`Container runtime`,`CDN`],a:[1],e:`Deployment Manager provisions GCP resources declaratively, comparable to CloudFormation (Terraform also works cross-cloud).`},
+{q:`Cloud Build is used for:`,o:[`Storing images only`,`Running CI/CD build pipelines`,`DNS`,`Caching`],a:[1],e:`Cloud Build compiles, tests, and produces artifacts/images as part of CI/CD.`},
+{q:`For a data warehouse serving BI analysts with SQL, choose:`,o:[`Bigtable`,`BigQuery`,`Cloud SQL`,`Memorystore`],a:[1],e:`BigQuery's serverless SQL analytics is purpose-built for warehousing/BI.`},
+{q:`For a globally consistent inventory ledger needing SQL and horizontal scale, choose:`,o:[`Cloud SQL`,`Cloud Spanner`,`Firestore`,`Bigtable`],a:[1],e:`Spanner uniquely offers relational + global + horizontal scale + strong consistency.`},
+{q:`For millions of IoT sensor writes per second, choose:`,o:[`Cloud SQL`,`Bigtable`,`BigQuery`,`Cloud Spanner`],a:[1],e:`Bigtable handles very high write throughput at low latency for time-series/IoT.`},
+{q:`Select all that apply: characteristics of Cloud Functions.`,o:[`Event-driven`,`Scales automatically`,`You manage the underlying servers`,`Good for lightweight glue/logic`],a:[0,1,3],m:true,e:`Cloud Functions are event-driven, auto-scaling, serverless glue — you don't manage servers.`},
+{q:`Firewall rules in GCP are applied at the level of:`,o:[`Individual files`,`The VPC network (with targets by tag/service account)`,`The billing account`,`DNS`],a:[1],e:`VPC firewall rules control traffic to/from instances, targeted via tags or service accounts.`},
+{q:`Persistent Disk is analogous to AWS:`,o:[`S3`,`EBS (block storage)`,`Glacier`,`Lambda`],a:[1],e:`Persistent Disk is durable block storage attached to VMs, like EBS.`},
+{q:`Filestore provides:`,o:[`Object storage`,`Managed NFS file storage`,`Block storage`,`A database`],a:[1],e:`Filestore is managed network file storage (NFS), comparable to AWS EFS.`},
+{q:`A project in GCP is:`,o:[`A billing method`,`The basic unit that organizes resources, APIs, billing, and IAM`,`A VM`,`A region`],a:[1],e:`Projects are the fundamental container for resources, quotas, billing, and permissions.`},
+{q:`Which service processes both streaming and batch with one model?`,o:[`Dataproc`,`Dataflow`,`Bigtable`,`Cloud SQL`],a:[1],e:`Dataflow (Apache Beam) unifies stream and batch processing.`},
+{q:`Select all that apply: valid choices for infrequently-accessed backup data.`,o:[`Coldline storage`,`Archive storage`,`Standard storage for daily reads`,`Nearline for roughly monthly access`],a:[0,1,3],m:true,e:`Coldline (quarterly), Archive (yearly), and Nearline (monthly) fit infrequent access; Standard is for hot data.`},
+{q:`To lift-and-shift an existing Spark/Hadoop job to GCP, use:`,o:[`Dataflow`,`Dataproc`,`BigQuery`,`Pub/Sub`],a:[1],e:`Dataproc runs managed Spark/Hadoop clusters, ideal for migrating existing jobs.`},
+{q:`The principle of least privilege in GCP IAM means:`,o:[`Grant Owner to everyone`,`Grant only the minimal permissions needed, using predefined/custom roles`,`Disable IAM`,`Use primitive roles only`],a:[1],e:`Least privilege reduces blast radius by granting the narrowest necessary access.`},
+{q:`Which pairing is correct?`,o:[`Cloud Monitoring → AWS Route 53`,`Cloud Load Balancing → AWS ELB/ALB`,`Pub/Sub → AWS RDS`,`BigQuery → AWS DynamoDB`],a:[1],e:`Cloud Load Balancing corresponds to AWS Elastic Load Balancing.`}
+],
+"data":[
+{q:`First Normal Form (1NF) requires:`,o:[`No transitive dependencies`,`Atomic values and no repeating groups`,`Every determinant is a candidate key`,`No partial dependencies`],a:[1],e:`1NF requires each column to hold atomic (indivisible) values with no repeating groups.`},
+{q:`Second Normal Form (2NF) removes:`,o:[`Transitive dependencies`,`Partial dependencies on part of a composite key`,`Non-atomic values`,`All redundancy`],a:[1],e:`2NF (already in 1NF) eliminates partial dependencies — non-key attributes must depend on the whole composite key.`},
+{q:`Third Normal Form (3NF) removes:`,o:[`Partial dependencies`,`Transitive dependencies (non-key depending on another non-key)`,`Repeating groups`,`Candidate keys`],a:[1],e:`3NF eliminates transitive dependencies so non-key attributes depend only on the key.`},
+{q:`BCNF is stricter than 3NF because it requires:`,o:[`Atomic values`,`Every determinant to be a candidate key`,`No foreign keys`,`Denormalization`],a:[1],e:`Boyce-Codd Normal Form requires that for every functional dependency, the determinant is a candidate key.`},
+{q:`Denormalization is done to:`,o:[`Increase redundancy for faster reads`,`Remove all redundancy`,`Enforce constraints`,`Reduce storage`],a:[0],e:`Denormalization deliberately adds redundancy to improve read/query performance, common in warehousing.`},
+{q:`ACID stands for:`,o:[`Atomicity, Consistency, Isolation, Durability`,`Availability, Consistency, Integrity, Durability`,`Atomicity, Concurrency, Isolation, Distribution`,`Accuracy, Consistency, Isolation, Durability`],a:[0],e:`ACID = Atomicity, Consistency, Isolation, Durability — the guarantees of reliable transactions.`},
+{q:`Atomicity guarantees that a transaction:`,o:[`Is isolated from others`,`Either fully completes or has no effect at all`,`Is durable`,`Is consistent`],a:[1],e:`Atomicity means all-or-nothing — partial transactions are rolled back.`},
+{q:`Which isolation level prevents dirty reads but still allows non-repeatable reads?`,o:[`Read Uncommitted`,`Read Committed`,`Serializable`,`Repeatable Read`],a:[1],e:`Read Committed prevents dirty reads but a row can still change between reads (non-repeatable read).`},
+{q:`A phantom read is prevented only by:`,o:[`Read Committed`,`Repeatable Read`,`Serializable`,`Read Uncommitted`],a:[2],e:`Serializable is the strictest level and prevents dirty, non-repeatable, and phantom reads.`},
+{q:`A dirty read occurs when a transaction:`,o:[`Reads its own writes`,`Reads uncommitted data from another transaction`,`Reads the same row twice`,`Locks a table`],a:[1],e:`A dirty read reads data another transaction wrote but hasn't committed (and might roll back).`},
+{q:`Select all that apply: anomalies possible at Read Uncommitted.`,o:[`Dirty read`,`Non-repeatable read`,`Phantom read`,`None of these`],a:[0,1,2],m:true,e:`Read Uncommitted is the weakest level and allows all three anomalies.`},
+{q:`A clustered index:`,o:[`Can have many per table`,`Determines the physical order of rows; one per table`,`Is stored separately with pointers`,`Cannot be the primary key`],a:[1],e:`A clustered index sorts the table's physical rows; there's only one per table (often the PK).`},
+{q:`A non-clustered index:`,o:[`Physically reorders the table`,`Is a separate structure with pointers to rows; many allowed`,`Is limited to one per table`,`Cannot include multiple columns`],a:[1],e:`Non-clustered indexes are separate structures pointing to data rows; a table can have many.`},
+{q:`A covering index is one that:`,o:[`Covers all tables`,`Contains all columns a query needs, avoiding a table lookup`,`Is always clustered`,`Covers foreign keys`],a:[1],e:`If the index includes every column the query references, the engine can answer from the index alone.`},
+{q:`The difference between a primary key and a unique key is:`,o:[`Unique allows one NULL (typically) and multiple per table; PK is not null and one per table`,`They are identical`,`PK allows NULLs`,`Unique cannot be indexed`],a:[0],e:`A PK is not-null and single per table; unique constraints allow (usually one) NULL and you can have several.`},
+{q:`A foreign key enforces:`,o:[`Atomicity`,`Referential integrity between tables`,`Normalization`,`Indexing`],a:[1],e:`A foreign key ensures values reference existing rows in another table (referential integrity).`},
+{q:`A surrogate key is:`,o:[`A natural business attribute`,`A system-generated key with no business meaning (e.g. auto-increment)`,`A composite of two columns`,`A foreign key`],a:[1],e:`Surrogate keys are artificial identifiers, unlike natural keys drawn from real data.`},
+{q:`WHERE vs HAVING:`,o:[`WHERE filters after grouping, HAVING before`,`WHERE filters rows before grouping; HAVING filters groups after GROUP BY`,`They are identical`,`HAVING cannot use aggregates`],a:[1],e:`WHERE filters individual rows pre-aggregation; HAVING filters aggregated groups.`},
+{q:`An INNER JOIN returns:`,o:[`All rows from both tables`,`Only rows with matches in both tables`,`All rows from the left table`,`Unmatched rows only`],a:[1],e:`INNER JOIN returns only matching rows from both sides.`},
+{q:`A LEFT OUTER JOIN returns:`,o:[`Only matches`,`All rows from the left table plus matches from the right (NULLs where none)`,`All rows from the right table`,`The Cartesian product`],a:[1],e:`LEFT JOIN keeps all left rows, filling right columns with NULL when unmatched.`},
+{q:`A CROSS JOIN produces:`,o:[`Matched rows`,`The Cartesian product of both tables`,`Left rows only`,`Distinct rows`],a:[1],e:`CROSS JOIN pairs every row of one table with every row of the other.`},
+{q:`Select all that apply: true about window functions.`,o:[`They can rank rows with ROW_NUMBER/RANK`,`They use OVER(PARTITION BY ...)`,`They collapse rows like GROUP BY`,`They compute running totals`],a:[0,1,3],m:true,e:`Window functions operate over a partition without collapsing rows (unlike GROUP BY) and support ranking and running aggregates.`},
+{q:`RANK vs DENSE_RANK on ties:`,o:[`They behave the same`,`RANK leaves gaps after ties; DENSE_RANK does not`,`DENSE_RANK leaves gaps`,`Neither handles ties`],a:[1],e:`After tied values, RANK skips numbers (1,1,3) while DENSE_RANK is continuous (1,1,2).`},
+{q:`In SQL, comparing to NULL with = returns:`,o:[`TRUE`,`UNKNOWN (use IS NULL)`,`FALSE always`,`An error`],a:[1],e:`NULL comparisons yield UNKNOWN; use IS NULL / IS NOT NULL.`},
+{q:`TRUNCATE vs DELETE:`,o:[`DELETE is faster and can't be filtered`,`TRUNCATE removes all rows quickly without a WHERE and usually resets identity; DELETE is row-by-row and can filter`,`They are identical`,`TRUNCATE keeps a WHERE clause`],a:[1],e:`TRUNCATE is a fast bulk operation (no WHERE, minimal logging); DELETE removes rows individually and supports WHERE.`},
+{q:`DROP TABLE does what?`,o:[`Deletes all rows but keeps structure`,`Removes the table and its structure entirely`,`Resets identity`,`Truncates the table`],a:[1],e:`DROP removes the object definition and data; DELETE/TRUNCATE only affect rows.`},
+{q:`The CAP theorem's three properties are:`,o:[`Consistency, Availability, Partition tolerance`,`Concurrency, Atomicity, Persistence`,`Cost, Availability, Performance`,`Consistency, Accuracy, Persistence`],a:[0],e:`CAP = Consistency, Availability, Partition tolerance; under a partition you trade C vs A.`},
+{q:`BASE stands for:`,o:[`Basic Atomic Secure Environment`,`Basically Available, Soft state, Eventual consistency`,`Balanced Availability State Engine`,`Backup And Standby Environment`],a:[1],e:`BASE is the NoSQL counterpart to ACID, favoring availability and eventual consistency.`},
+{q:`Select all that apply: NoSQL database categories.`,o:[`Document`,`Key-value`,`Column-family`,`Relational`],a:[0,1,2],m:true,e:`NoSQL categories are document, key-value, column-family, and graph. Relational is SQL, not NoSQL.`},
+{q:`Horizontal partitioning (sharding) splits:`,o:[`Columns into separate tables`,`Rows across multiple nodes/partitions`,`Indexes only`,`Nothing`],a:[1],e:`Sharding distributes rows across nodes to scale out; vertical partitioning splits columns.`},
+{q:`Vertical partitioning splits:`,o:[`Rows across servers`,`Columns/tables so different columns live separately`,`Indexes`,`Transactions`],a:[1],e:`Vertical partitioning divides a table by columns (e.g. hot vs cold attributes).`},
+{q:`Database replication primarily improves:`,o:[`Normalization`,`Availability and read scalability (with copies of data)`,`Schema design`,`Indexing`],a:[1],e:`Replication keeps copies across nodes for fault tolerance and read scaling.`},
+{q:`OLTP vs OLAP:`,o:[`OLTP is analytical, OLAP transactional`,`OLTP handles many small transactions (normalized); OLAP handles analytical queries (denormalized)`,`They are identical`,`OLAP is row-based only`],a:[1],e:`OLTP = transaction processing; OLAP = analytical processing over large aggregates.`},
+{q:`In a star schema:`,o:[`Dimensions are fully normalized`,`A central fact table connects to denormalized dimension tables`,`There are no fact tables`,`Everything is one table`],a:[1],e:`Star schema has a fact table surrounded by denormalized dimension tables.`},
+{q:`A snowflake schema differs from a star schema by:`,o:[`Having no dimensions`,`Normalizing dimension tables into related sub-dimensions`,`Removing the fact table`,`Being denormalized`],a:[1],e:`Snowflake normalizes dimensions further into related tables, reducing redundancy at the cost of more joins.`},
+{q:`A fact table typically stores:`,o:[`Descriptive attributes`,`Numeric measures/metrics and foreign keys to dimensions`,`Only text`,`Indexes`],a:[1],e:`Fact tables hold measurements (sales amount, quantity) plus keys to dimensions.`},
+{q:`ETL vs ELT:`,o:[`ELT transforms before loading`,`ETL transforms before loading; ELT loads raw then transforms in the warehouse`,`They are identical`,`ETL loads raw data first`],a:[1],e:`ETL transforms then loads; ELT (common in cloud warehouses) loads raw and transforms in-place.`},
+{q:`A data lake differs from a data warehouse by:`,o:[`Storing only structured data`,`Storing raw data of any type (schema-on-read) vs structured/curated (schema-on-write)`,`Being smaller`,`Requiring SQL only`],a:[1],e:`Lakes hold raw, varied data read on demand; warehouses hold structured, modeled data.`},
+{q:`Select all that apply: describe a lakehouse.`,o:[`Combines lake flexibility with warehouse management features`,`Supports both BI and ML on one platform`,`Adds ACID/table management over lake storage`,`Eliminates the need for any storage`],a:[0,1,2],m:true,e:`A lakehouse layers warehouse-like management (ACID, schema) over cheap lake storage; it still needs storage.`},
+{q:`Slowly Changing Dimension (SCD) Type 2 handles change by:`,o:[`Overwriting the old value`,`Adding a new row to preserve history (versioning)`,`Adding a column for the previous value`,`Ignoring the change`],a:[1],e:`SCD Type 2 inserts a new row (with effective dates/flags) to keep full history; Type 1 overwrites; Type 3 keeps a prior-value column.`},
+{q:`A conceptual data model is:`,o:[`Physical tables and indexes`,`A high-level, technology-independent view of entities and relationships`,`SQL DDL`,`A query plan`],a:[1],e:`Conceptual → logical → physical; conceptual is the abstract entity/relationship view.`},
+{q:`Cardinality in an ER model describes:`,o:[`Index size`,`The numeric relationship between entities (1:1, 1:N, M:N)`,`Row order`,`Column types`],a:[1],e:`Cardinality specifies how many instances of one entity relate to another.`},
+{q:`A composite key is:`,o:[`A single-column key`,`A key made of two or more columns together`,`A foreign key`,`A surrogate key`],a:[1],e:`A composite (compound) key uses multiple columns to uniquely identify a row.`},
+{q:`Select all that apply: benefits of proper indexing.`,o:[`Faster reads/lookups`,`Faster writes in all cases`,`Efficient sorting and range scans`,`Support for uniqueness constraints`],a:[0,2,3],m:true,e:`Indexes speed reads, sorts, and enforce uniqueness — but they add overhead to writes, so they don't speed writes.`},
+{q:`Master Data Management (MDM) aims to:`,o:[`Store logs`,`Provide a single authoritative source for core business entities`,`Encrypt data`,`Shard tables`],a:[1],e:`MDM creates a consistent "golden record" for key entities (customers, products) across systems.`},
+{q:`Data lineage tracks:`,o:[`Server uptime`,`The origin and transformations data undergoes as it moves through systems`,`Index fragmentation`,`User passwords`],a:[1],e:`Lineage documents where data comes from and how it's transformed, aiding trust and compliance.`},
+{q:`A transaction that isn't Durable could:`,o:[`Read uncommitted data`,`Lose committed changes after a crash`,`Deadlock`,`Skip isolation`],a:[1],e:`Durability guarantees committed data survives failures; without it, commits can be lost on crash.`},
+{q:`A self join is used to:`,o:[`Join two different tables`,`Join a table to itself (e.g. employee to manager)`,`Join three tables`,`Create an index`],a:[1],e:`A self join relates rows within the same table, like hierarchical employee/manager relationships.`},
+{q:`Which normal form would you denormalize toward for a read-heavy reporting warehouse?`,o:[`Higher normal forms (BCNF)`,`Lower normalization / denormalized star schema`,`1NF strictly`,`No schema`],a:[1],e:`Warehouses often denormalize (star schema) to reduce joins and speed analytical reads.`},
+{q:`A GROUP BY without an aggregate in the SELECT for non-grouped columns will:`,o:[`Always work`,`Error or produce indeterminate results (non-grouped columns must be aggregated)`,`Return NULLs`,`Sort the table`],a:[1],e:`Columns in SELECT must be either grouped or aggregated; otherwise it's invalid (or nondeterministic in lax modes).`}
+],
+"ai":[
+{q:`In LLMs, a "token" is:`,o:[`Always a full word`,`A chunk of text (word/subword/character piece) the model processes`,`A security key`,`A single byte`],a:[1],e:`Models operate on tokens — often subword pieces — not whole words; token count drives cost and limits.`},
+{q:`The context window of an LLM is:`,o:[`Its training dataset`,`The maximum number of tokens (input + output) it can consider at once`,`A GUI element`,`The response latency`],a:[1],e:`The context window bounds how many tokens the model can attend to in a single request.`},
+{q:`Increasing the temperature parameter generally:`,o:[`Makes output more deterministic`,`Makes output more random/creative`,`Speeds up inference`,`Reduces token count`],a:[1],e:`Higher temperature increases randomness; temperature 0 is (near) deterministic.`},
+{q:`A hallucination in an LLM is:`,o:[`A crash`,`Confidently generated but false or fabricated information`,`A slow response`,`A refused request`],a:[1],e:`Hallucinations are plausible-sounding outputs that are factually wrong or invented.`},
+{q:`Retrieval-Augmented Generation (RAG) works by:`,o:[`Retraining the model per query`,`Fetching relevant documents and injecting them into the prompt context`,`Increasing temperature`,`Removing the context window`],a:[1],e:`RAG retrieves relevant external/private data and adds it to the prompt so the model answers from current, grounded info.`},
+{q:`Which technique best injects fresh, factual, private knowledge without retraining?`,o:[`Fine-tuning`,`RAG`,`Raising temperature`,`Zero-shot prompting`],a:[1],e:`RAG grounds responses in retrieved facts; fine-tuning is better for behavior/style than for injecting up-to-date facts.`},
+{q:`Fine-tuning is most appropriate for:`,o:[`Adding real-time facts`,`Teaching consistent style, format, or task behavior`,`Increasing the context window`,`Replacing prompts entirely`],a:[1],e:`Fine-tuning adjusts weights to shape behavior/format; it's a poor way to store frequently-changing facts (use RAG).`},
+{q:`Embeddings are:`,o:[`Compressed images`,`Numeric vector representations of text capturing semantic meaning`,`Database indexes`,`API keys`],a:[1],e:`Embeddings map text to vectors so semantic similarity becomes vector distance.`},
+{q:`A vector database is used to:`,o:[`Store relational rows`,`Store embeddings and perform similarity search (e.g. nearest neighbors)`,`Cache HTML`,`Run containers`],a:[1],e:`Vector DBs index embeddings for fast semantic similarity search, powering RAG.`},
+{q:`Semantic similarity between embeddings is commonly measured with:`,o:[`Exact string match`,`Cosine similarity / distance`,`Row count`,`Regex`],a:[1],e:`Cosine similarity (or related distances) compares embedding vectors' directions to gauge closeness.`},
+{q:`Zero-shot vs few-shot prompting:`,o:[`Zero-shot provides examples, few-shot none`,`Zero-shot gives no examples; few-shot includes a few examples in the prompt`,`They are identical`,`Few-shot means training the model`],a:[1],e:`Few-shot prompts include example input/output pairs; zero-shot relies on the instruction alone.`},
+{q:`Chain-of-thought prompting encourages the model to:`,o:[`Answer instantly`,`Show intermediate reasoning steps before the final answer`,`Use less context`,`Increase temperature`],a:[1],e:`CoT elicits step-by-step reasoning, often improving accuracy on multi-step problems.`},
+{q:`Function/tool calling lets an LLM:`,o:[`Execute arbitrary code itself`,`Emit a structured call that your application executes, returning results to the model`,`Bypass the context window`,`Retrain itself`],a:[1],e:`The model outputs a structured tool request; your app runs it and feeds the result back — the model doesn't execute code directly.`},
+{q:`Prompt injection is an attack where:`,o:[`The server is overloaded`,`Malicious text in the input/tool output overrides the intended instructions`,`The model runs out of tokens`,`The API key leaks`],a:[1],e:`Untrusted content smuggles instructions that hijack the model's behavior — treat retrieved/tool content as data, not commands.`},
+{q:`Select all that apply: risks specific to AI-generated code.`,o:[`Hallucinated non-existent packages/APIs`,`Introducing subtle security vulnerabilities`,`Licensing/IP concerns of generated code`,`Guaranteed correctness`],a:[0,1,2],m:true,e:`AI code can invent packages, contain vulnerabilities, and raise IP questions — it is never guaranteed correct, so review it.`},
+{q:`The safest practice with AI-generated code is to:`,o:[`Deploy it without review`,`Review, test, and validate it with a human in the loop`,`Trust it if it compiles`,`Disable tests`],a:[1],e:`Human-in-the-loop review and testing catch hallucinations, bugs, and security issues.`},
+{q:`"Slopsquatting" / hallucinated package risk refers to:`,o:[`A network attack`,`Attackers registering package names that LLMs commonly hallucinate, so unchecked installs pull malware`,`A prompt technique`,`A model architecture`],a:[1],e:`If a model suggests a non-existent package name, an attacker can pre-register it — always verify dependencies.`},
+{q:`A system prompt typically:`,o:[`Is written by the end user each turn`,`Sets the model's role, rules, and behavior for the conversation`,`Stores embeddings`,`Increases temperature`],a:[1],e:`The system prompt defines high-level instructions/persona guiding the model's responses.`},
+{q:`Select all that apply: ways to reduce hallucinations.`,o:[`Ground responses with RAG`,`Ask for citations/sources`,`Lower temperature for factual tasks`,`Increase temperature to maximum`],a:[0,1,2],m:true,e:`Grounding, requiring sources, and lower temperature reduce fabrication; higher temperature increases it.`},
+{q:`An AI agent (agentic system) is characterized by:`,o:[`A single one-shot completion`,`An LLM that plans and takes multiple tool-using steps toward a goal`,`A database`,`A CDN`],a:[1],e:`Agents loop: reason, call tools, observe results, and iterate toward a goal, often with autonomy.`},
+{q:`Data leakage risk when using AI tools involves:`,o:[`Slow responses`,`Sending sensitive/proprietary data into prompts or training pipelines`,`Token limits`,`High temperature`],a:[1],e:`Confidential data pasted into prompts may be logged, retained, or exposed — govern what's shared.`},
+{q:`Supervised learning uses:`,o:[`Unlabeled data`,`Labeled input-output pairs to learn a mapping`,`Rewards only`,`No data`],a:[1],e:`Supervised learning trains on labeled examples; unsupervised finds structure in unlabeled data.`},
+{q:`Unsupervised learning is typically used for:`,o:[`Classification with labels`,`Clustering and finding structure in unlabeled data`,`Reward maximization`,`Regression with labels`],a:[1],e:`Without labels, unsupervised methods (clustering, dimensionality reduction) discover patterns.`},
+{q:`Reinforcement learning learns via:`,o:[`Labeled pairs`,`Trial and error guided by rewards/penalties`,`Only clustering`,`Static rules`],a:[1],e:`An RL agent takes actions and learns a policy that maximizes cumulative reward.`},
+{q:`Overfitting means a model:`,o:[`Generalizes well to new data`,`Memorizes training data and performs poorly on unseen data`,`Is too simple`,`Has too little data`],a:[1],e:`Overfitting fits noise in the training set, hurting generalization; regularization and more data help.`},
+{q:`Underfitting means a model:`,o:[`Is too complex`,`Is too simple to capture the underlying pattern`,`Memorizes data`,`Has high variance`],a:[1],e:`Underfitting (high bias) fails to learn the signal — the model is too simple.`},
+{q:`Training vs inference:`,o:[`Training makes predictions; inference learns weights`,`Training learns model weights; inference uses the trained model to make predictions`,`They are identical`,`Inference updates weights`],a:[1],e:`Training fits parameters on data; inference applies the fixed model to new inputs.`},
+{q:`Select all that apply: reasons to keep a human in the loop for AI outputs.`,o:[`AI can be confidently wrong`,`Accountability for high-stakes decisions`,`Catching bias or policy violations`,`AI is always correct`],a:[0,1,2],m:true,e:`Human oversight guards against hallucinations, bias, and unaccountable high-stakes decisions; "always correct" is false.`},
+{q:`When should you NOT rely on an LLM's output?`,o:[`For brainstorming`,`For unverifiable, high-stakes, or safety-critical facts without validation`,`For drafting text`,`For code suggestions you'll review`],a:[1],e:`Avoid blind trust where errors are costly and you can't verify — validate or use deterministic methods.`},
+{q:`A larger context window primarily helps by:`,o:[`Making the model smarter`,`Letting the model consider more input (docs, history) at once`,`Reducing hallucinations to zero`,`Lowering cost`],a:[1],e:`More context capacity means more information can be provided per request, though it can raise cost/latency.`},
+{q:`Model bias in AI systems often originates from:`,o:[`Temperature settings`,`Biases present in the training data`,`The API endpoint`,`Token limits`],a:[1],e:`Models learn patterns — including societal biases — from their training data.`},
+{q:`Explainability in AI refers to:`,o:[`Faster inference`,`Understanding and communicating why a model produced an output`,`Higher temperature`,`Bigger models`],a:[1],e:`Explainability/interpretability helps humans understand and trust model decisions, important for regulated domains.`},
+{q:`Select all that apply: good practices when using AI coding assistants.`,o:[`Review and test generated code`,`Verify suggested dependencies exist and are safe`,`Avoid pasting secrets/proprietary data`,`Merge unreviewed AI code to main`],a:[0,1,2],m:true,e:`Review/test, verify dependencies, and protect sensitive data. Merging unreviewed AI code is unsafe.`},
+{q:`The "temperature 0" setting is best for:`,o:[`Creative brainstorming`,`Deterministic, reproducible outputs (e.g. structured extraction)`,`Maximizing variety`,`Poetry`],a:[1],e:`Low/zero temperature yields consistent, repeatable outputs suited to structured tasks.`},
+{q:`Top-p (nucleus) sampling controls:`,o:[`The number of tokens`,`Sampling from the smallest set of tokens whose cumulative probability exceeds p`,`The context window`,`Latency`],a:[1],e:`Top-p restricts sampling to the most probable tokens summing to probability p, another randomness control.`},
+{q:`A prompt template is useful because it:`,o:[`Retrains the model`,`Standardizes prompts with placeholders for reusable, consistent inputs`,`Increases the context window`,`Stores embeddings`],a:[1],e:`Templates parameterize prompts so they're consistent and maintainable across calls.`},
+{q:`RAG reduces hallucination mainly by:`,o:[`Raising temperature`,`Providing the model with grounded source material to answer from`,`Shrinking the model`,`Removing the system prompt`],a:[1],e:`Grounding answers in retrieved evidence reduces the need to fabricate.`},
+{q:`Which is TRUE about LLM outputs and determinism?`,o:[`They are always identical for the same prompt`,`They can vary between runs, especially at higher temperature`,`They never change`,`Determinism is guaranteed by the API`],a:[1],e:`Sampling introduces variability; only very low temperature (and fixed seeds where supported) approach determinism.`},
+{q:`Select all that apply: valid mitigations for prompt injection.`,o:[`Treat retrieved/tool content as untrusted data, not instructions`,`Separate and clearly delimit user vs system instructions`,`Constrain tool permissions and require confirmation for risky actions`,`Blindly execute any instruction found in fetched web pages`],a:[0,1,2],m:true,e:`Isolating untrusted content, clear instruction boundaries, and least-privilege tools mitigate injection; executing found instructions is the vulnerability.`},
+{q:`Grounding an answer means:`,o:[`Increasing model size`,`Basing the response on provided/retrieved evidence`,`Raising temperature`,`Disabling tools`],a:[1],e:`Grounded responses cite or rely on supplied context rather than the model's unverified memory.`},
+{q:`A key limitation of an LLM's parametric knowledge is that it:`,o:[`Is always current`,`Can be outdated (frozen at training cutoff) and lacks private data`,`Includes real-time data`,`Never hallucinates`],a:[1],e:`Model weights encode knowledge up to a training cutoff and exclude private/current data — hence RAG/tools.`},
+{q:`When integrating an LLM into a product, rate limiting and cost control matter because:`,o:[`Tokens are free`,`Token usage drives cost and providers enforce limits`,`Models never fail`,`Latency is always zero`],a:[1],e:`Both input and output tokens incur cost, and APIs enforce rate/quotas, so budget and throttle accordingly.`},
+{q:`Select all that apply: appropriate uses of AI-augmented development.`,o:[`Drafting boilerplate and tests`,`Explaining unfamiliar code`,`Accelerating research and prototyping`,`Replacing all code review`],a:[0,1,2],m:true,e:`AI accelerates drafting, comprehension, and prototyping — but it augments, not replaces, human review.`},
+{q:`An "agentic loop" typically includes:`,o:[`A single response`,`Reason → act (tool call) → observe → repeat until goal`,`Only retrieval`,`Only fine-tuning`],a:[1],e:`Agents iterate through reasoning, acting via tools, and observing results until the objective is met.`},
+{q:`Guardrails / output validation on LLM responses are used to:`,o:[`Increase creativity`,`Enforce format, safety, and correctness constraints on outputs`,`Raise temperature`,`Store embeddings`],a:[1],e:`Guardrails validate/constrain outputs (schema, safety, policy) before they're used downstream.`},
+{q:`Which best distinguishes RAG from fine-tuning?`,o:[`RAG changes model weights; fine-tuning adds context`,`RAG adds retrieved context at query time; fine-tuning updates model weights during training`,`They are identical`,`Fine-tuning is real-time`],a:[1],e:`RAG augments the prompt at inference; fine-tuning bakes behavior into the weights beforehand.`},
+{q:`A responsible-AI concern when auto-generating user-facing content is:`,o:[`Faster typing`,`Producing biased, unsafe, or non-factual content without oversight`,`Lower token cost`,`Bigger context`],a:[1],e:`Ungoverned generation can output biased, unsafe, or false content — oversight and guardrails are essential.`},
+{q:`Select all that apply: signals that a task suits a deterministic program over an LLM.`,o:[`Exact, verifiable correctness is required`,`The logic is well-defined and rule-based`,`Reproducibility is mandatory`,`The task is open-ended and creative`],a:[0,1,2],m:true,e:`Deterministic code fits exact, rule-based, reproducible tasks; open-ended creative work is where LLMs shine.`},
+{q:`Why verify an LLM-cited source or fact?`,o:[`Sources are always real`,`Models can fabricate plausible-looking citations`,`Verification is unnecessary`,`It lowers temperature`],a:[1],e:`LLMs can invent citations and facts, so independent verification is required for reliability.`},
+{q:`The main value of AI-augmented programming is:`,o:[`Removing the need for engineers`,`Amplifying developer productivity while the engineer stays responsible for correctness`,`Guaranteeing bug-free code`,`Eliminating testing`],a:[1],e:`It boosts productivity, but engineers remain accountable for reviewing, testing, and validating the output.`}
+]
+};
+
+// ---------- engine ----------
+const $=s=>document.querySelector(s);
+let cur=null, idx=0, answers=[], selected=[];
+
+function buildHome(){
+  const g=$('#grid'); g.innerHTML='';
+  Object.keys(QUIZ).forEach(k=>{
+    const m=META[k]; const n=QUIZ[k].length;
+    const c=document.createElement('div'); c.className='card';
+    c.innerHTML=`<div class="count">${n} Q</div>
+      <div class="dot" style="background:${m.color}">${m.name[0]}</div>
+      <h3>${m.name}</h3><p>${m.blurb}</p>`;
+    c.onclick=()=>startQuiz(k);
+    g.appendChild(c);
+  });
+}
+function show(id){['home','quiz','results'].forEach(s=>$('#'+s).classList.toggle('hidden',s!==id));window.scrollTo(0,0);}
+function startQuiz(k){cur=k;idx=0;answers=[];$('#qSubject').textContent=META[k].name;$('#qSubject').style.color=META[k].color;render();show('quiz');}
+function render(){
+  const q=QUIZ[cur][idx]; selected=[];
+  const multi=!!q.m;
+  $('#progBar').style.width=((idx)/QUIZ[cur].length*100)+'%';
+  $('#qCount').textContent=`Question ${idx+1} of ${QUIZ[cur].length}`;
+  const t=$('#qType'); t.textContent=multi?'Select all that apply':'Single answer'; t.className='pill '+(multi?'multi':'single');
+  $('#qText').innerHTML=q.q;
+  const box=$('#qOpts'); box.innerHTML='';
+  q.o.forEach((opt,i)=>{
+    const el=document.createElement('div'); el.className='opt '+(multi?'':'radio');
+    el.innerHTML=`<span class="box"></span><span>${opt}</span>`;
+    el.onclick=()=>{
+      if(el.classList.contains('locked'))return;
+      if(multi){const p=selected.indexOf(i);p>-1?selected.splice(p,1):selected.push(i);el.classList.toggle('sel');}
+      else{selected=[i];[...box.children].forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
+      $('#submitBtn').disabled=selected.length===0;
+    };
+    box.appendChild(el);
+  });
+  $('#qExp').classList.add('hidden');
+  $('#submitBtn').classList.remove('hidden'); $('#submitBtn').disabled=true;
+  $('#nextBtn').classList.add('hidden');
+  $('#nextBtn').textContent = idx===QUIZ[cur].length-1?'See results':'Next';
+  const correct=answers.filter(a=>a.ok).length;
+  $('#scoreLive').textContent=answers.length?`${correct}/${answers.length} correct`:'';
+}
+function submit(){
+  const q=QUIZ[cur][idx]; const box=$('#qOpts');
+  const ok=selected.length===q.a.length && selected.every(s=>q.a.includes(s));
+  [...box.children].forEach((el,i)=>{
+    el.classList.add('locked');
+    if(q.a.includes(i))el.classList.add('correct');
+    else if(selected.includes(i))el.classList.add('wrong');
+  });
+  const e=$('#qExp'); e.innerHTML=`<b>${ok?'Correct.':'Not quite.'}</b> ${q.e}`; e.classList.remove('hidden');
+  answers.push({q:q.q,ok,picked:selected.slice(),correct:q.a.slice(),opts:q.o});
+  $('#submitBtn').classList.add('hidden'); $('#nextBtn').classList.remove('hidden');
+  const c=answers.filter(a=>a.ok).length; $('#scoreLive').textContent=`${c}/${answers.length} correct`;
+  $('#progBar').style.width=((idx+1)/QUIZ[cur].length*100)+'%';
+}
+function next(){ if(idx<QUIZ[cur].length-1){idx++;render();} else results(); }
+function results(){
+  const total=QUIZ[cur].length, correct=answers.filter(a=>a.ok).length;
+  const pct=Math.round(correct/total*100);
+  $('#rPct').textContent=pct+'%'; $('#rPct').style.color=pct>=75?'var(--green)':pct>=50?'var(--yellow)':'var(--red)';
+  const band=pct>=75?'Strong':pct>=50?'Proficient':'Needs work';
+  $('#rBand').textContent=band+' — '+META[cur].name; $('#rBand').style.color=$('#rPct').style.color;
+  $('#rSub').textContent=`${correct} of ${total} correct. On IKM this maps roughly to a ${band.toLowerCase()} band; aim to review every miss below.`;
+  const r=$('#review'); r.innerHTML='';
+  answers.forEach((a,i)=>{
+    if(a.ok)return;
+    const d=document.createElement('div'); d.className='item';
+    const yours=a.picked.map(p=>a.opts[p]).join(', ')||'—';
+    const right=a.correct.map(p=>a.opts[p]).join(', ');
+    d.innerHTML=`<div class="qn">${i+1}. ${a.q}</div>
+      <div><span class="mark no">Your answer:</span> ${yours}</div>
+      <div><span class="mark ok">Correct:</span> ${right}</div>`;
+    r.appendChild(d);
+  });
+  if(!r.innerHTML)r.innerHTML='<div class="item" style="text-align:center">Clean sweep — every question correct.</div>';
+  show('results');
+}
+$('#submitBtn').onclick=submit;
+$('#nextBtn').onclick=next;
+$('#quitBtn').onclick=()=>show('home');
+$('#retryBtn').onclick=()=>startQuiz(cur);
+$('#homeBtn').onclick=()=>show('home');
+buildHome();
+</script>
+</body>
+</html>
