@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const columns = [
   {
     heading: "Links",
@@ -68,12 +70,15 @@ export function Footer() {
             <a className="transition-colors hover:text-foreground" href="mailto:info@solafidei.com">
               info@solafidei.com
             </a>
-            <a className="transition-colors hover:text-foreground" href="#">
+            <Link className="transition-colors hover:text-foreground" href="/privacy">
               Privacy
-            </a>
-            <a className="transition-colors hover:text-foreground" href="#">
+            </Link>
+            <Link className="transition-colors hover:text-foreground" href="/terms">
               Terms
-            </a>
+            </Link>
+            <Link className="transition-colors hover:text-foreground" href="/data-deletion">
+              Data deletion
+            </Link>
           </div>
         </div>
       </div>
