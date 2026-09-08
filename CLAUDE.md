@@ -31,12 +31,9 @@ Single-page marketing site for Solafidei (Next.js 15 App Router, React 19, Tailw
 
 **Splash screen sequencing:** `splash-state.ts` coordinates a once-per-session branded splash with the hero entrance — the hero waits for the `solafidei:splash-done` event instead of animating behind the splash. `?splash=on|off` query param forces either mode (useful when testing, and verification scripts must wait out the splash).
 
-**Server side:** two API routes, both emailing via Resend:
+**Server side:** one API route — `src/app/api/contact/route.ts`, the contact form, gated by Cloudflare Turnstile and emailing via Resend.
 
-- `src/app/api/contact/route.ts` — contact form, gated by Cloudflare Turnstile.
-- `src/app/api/awareness/events/route.ts` — phishing-awareness campaign tracking (paired with the `/letter` page). Links are HMAC-signed (`sig` = hex hmac_sha256 of `JSON.stringify([rid, campaign, to, from])` with `AWARENESS_EVENT_SECRET`); requests are IP rate-limited in memory. Notification emails deliberately omit IP/user-agent/screen data — keep it that way.
-
-Required env vars are listed in README.md (`RESEND_API_KEY`, `EMAIL_FROM`, `EMAIL_TO`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `AWARENESS_EVENT_SECRET`, `AWARENESS_EMAIL_TO`).
+Required env vars are listed in README.md (`RESEND_API_KEY`, `EMAIL_FROM`, `EMAIL_TO`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`).
 
 ## Conventions
 

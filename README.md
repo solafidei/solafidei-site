@@ -24,21 +24,11 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 Required production variables:
 
-- `RESEND_API_KEY`: API key used by contact and awareness notification emails.
+- `RESEND_API_KEY`: API key used by contact notification emails.
 - `EMAIL_FROM`: verified sender address, for example `Solafidei <hello@solafidei.com>`.
 - `EMAIL_TO`: recipient for contact form submissions.
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY`: Cloudflare Turnstile site key rendered on the contact form.
 - `TURNSTILE_SECRET_KEY`: Cloudflare Turnstile secret key verified by `/api/contact`.
-- `AWARENESS_EVENT_SECRET`: shared secret used to sign awareness campaign links.
-- `AWARENESS_EMAIL_TO`: optional recipient for awareness event emails.
-
-Awareness links must include a `sig` parameter. The signature is:
-
-```txt
-hex(hmac_sha256(AWARENESS_EVENT_SECRET, JSON.stringify([rid, campaign, to, from])))
-```
-
-The awareness endpoint uses the request IP only for transient rate limiting. Notification emails intentionally omit IP address, user agent, screen size, and viewport data.
 
 ## Learn More
 
