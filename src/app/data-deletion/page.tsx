@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "How to request deletion of your personal data from the Solafidei booking system and WhatsApp service.",
   robots: { index: true, follow: true },
-  alternates: { canonical: "https://solafidei.com/data-deletion" },
+  alternates: { canonical: "https://www.solafidei.com/data-deletion" },
 };
 
 const SUPPORT_EMAIL = "info@solafidei.com";

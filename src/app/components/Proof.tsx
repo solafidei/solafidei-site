@@ -302,6 +302,34 @@ export function Proof() {
             </figure>
           ))}
         </div>
+        {/* the same testimonials, as structured data — no rating exists in the
+            source, so no reviewRating/aggregateRating */}
+        <script
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": voices.map(({ quote, author, role }) => {
+                const [jobTitle, ...rest] = role.split(/,\s*/);
+                const company = rest.join(", ");
+                return {
+                  "@type": "Review",
+                  reviewBody: quote,
+                  itemReviewed: { "@id": "https://www.solafidei.com/#studio" },
+                  author: {
+                    "@type": "Person",
+                    name: author,
+                    jobTitle,
+                    ...(company && {
+                      worksFor: { "@type": "Organization", name: company },
+                    }),
+                  },
+                };
+              }),
+            }),
+          }}
+        />
       </div>
     </section>
   );

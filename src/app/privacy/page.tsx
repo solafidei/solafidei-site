@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "How Solafidei collects, uses, and protects your personal data, including data handled through our booking system and WhatsApp service.",
   robots: { index: true, follow: true },
-  alternates: { canonical: "https://solafidei.com/privacy" },
+  alternates: { canonical: "https://www.solafidei.com/privacy" },
 };
 
 const SUPPORT_EMAIL = "info@solafidei.com";

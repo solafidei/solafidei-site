@@ -286,6 +286,29 @@ export function Services() {
             />
           </div>
         </div>
+
+        {/* the four service lines, machine-readable — mapped from `items`
+            so the schema tracks the copy */}
+        <script
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "ItemList",
+              itemListElement: items.map(({ title, desc }, i) => ({
+                "@type": "ListItem",
+                position: i + 1,
+                item: {
+                  "@type": "Service",
+                  name: title,
+                  description: desc,
+                  provider: { "@id": "https://www.solafidei.com/#studio" },
+                },
+              })),
+            }),
+          }}
+        />
       </div>
     </section>
   );

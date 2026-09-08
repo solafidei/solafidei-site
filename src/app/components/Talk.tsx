@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2, Loader2, Plus } from "lucide-react";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
 import { Button as MovingBorderButton } from "@/components/ui/moving-border";
@@ -127,6 +127,21 @@ export function Talk() {
           subtitle="The things future clients usually ask us first."
         />
         <FAQList />
+        <script
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: faqs.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
+            }),
+          }}
+        />
       </div>
 
       {/* set piece #4: the page's single loudest CTA. Everything funnels here. */}
@@ -258,22 +273,20 @@ function FAQList() {
                 }`}
               />
             </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  id={`faq-panel-${i}`}
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  className="overflow-hidden"
-                >
-                  <p className="max-w-2xl pb-7 pl-9 text-sm leading-relaxed text-muted md:text-base">
-                    {f.a}
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* always mounted (collapsed = height 0) so all six answers are
+                server-rendered — crawlers and AI extractors read them all */}
+            <motion.div
+              id={`faq-panel-${i}`}
+              inert={!isOpen}
+              initial={false}
+              animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden"
+            >
+              <p className="max-w-2xl pb-7 pl-9 text-sm leading-relaxed text-muted md:text-base">
+                {f.a}
+              </p>
+            </motion.div>
           </div>
         );
       })}

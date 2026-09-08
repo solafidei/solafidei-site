@@ -30,7 +30,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://solafidei.com"),
+  metadataBase: new URL("https://www.solafidei.com"),
   title: {
     default: "Solafidei",
     template: "%s | Solafidei",
@@ -46,13 +46,11 @@ export const metadata: Metadata = {
     title: "Solafidei",
     description:
       "We design and build modern, intuitive web and mobile apps that help innovative companies launch and scale digital products with confidence.",
-    url: "https://solafidei.com",
+    url: "https://www.solafidei.com",
     siteName: "Solafidei",
     images: [
       {
         url: "/logo_opaque_smaller.png",
-        width: 1200,
-        height: 630,
         alt: "Solafidei",
       },
     ],
@@ -60,7 +58,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "Solafidei",
     description:
       "We design and build modern, intuitive web and mobile apps that help innovative companies launch and scale digital products with confidence.",
@@ -71,7 +69,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: "https://solafidei.com",
+    canonical: "https://www.solafidei.com",
   },
   other: {
     "facebook-domain-verification": "ue9rteh0x5yxy3ceywit8jk744vjpq",
@@ -105,12 +103,65 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "Organization",
-              name: "Solafidei",
-              url: "https://solafidei.com",
-              logo: "https://solafidei.com/logo_opaque_smaller.png",
-              email: "info@solafidei.com",
-              sameAs: [],
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://www.solafidei.com/#studio",
+                  name: "Solafidei",
+                  alternateName:
+                    "Solafidei Software Design & Development Studio",
+                  description: metadata.description,
+                  url: "https://www.solafidei.com",
+                  logo: "https://www.solafidei.com/logo_opaque_smaller.png",
+                  email: "info@solafidei.com",
+                  legalName: "Solafidei",
+                  foundingDate: "2025-10",
+                  telephone: "+27690570000",
+                  address: {
+                    "@type": "PostalAddress",
+                    addressLocality: "Pretoria",
+                    addressCountry: "ZA",
+                  },
+                  // grounded in the service lines, stack and case studies
+                  // rendered by Services.tsx and Proof.tsx — nothing else
+                  knowsAbout: [
+                    "Web & Mobile App Development",
+                    "Product Discovery & UI/UX Design",
+                    "Feature Development & Integration",
+                    "Ongoing Support & Optimization",
+                    "Next.js",
+                    "React",
+                    "React Native",
+                    "Flutter",
+                    ".NET / C#",
+                    "Node.js",
+                    "Python",
+                    "AWS",
+                    "GCP",
+                    "Azure",
+                    "Terraform",
+                    "Firebase",
+                    "PostgreSQL",
+                    "Redis",
+                    "Microservices architecture",
+                    "CI/CD pipelines",
+                    "Realtime chat and media pipelines",
+                    "Push notification campaigns",
+                    "Database migrations",
+                  ],
+                  sameAs: [
+                    "https://github.com/solafidei",
+                    "https://gitlab.com/solafidei",
+                  ],
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://www.solafidei.com/#website",
+                  name: "Solafidei",
+                  url: "https://www.solafidei.com",
+                  publisher: { "@id": "https://www.solafidei.com/#studio" },
+                },
+              ],
             }),
           }}
         />

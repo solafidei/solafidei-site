@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "The terms that govern your use of the Solafidei booking system and WhatsApp messaging service.",
   robots: { index: true, follow: true },
-  alternates: { canonical: "https://solafidei.com/terms" },
+  alternates: { canonical: "https://www.solafidei.com/terms" },
 };
 
 const SUPPORT_EMAIL = "info@solafidei.com";
