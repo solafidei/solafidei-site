@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   // this rewrite just gives them a clean shareable URL.
   async rewrites() {
     return [
+      { source: "/decks/:deck/demo", destination: "/decks/:deck/demo/index.html" },
+      { source: "/decks/:deck/demo/:page", destination: "/decks/:deck/demo/:page.html" },
       { source: "/decks/:deck", destination: "/decks/:deck/index.html" },
     ];
   },
