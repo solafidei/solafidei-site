@@ -42,3 +42,8 @@ next-env.d.ts
 
 # tokensave code-graph index (local, rebuildable)
 .tokensave/
+
+# Mel's Skate Shop pitch — raw Store API / size-chart responses cached by
+# scripts/fetch-mels-fixtures.mjs (spec §9: one pass over the live site;
+# never committed, never re-fetched while the cache file exists)
+/.cache/mels-fixtures/

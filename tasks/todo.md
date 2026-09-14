@@ -4,11 +4,11 @@
 
 ## Phase 1: Spine
 
-- [ ] Task 1: Branch, the two rewrites, six stubs, verify skeleton (group 1) — S · sonnet · deps: —
+- [x] Task 1: Branch, the two rewrites, six stubs, verify skeleton (group 1) — S · sonnet · deps: —
 
 ## Phase 2: Fixtures
 
-- [ ] Task 2: Fetch A — polite core + Store API → products.json + manifest scaffold — M · sonnet · deps: 1
+- [x] Task 2: Fetch A — polite core + Store API → products.json + manifest scaffold — M · sonnet · deps: 1
 - [ ] Task 3: Fetch B — product/logo images → WebP + manifest.images[] (reserves, does not fetch, roll-line-listing.webp — owner-captured, §9 no forms) — M · sonnet · deps: 2
 - [ ] Task 4: Fetch C — outbound link enumeration (12 candidates incl. maps.google.com/waze.com per §7.3; Maps/Waze exempt per #495 → 9 fetched, ≤10 holds), budget check, HEADs → manifest.links[] — S · sonnet · deps: 2
 - [ ] CHECKPOINT: fixtures landed — owner eyeballs products.json + manifest, opens the Facebook URL once, ticks manual-ok or drops the link, captures the Roll-Line listing screenshot in a real browser, confirms Maps/Waze recorded exempt (#495) and the 9 fetched links are all 200 (owner gate)
