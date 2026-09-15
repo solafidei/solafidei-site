@@ -188,10 +188,12 @@
     {
       "file": "roll-line-listing.webp",
       "from": "roll-line.it",
-      "width": null,
-      "flags": [
-        "pending-owner-capture"
-      ]
+      "width": 1170,
+      "flags": [],
+      "height": 940,
+      "source": "https://roll-line.it/en/dealers (Country filter = South Africa)",
+      "note": "Owner-authorised manual browser capture at CP1 — the locator needs a filter interaction the fetch script may not perform (spec §9 no forms). Mel is the sole South African Roll-Line dealer.",
+      "capturedAt": "2026-09-15T00:00:00.000Z"
     }
   ],
   "links": [
@@ -237,18 +239,27 @@
     },
     {
       "href": "https://facebook.com/melsskateshopofficial",
-      "status": "pending-manual",
-      "reason": "never fetched by this script (audit.json issue 10) — the owner opens it once in a real browser at CP1 and ticks manual-ok, or the link is dropped"
+      "status": "manual-ok",
+      "reason": "Owner-authorised single manual browser load at CP1. 301 -> www.facebook.com/melsskateshopofficial, 200, title \"Mel's Skate Shop | Midrand | Facebook\", page active (most recent post 4 September). Never fetched by the script.",
+      "checkedAt": "2026-09-15T00:00:00.000Z"
     },
     {
       "href": "https://maps.google.com/?q=Swallow%20Drive%2020%2C%20Midrand%201686",
       "status": "exempt",
-      "reason": "query deep link — status proves nothing about the address (decision #495)"
+      "reason": "query deep link — status proves nothing about the address (decision #495)",
+      "flags": [
+        "address-conflict-unresolved"
+      ],
+      "conflict": "UNRESOLVED ADDRESS CONFLICT (spec §2.9 confirm-flag, decision #489, still open). Two live sources disagree by ~20 km: (a) \"Swallow Drive 20, Midrand 1686\" — roll-line.it dealer listing + facebook.com Intro panel; (b) \"Eastgate Shopping Centre, 43 Bradford Rd, Bedfordview, Germiston 2008\" — Google Business Profile, which carries the matching phone 082 370 6771, the matching site melsskateshop.co.za, trading hours, an interior photo and walk-in directions. This href was built from (a) and geocodes to -26.0027,28.0882; the Google pin for the business name is -26.1786,28.1143. OWNER RULING REQUIRED before T06 writes contact.json — a pitch that sends Mel's own customers to the wrong door is worse than no map link."
     },
     {
       "href": "https://waze.com/ul?q=Swallow%20Drive%2020%2C%20Midrand%201686",
       "status": "exempt",
-      "reason": "query deep link — status proves nothing about the address (decision #495)"
+      "reason": "query deep link — status proves nothing about the address (decision #495)",
+      "flags": [
+        "address-conflict-unresolved"
+      ],
+      "conflict": "UNRESOLVED ADDRESS CONFLICT (spec §2.9 confirm-flag, decision #489, still open). Two live sources disagree by ~20 km: (a) \"Swallow Drive 20, Midrand 1686\" — roll-line.it dealer listing + facebook.com Intro panel; (b) \"Eastgate Shopping Centre, 43 Bradford Rd, Bedfordview, Germiston 2008\" — Google Business Profile, which carries the matching phone 082 370 6771, the matching site melsskateshop.co.za, trading hours, an interior photo and walk-in directions. This href was built from (a) and geocodes to -26.0027,28.0882; the Google pin for the business name is -26.1786,28.1143. OWNER RULING REQUIRED before T06 writes contact.json — a pitch that sends Mel's own customers to the wrong door is worse than no map link."
     },
     {
       "href": null,

@@ -219,7 +219,7 @@ const PRODUCT_FIELDS = [
   "stock_availability",
 ];
 
-function pickProductFields(raw) {
+export function pickProductFields(raw) {
   const out = {};
   for (const key of PRODUCT_FIELDS) out[key] = raw[key];
   return out;
@@ -461,7 +461,7 @@ function printDriftTable(rows) {
 
 // --- Sky 50 discovery (do not guess the id — spec) --------------------------
 
-function pickSky50(iceSkatesProducts) {
+export function pickSky50(iceSkatesProducts) {
   const candidates = iceSkatesProducts.filter((p) => /sky\s*50/i.test(p.name));
   const nonBlack = candidates.filter((p) => !/black/i.test(p.name) && !/black/i.test(p.slug));
   if (nonBlack.length !== 1) {
@@ -474,9 +474,31 @@ function pickSky50(iceSkatesProducts) {
   return nonBlack[0];
 }
 
+// --- Sky 200 discovery (spec §6.3 item 11 Rail-B price ladder) --------------
+//
+// The ladder is "Sky 50 R7,850 · Sky 100 R12,050 · Sky 200 R15,550", and all
+// three rungs are the WHITE colourway (11905 / 11919 / this one). 11941 — the
+// BLACK Sky 200 at R15,500 — is fetched separately for the Aura size-guide
+// image (store:11941) and is NOT the ladder's top rung; using it there puts
+// R15,500 on the screen under a spec that says R15,550. Discovered, never
+// guessed, out of the Ice Skates dump already in memory: zero extra requests.
+
+export function pickSky200White(iceSkatesProducts) {
+  const candidates = iceSkatesProducts.filter((p) => /sky\s*200/i.test(p.name));
+  const nonBlack = candidates.filter((p) => !/black/i.test(p.name) && !/black/i.test(p.slug));
+  if (nonBlack.length !== 1) {
+    throw new Error(
+      `Sky 200 discovery ambiguous in Ice Skates (${CATEGORY_IDS.iceSkates}): ` +
+        `${candidates.length} "Sky 200" match(es), ${nonBlack.length} non-black. Expected exactly one. ` +
+        `Candidates: ${JSON.stringify(candidates.map((p) => ({ id: p.id, name: p.name, slug: p.slug })))}`,
+    );
+  }
+  return nonBlack[0];
+}
+
 // --- output shaping ---------------------------------------------------------
 
-function sortProducts(products) {
+export function sortProducts(products) {
   const byId = new Map();
   for (const p of products) {
     if (EXCLUDED_PRODUCT_IDS.has(p.id)) continue; // 11938 leaks nowhere, regardless of source bucket
@@ -1128,6 +1150,7 @@ async function main() {
 
   const iceSkatesProducts = await fetchJsonCached(iceSkatesPlan.url, iceSkatesPlan.cacheFile, iceSkatesPlan.label);
   const pSky50 = pickProductFields(pickSky50(iceSkatesProducts));
+  const pSky200White = pickProductFields(pickSky200White(iceSkatesProducts));
 
   const derby120 = (await fetchJsonCached(derbyPlan.url, derbyPlan.cacheFile, derbyPlan.label)).map(pickProductFields);
   const sets = (await fetchJsonCached(setsPlan.url, setsPlan.cacheFile, setsPlan.label)).map(pickProductFields);
@@ -1150,6 +1173,7 @@ async function main() {
     p11919,
     p11941,
     pSky50,
+    pSky200White,
     ...derby120,
     ...sets,
     ...wheels,

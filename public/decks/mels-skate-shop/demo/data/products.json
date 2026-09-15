@@ -6670,6 +6670,69 @@
     {
       "categories": [
         {
+          "id": 98,
+          "name": "Ice Skates",
+          "slug": "ice-skates",
+          "link": "https://melsskateshop.co.za/product-category/ice-skates/"
+        },
+        {
+          "id": 304,
+          "name": "White Ice Skates",
+          "slug": "white-ice-skates",
+          "link": "https://melsskateshop.co.za/product-category/ice-skates/white-ice-skates/"
+        }
+      ],
+      "id": 11924,
+      "images": [
+        {
+          "id": 11931,
+          "src": "https://melsskateshop.co.za/wp-content/uploads/2026/03/Aura.jpg",
+          "thumbnail": "https://melsskateshop.co.za/wp-content/uploads/2026/03/Aura-300x279.jpg",
+          "srcset": "https://melsskateshop.co.za/wp-content/uploads/2026/03/Aura.jpg 562w, https://melsskateshop.co.za/wp-content/uploads/2026/03/Aura-300x279.jpg 300w",
+          "sizes": "(max-width: 562px) 100vw, 562px",
+          "thumbnail_srcset": "https://melsskateshop.co.za/wp-content/uploads/2026/03/Aura-300x279.jpg 300w, https://melsskateshop.co.za/wp-content/uploads/2026/03/Aura.jpg 562w",
+          "thumbnail_sizes": "(max-width: 300px) 100vw, 300px",
+          "name": "Aura",
+          "alt": ""
+        },
+        {
+          "id": 11932,
+          "src": "https://melsskateshop.co.za/wp-content/uploads/2026/03/Aura-Size-Guide-2026-kg-pdf.jpg",
+          "thumbnail": "https://melsskateshop.co.za/wp-content/uploads/2026/03/Aura-Size-Guide-2026-kg-pdf.jpg",
+          "srcset": "",
+          "sizes": "(max-width: 1088px) 100vw, 1088px",
+          "thumbnail_srcset": "",
+          "thumbnail_sizes": "(max-width: 300px) 100vw, 300px",
+          "name": "Aura Size Guide 2026 kg",
+          "alt": ""
+        }
+      ],
+      "is_in_stock": true,
+      "is_purchasable": true,
+      "name": "Aura Sky 200 Ice Skate Boot White",
+      "permalink": "https://melsskateshop.co.za/product/aura-sky-200-ice-skate-boot-white/",
+      "prices": {
+        "price": "1555000",
+        "regular_price": "1555000",
+        "sale_price": "1555000",
+        "price_range": null,
+        "currency_code": "ZAR",
+        "currency_symbol": "R",
+        "currency_minor_unit": 2,
+        "currency_decimal_separator": ".",
+        "currency_thousand_separator": ",",
+        "currency_prefix": "R",
+        "currency_suffix": ""
+      },
+      "slug": "aura-sky-200-ice-skate-boot-white",
+      "stock_availability": {
+        "text": "",
+        "class": "in-stock"
+      }
+    },
+    {
+      "categories": [
+        {
           "id": 303,
           "name": "Black Ice Skates",
           "slug": "black-ice-skates",
