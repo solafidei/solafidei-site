@@ -1,0 +1,159 @@
+Font licensing and provenance — Mel's Skate Shop proposal demo
+==============================================================
+
+Two font binaries are redistributed in this directory. Both are licensed under
+the SIL Open Font License, Version 1.1. The full licence text is reproduced
+below and applies to both.
+
+The copyright notices, family names, version strings and weight axes below were
+read out of each file's own OpenType `name` and `fvar` tables on 2026-09-15 —
+they are not transcribed from a website. Nothing here is asserted that the
+binaries do not themselves state.
+
+----------------------------------------------------------------------
+outfit-variable-subset.woff2                                 23,076 bytes
+  name ID 1  (family) : Outfit Thin   (the upstream variable file is published
+                        under its thin-instance name; the axis below is the
+                        full range, and this demo names the CSS family "Outfit")
+  name ID 5  (version): Version 1.100;gftools[0.9.27]
+  name ID 0  (notice) : Copyright 2021 The Outfit Project Authors
+                        (https://github.com/Outfitio/Outfit-Fonts)
+  name ID 14 (licence): https://scripts.sil.org/OFL
+  fvar axis           : wght 100 – 900 (default 100)
+  measured coverage   : 94 code points
+  sha256              : 5a2cdba835de311206f81c864f7d94cf7fe3f70cd71d46b9423569299aa0a031
+
+jetbrains-mono-variable-subset.woff2                         32,288 bytes
+  name ID 1  (family) : JetBrains Mono
+  name ID 5  (version): Version 2.211
+  name ID 0  (notice) : Copyright 2020 The JetBrains Mono Project Authors
+                        (https://github.com/JetBrains/JetBrainsMono)
+  name ID 14 (licence): https://scripts.sil.org/OFL
+  fvar axis           : wght 100 – 800 (default 400)
+  measured coverage   : 95 code points (the 94 below plus U+2500 BOX DRAWINGS
+                        LIGHT HORIZONTAL, which site.css does not declare)
+  sha256              : 36a51e9e861f6bf2a42b608ce51eaee1908221d8d20a4fbea0e82bb3019bf2d1
+----------------------------------------------------------------------
+
+MODIFICATION NOTICE (OFL clause 2)
+  Both files are SUBSETS. They are not the upstream releases. Each carries a
+  reduced character set only — measured by decoding each file's `cmap` table:
+
+      U+0020–U+007E  minus  U+005C (\), U+005E (^), U+007E (~)
+      U+00B7  MIDDLE DOT
+      U+2014  EM DASH
+
+  The subsetting was performed upstream of this repository (the files were taken
+  from a local build cache, not fetched for this task); this project only
+  renamed and copied them. No glyph outline, name-table string or axis was
+  altered here. Neither file uses a Reserved Font Name, so no name change is
+  required by OFL clause 3.
+
+  The `unicode-range` declared in `../site.css` is exactly the 94 code points
+  above, for both faces, so any character outside that set is handed to the
+  fallback stack by the browser rather than silently dropped.
+
+OPEN GAP, recorded honestly (see ../PRODUCT.md)
+  Upstream release notes, designer credits and the precise upstream subsetting
+  recipe were NOT available offline and are not reproduced here. Nothing in this
+  file is inferred: every field above came out of the binaries themselves. If the
+  owner wants fuller attribution before this demo is shown, the upstream projects
+  named in the copyright notices are where it comes from.
+
+======================================================================
+SIL OPEN FONT LICENSE, VERSION 1.1 — applies to both files above
+======================================================================
+
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+PREAMBLE
+
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font
+creation efforts of academic and linguistic communities, and to provide
+a free and open framework in which fonts may be shared and improved in
+partnership with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded,
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply to
+any document created using the fonts or their derivatives.
+
+DEFINITIONS
+
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components
+as distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to,deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software
+to a new environment.
+
+"Author" refers to any designer, engineer, programmer, technical writer
+or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components, in
+Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or in
+the appropriate machine-readable metadata fields within text or binary
+files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the
+corresponding Copyright Holder. This restriction only applies to the
+primary font name as presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole, must
+be distributed entirely under this license, and must not be distributed
+under any other license. The requirement for fonts to remain under this
+license does not apply to any document created using the Font Software.
+
+TERMINATION
+
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+

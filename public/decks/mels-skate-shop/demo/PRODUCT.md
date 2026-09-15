@@ -1,0 +1,439 @@
+# Product
+
+<!-- impeccable:product-schema 1 -->
+
+> Scope note. This file governs **`public/decks/mels-skate-shop/demo/` only** — the five
+> static HTML screens of the Mel's Skate Shop cold-pitch demo. It is not the product record
+> for `solafidei-site`, which is a different product with a different design system. It sits
+> inside `demo/` (not at the repo root) because `tasks/plan.md` Task 5 places it there, where
+> `impeccable detect` finds it alongside the files it describes.
+>
+> It also carries more design direction than impeccable's `init` convention normally allows in
+> a PRODUCT.md — palette, type and the chip rule would ordinarily live in a DESIGN.md. Task 5's
+> acceptance criteria require them *here*, and five later tasks will read exactly one file
+> before they write markup. The plan wins; the sections are labelled so the seam is visible.
+
+## Platform
+
+web
+
+## Stack
+
+Static HTML5 + one hand-written CSS file + (from Task 9) vanilla ES2020 modules. No framework,
+no build step, no npm dependency, no CDN, no third-party script — spec §3 and §9. Files are
+served straight out of `public/`; `next.config.ts` only rewrites the clean URLs onto them.
+
+## Users
+
+**Melony**, the owner of Mel's Skate Shop, on her phone, cold. She did not ask for this and has
+never heard of us. A stranger sent her a link. She will decide in roughly eight seconds whether
+the rest of her afternoon is worth spending on it.
+
+That single fact sets every constraint below: 390 px first, legible without zooming, no
+cleverness that costs a second of comprehension, and nothing that reads as a template with her
+logo dropped into it. A secondary audience — her customers — only matters in so far as Melony
+recognises them in the screens.
+
+## Product Purpose
+
+The demo is an argument made in working software: *this is what your shop would look like if
+someone who respects it rebuilt the storefront.* Five screens (Home, Roller Derby hub, an Aura
+Sky 100 product page, a Size Finder, Book a fitting) show the specific things her current site
+cannot do. Success is Melony taking a call — not a conversion, not a sale.
+
+The demo is also a promise about how we would work: everything shown is either a fact sourced in
+`data/manifest.json`, or it is visibly marked **proposed**. Nothing is quietly invented. The
+chip (below) is not decoration; it is the product.
+
+## Positioning
+
+Mel's is a fitting shop, not a warehouse with a checkout. The demo has to feel like a shop that
+**puts skates on feet** — measures, adjusts, heat-moulds, and says "bring it back if it's wrong"
+— rather than a marketplace that ships boxes and hopes.
+
+Facts that back that, all already sourced in the spec, none invented here: trading since 2012;
+the first roller derby shop in South Africa; an official Roll-Line dealer (Roll-Line's own dealer
+listing is the evidence); Roadhouse Roller Rink lists it as a recommended shop; and it is the one
+shop in the country covering ice, artistic and derby under one roof. The demo's job is to make
+that visible in the first screenful, because her current site does not.
+
+## Operating Context
+
+- Phone first, cold, one-handed, probably in a quiet moment between customers.
+- Five pages, no login, no cart, no backend. Every action that would need one ends in WhatsApp,
+  a `tel:` link, or an email — labelled as what it is.
+- The pages are `noindex`. This is a proposal shown to one person, not a live storefront.
+- The five screens must reach each other from a shared header; no page is a dead end (§6.0b).
+
+## Capabilities and Constraints
+
+- One stylesheet, `assets/site.css`, is the entire design system. Later tasks must not add a
+  second stylesheet and must not use inline styles.
+- Class names are BEM-lite and several are **already fixed by spec §8** — `.pdp`, `.pdp__title`,
+  `.pdp__price`, `.price`, `.price__instalment`, `.fit-guarantee`, `.sizes`, `.size`,
+  `.size--selected`, `.availability`. Do not rename them; they are in the code sample the
+  reviewers will diff against.
+- State lives in `data-*` attributes. JS enhances; the page must read correctly without it.
+- Live regions start empty and receive only real state changes; static prompt text stays outside
+  them. `site.css` reserves one line of height for an empty live region so the layout does not
+  jump when a result arrives.
+- Tap targets are at least 44 px (`--tap`). Every focusable thing has a visible focus ring;
+  `outline: none` without a replacement is a defect.
+- `prefers-reduced-motion: reduce` is honoured globally.
+- **Undecided, and later tasks must not decide it for the owner:** the shop's street address.
+  Roll-Line's dealer listing and Facebook say one thing, the Google Business Profile says another
+  roughly 20 km away (decision #501). This file therefore says only that the shop is in Gauteng
+  and fits people in person. The address line in the contact block stays flagged `confirm`.
+
+## Brand Commitments
+
+- Melony's own logo is the wordmark (fetched once, `img/logo.webp`, ruled #492). There is no
+  invented mark, no re-drawn logo, no alternative lockup.
+- Melony's voice, not agency voice. Copy in `draft-copy.json` speaks as her and is labelled as a
+  draft, never as a promise.
+- No "walk-ins welcome" anywhere — that is a competitor's practice, not hers. The shop is
+  by appointment, in her own published hours.
+
+## Evidence on Hand
+
+Real, in the repo: the Store API product and category data (`data/products.json`), her own
+product photography and logo under `img/`, the Aura model-selection chart from her own listing,
+the Roll-Line dealer listing, the Roadhouse "recommended shop" mention, and exactly **one**
+public review (Elizabeth de Lange, Facebook, 2 November 2022).
+
+**Absences that must never be filled in by invention:** there is no Google rating, no review
+count beyond that one, no follower count, no Lighthouse score, no turnover figure, and no
+per-size stock truth for the Aura run. If a screen needs one of those, the answer is a chip and
+a WhatsApp handoff, not a number.
+
+## Product Principles
+
+1. **Fit, not freight.** Every screen answers "which one, and what size for *you*" before it
+   mentions price or delivery.
+2. **Evidence beats adjectives.** A named review, a dealer listing and a rink's recommendation
+   outrank any sentence starting "we are passionate about".
+3. **Marked, or sourced. Never neither.** If Mel has not published it, it wears the chip.
+4. **No dead ends.** Anything the demo cannot actually do hands over to WhatsApp with the
+   context already filled in, and says so on the button.
+5. **Respect the eight seconds.** One idea per screenful; nothing that needs a pinch-zoom.
+
+## Accessibility & Inclusion
+
+Target is WCAG 2.2 AA on a 390 × 844 phone. Body and UI text are at or above 4.5:1 (see the
+measured table below); the smallest text in the system, the chip at 13 px, measures 10.24:1.
+Keyboard order is DOM order, focus is always visible, and the one motion rule is disabled under
+`prefers-reduced-motion`. Live regions announce results, never placeholders.
+
+---
+
+# Design Direction
+
+*(Recorded here by `tasks/plan.md` Task 5. Impeccable convention would file this under
+DESIGN.md; see the scope note at the top.)*
+
+## Why the Solafidei tokens deliberately do not apply
+
+This is a decision, not an omission.
+
+**The mechanical half — verified, not assumed.** These five pages are static files under
+`public/`. `next.config.ts` rewrites `/decks/:deck/demo/:page` onto `/decks/:deck/demo/:page.html`
+and Next.js then serves that file verbatim. Fetching the clean URL from the dev server returns the
+stub's own bytes: one `<link rel="stylesheet">`, pointing at `assets/site.css`, and no Next-injected
+CSS or markup at all. So `src/app/layout.tsx` never wraps these pages and `src/app/globals.css`
+never loads. `site.css` is not *a* stylesheet for this demo — it is the only one.
+
+**The design half.** `globals.css` is Solafidei's house system: `color-scheme: dark`, a near-black
+base (`#030507`), one cyan accent (`#22d3ee`), "engineered, not decorated". That is a correct system
+for an engineering studio's own site and the wrong one for this. Dressing Mel's shop in our colours
+would say *look what we made*; the pitch has to say *look what you could have*. And a dark cyan
+storefront on a phone, cold, would read as a tech deck rather than a skate shop. So: a single
+light theme, warm, hers. Spec §2.13 anticipated exactly this and named it.
+
+Practically, nothing in `site.css` may reference a Solafidei token, and nothing in `src/` may be
+touched to support the demo.
+
+## Brand direction
+
+**Rink floor and toe stop.** The page is a cool, pale grey — the colour of a rink surface and a
+workshop bench — and the only genuinely warm things on it are Melony's own product photographs and
+one burnt-brick accent. That inversion is the whole idea: on her current site the photography
+competes with the page; here the page gets out of its way, and the single warm accent is reserved
+for the few things that are actually actions.
+
+Type does the rest. One geometric display face carries the voice, and a monospace face is allowed
+to carry exactly one thing — **measured values**: millimetres, cm/UK/EU/US conversions, prices,
+lead times. That is not ornament. It is a fitting shop; the numbers are the product, and setting
+them in a face that aligns in a column says so before any copy does.
+
+What it is **not**: no gradients, no glassmorphism, no hero video, no drop-shadow theatre, no
+stock photography, no warm-cream "tasteful" surface. The restraint is the argument — it is what
+lets her own product photos carry the page. (The cream surface is called out specifically: it is
+the reflex AI-template background, and `impeccable detect` flags it by name. This palette was
+changed away from it deliberately, not by accident — see "The gates this passed", below.)
+
+## Palette rationale — checkable in words
+
+All ratios below were computed from the actual hex values with the WCAG 2.x relative-luminance
+formula (`(L_lighter + 0.05) / (L_darker + 0.05)`), not estimated.
+
+| Token | Value | What it is for | Measured |
+|---|---|---|---|
+| `--c-surface` | `#f1f3f5` | the page. Cool pale grey — rink floor | — |
+| `--c-surface-raised` | `#ffffff` | cards lift off the floor | — |
+| `--c-surface-sunken` | `#e4e8ec` | bands, intake blocks, quiet cards | — |
+| `--c-ink` | `#14181c` | all body copy. Cool near-black, never `#000` | **16.04:1** on surface |
+| `--c-ink-muted` | `#4d565f` | meta, captions, hints | **6.71:1** on surface |
+| `--c-accent` | `#9e3315` | links, primary buttons, eyebrows | **6.43:1** on surface; **7.15:1** white-on-accent |
+| `--c-accent-strong` | `#7e2810` | hover / active only | **9.55:1** white-on-accent |
+| `--c-focus` | `#1b5fc1` | the focus ring, and nothing else | **5.47:1** on surface |
+| `--c-ok` | `#1e6b3a` | "in stock" | **5.86:1** on surface |
+| `--c-warn` | `#8a5a00` | "imported to order" | **5.33:1** on surface |
+| `--c-border` | `#d3d9de` | **decorative hairlines only** | 1.28:1 — never a control edge |
+| `--c-border-strong` | `#7c868f` | inputs, size buttons, real UI edges | **3.33:1** on surface |
+| `--c-chip-bg` / `--c-chip-ink` | `#33415c` / `#ffffff` | the "proposed" stamp | **10.24:1** |
+
+Four rules a non-designer can hold the build to:
+
+1. **The page is cool; the accent is the only warm thing that is not a photograph.** A burnt brick
+   red — links, primary buttons, the active nav item, the eyebrow above a section. If a red thing
+   is not clickable and not a section marker, that is a bug.
+2. **Stock states are never colour alone.** Green means in stock and *also* says "In stock";
+   amber means imported to order and *also* says how long. A colour-blind reader loses nothing.
+3. **`--c-border` is a hairline, not an edge.** It is intentionally faint (1.28:1) and may only
+   draw decorative card outlines. Anything a finger or a keyboard can land on uses
+   `--c-border-strong` (3.33:1), which clears WCAG 1.4.11.
+4. **Slate is reserved.** `#33415c` is the chip and nothing else. It is neither Mel's brand colour
+   nor a stock state, which is precisely why the chip can never be mistaken for either.
+
+The focus ring is blue on purpose: it is the one colour in the system that is not part of Mel's
+brand and not the chip, so it can never be mistaken for a decorative state.
+
+## Type
+
+Two families, both SIL OFL 1.1, both self-hosted as local `.woff2` with `font-display: swap`. No
+Google Fonts, no CDN, no `@import`. Full provenance, versions, axes, checksums and the licence text
+are in `assets/fonts/OFL.txt`.
+
+- **Outfit** (display *and* body) — everything that is words. Geometric, a little sporty,
+  wide-open counters; it holds up at 44 px in a hero and at 13 px in a caption, and it gives the
+  page a voice instead of the default one.
+- **JetBrains Mono** (measured values only) — millimetres, size conversions, prices, lead times,
+  via the `.num` utility and the `.price` / `.size` components. Tabular figures, so a size run and
+  a conversion row line up in a column. **Do not use it for prose.**
+
+**Inter was tried first and deliberately removed.** `impeccable detect` flags Inter by name as an
+overused face — one of the handful every AI-generated UI converges on — and on a pitch whose entire
+argument is "someone actually thought about your shop", shipping the default face would undercut
+the point. Outfit plus a purposeful mono is the more distinctive and more defensible system, and it
+happens to be smaller.
+
+Both files are **variable** (Outfit `wght 100–900`, JetBrains Mono `wght 100–800`), so there are
+exactly **two `@font-face` rules** for the whole system, **55,364 bytes** combined. The upstream
+cache held nine per-weight files per family; they were measured byte-identical within a family, so
+declaring nine static faces would have shipped the same bytes nine times for no gain. One face per
+family, one range.
+
+**Glyph budget — read this before writing copy.** These are subsets. Coverage was measured by
+decoding each file's `cmap` table; it is 94 code points per face and no more:
+
+```
+U+0020–U+007E   minus  \  ^  ~
+U+00B7  ·  MIDDLE DOT
+U+2014  —  EM DASH
+```
+
+So `·` and `—` are safe. **`–` (en dash), `’` (curly apostrophe), `“ ”`, `©` and accented letters
+are NOT in the fonts.** They will still render — `unicode-range` hands them to the fallback stack
+deliberately rather than dropping them — but they will render in the *system* face, mid-sentence,
+and a careful eye sees it. Therefore, for Tasks 6, 7 and 12–17:
+
+- write ranges with an em dash or a hyphen (`R100 Gauteng · R150 elsewhere · 1-3 days`), not an
+  en dash;
+- write apostrophes as the ASCII `'` (`Mel's`, not `Mel’s`);
+- use `"` for quotes;
+- the one place `©` is genuinely required — the image credit "Product imagery © Mel's Skate
+  Shop, reproduced for this proposal" (§2.5) — is a 12 px footer line, and the fallback there is
+  an accepted, recorded cost.
+
+The type scale is nine steps, `--t-xs` (12 px) to `--t-4xl` (44 px), all in `rem`. Body copy is
+17 px because 16 px is the floor, not the target, when the reader is holding the phone at arm's
+length — and that rule binds **every block that says something**, not just `<p>`. Measured at
+390 px, these all compute to 17 px: `.promise-row__item`, `.fit-guarantee`, `.banner`, `.note`,
+`.chip-legend`, `.availability`, `.price__instalment`, `.live`, `.site-footer`. The shop's
+promises, its terms, its contact details and the key that explains the chip are body copy; they
+were set at 14 px in the first pass and raised, because a brief that argues for 17 px and ships
+14 px is just a brief.
+
+What is deliberately **below** 17 px, and why:
+
+- `--t-md` (14 px) — genuinely secondary UI that labels something else rather than saying
+  something: `.card__meta`, `.field__label`, `.field` hints' sibling `.sizes legend`,
+  `.site-header__link`, `.table` cells (a four-column conversion row has to fit a 390 px box) and
+  `.promise-row__note` (raised from 12 px — it carries the Fit Guarantee terms).
+- `--t-xs` (12 px) — fine print only: `small` / `.fine`, `.field__hint`, `.source`, and the
+  `<small>` inside a `.size` button.
+
+## The chip contract — spec §6.0
+
+One rule, no JavaScript, defined once in `site.css`:
+
+```css
+[data-illustrative]::after { content: "proposed"; /* small pill, tokens from :root */ }
+```
+
+**Measured at 390 × 844 in Chromium**, injecting the attribute at runtime onto a stub page (both a
+short inline host and a long wrapping `.fit-guarantee` paragraph):
+
+- pill border box **80.016 × 26 CSS px** — non-zero, `display: inline-block`, `visibility: visible`;
+- resolved colours `rgb(255, 255, 255)` on `rgb(51, 65, 92)` → **10.24:1**, against a 4.5:1 floor;
+- `document.documentElement.scrollWidth === window.innerWidth === 390` with both chips present —
+  the pill does not blow out a card or force a horizontal scroll; it wraps as a unit
+  (`white-space: nowrap` on the pill, normal wrapping around it).
+
+**Why the chip is a solid slate stamp.** Slate is used for nothing else in the system: it is not
+Mel's accent and it is not a stock state, so the pill can never be misread as one of her badges or
+as availability. A solid fill rather than a tint, because the chip is the honesty argument — if
+Melony can miss it, the mechanism has failed. It reads as a stamp on a proof, which is what it is.
+
+**Accessibility decision, measured rather than assumed.** Chromium's full accessibility tree does
+expose the generated content as a `StaticText` node named "proposed"
+(`Accessibility.getFullAXTree`, 2026-09-15). A duplicate visually-hidden `<span>proposed</span>`
+would therefore make a screen reader say the word twice, so it is **deliberately not added** —
+and the trap it protects against is real: the word "proposed", heard alone after a price, means
+nothing anyway.
+
+The rule also carries the CSS **alt-text form** — `content: "proposed" / "proposed";` — declared
+as a *second* declaration immediately after the plain one. Engines that parse it route the string
+through the alt-text path, which assistive technology honours more consistently than raw
+generated content; engines that do not parse it drop only that declaration and keep the plain
+string above, so the pill can never disappear. Re-measured after the change, with page JavaScript
+disabled: the pill is still **80 × 26 CSS px** on both a plain paragraph and on `.btn--primary`.
+
+What is required instead of a hidden duplicate, and later tasks must do it:
+
+> **Every page that shows a chip also shows one visible `.chip-legend`, above the first chip,
+> saying what the pill means** — e.g. *"'proposed' marks something we're suggesting. Mel hasn't
+> published it, and this demo won't pretend she has."*
+
+That serves everyone at once: sighted visitors get the key they otherwise have to guess at, and
+screen-reader users get the explanation as real page text rather than as a hidden duplicate.
+> **and every chipped element carries `aria-describedby` pointing at that one legend's `id`.**
+
+The `aria-describedby` half is not optional polish. The Chromium measurement is real but it is
+one engine; the reader this demo is built for is on a phone, and iOS VoiceOver's handling of
+`::after` content could not be tested here — no device, no network. `aria-describedby` makes the
+association exist in markup rather than depending on the pseudo-element being announced at all,
+so the worst case degrades to "this claim is described by the legend" instead of to silence. It
+is logged for the owner below.
+
+`.chip-legend` is already in `site.css`. `.u-visually-hidden` also exists and is the right tool
+for control labels — just not for the chip.
+
+**The chip on the buy button (§6.3.10) has its own rule**, because `.btn` is `inline-flex` with a
+`gap`: the pill would otherwise collect the flex gap *plus* its own inline-start margin (16 px
+where every other host gets 8 px), and slate-on-brick is 1.43:1, so the stamp's edge disappears
+into the button. `.btn[data-illustrative]::after` zeroes the margin and gives the pill a ring in
+chip ink — 7.15:1 on the accent. Do not re-style the chip per screen; this is the whole set of
+host exceptions.
+
+Also measured at the same time, on the same injected subjects: `document.documentElement.scrollWidth
+=== window.innerWidth === 390` with both chips present (no horizontal scroll, the pill wraps as a
+unit and does not blow out the card); a `.btn` renders 44 px tall; and a keyboard `Tab` — not a
+hover — produces `outline: 3px solid rgb(27, 95, 193)` at `outline-offset: 2px`. Zero console
+errors or warnings on the page.
+
+Chips go on the **nine** `data-illustrative` ids §6.0 enumerates and no others; §7.11 asserts the
+chip set and the `source: "illustrative"` set in `manifest.facts[]` are identical.
+
+## Components already in `site.css` — use these, do not invent
+
+Page shell (`.page`, `.wrap`, `.page__main`, `.section`, `.section--sunken`, `.section--accent`,
+`.section__head`, `.eyebrow`, `.lede`, `.fine`, `.source`) · header (`.site-header` and its
+`__inner`, `__brand`, `__logo`, `__nav`, `__link`, `__link--cta`) · promise row (`.promise-row`,
+`__item`, `__label`, `__note`) · grid and cards (`.grid`, `.grid--wide`, `.card`, `.card--flat`,
+`.card--quiet`, `.card__media`, `__title`, `__meta`, `__body`, `__foot`) · badges (`.badge` with
+`--in-stock`, `--lead-time`, `--sold-out`, `--evidence`) · buttons and links (`.btn` with
+`--primary`, `--secondary`, `--ghost`, `--block`, plus `.btn-row`, `.link--quiet`) · forms
+(`.field`, `__label`, `__hint`, `.input`, `.select`, `.textarea`, `.check`) · the PDP set fixed by
+§8 (`.pdp`, `.pdp__title`, `.pdp__price`, `.price`, `.price__instalment`, `.fit-guarantee`,
+`.sizes`, `.size`, `.size--selected`, `.availability`) · live regions (`[aria-live]`, `.live`,
+`.live--result`, styled so an empty one holds its line without looking broken — bare
+`[aria-live]` stays **inline-block** so the §8 availability markup keeps its live `<span>` on the
+same line as its prompt text, while `.live` is the block-level variant for a standalone region
+such as the derby hub's "Showing N of M") · editorial
+(`.banner`, `.note`, `.qa`, `.qa__q`, `.qa__a`, `.rail`, `.rail__title`, `.chip-legend`) ·
+contact and footer (`.site-footer`, `.contact`, `.contact__list`, `.contact__item`,
+`.contact__label`, `.whatsapp-fab`) · utilities (`.u-visually-hidden`, `.u-measure`, `.u-stack`, `.num`).
+
+Four more exist specifically so the later screens do not have to invent them:
+
+- **`[hidden]`** — `[hidden] { display: none !important; }`. Every primitive above sets `display`,
+  and an author declaration beats the UA's `[hidden]` rule on origin alone, so without this the
+  `hidden` attribute does nothing. §6.2 filters the derby grid with all cards left in the DOM and
+  adds an "In stock only" toggle: use `hidden`, not a class, and not `style="display:none"`.
+- **Tables** (`.table-scroll`, `.table`, `.table__cell--num`) — for §6.3.8's spec table, §6.4.3's
+  cm · UK · EU · US conversion row and the `sizes.json` brand tables. Numeric cells take the mono
+  face and tabular figures, which is the reason that family is in the system. Always wrap a table
+  in `.table-scroll`; a four-column table is wider than the 358 px content box at 390 px.
+- **`.btn[aria-pressed="true"]`** — the pressed state for §6.2's five decision cards and its
+  in-stock toggle. Use it; `.size--selected` is bound to the PDP size buttons and carries mono and
+  tabular figures it would drag along.
+- **`dialog.sheet`** (`.sheet__title`, `.sheet__body`, `.sheet__foot`, `::backdrop` on `--c-scrim`)
+  — §6.3.10's demo sheet. Native `<dialog>` with `showModal()`, so focus trapping, Esc and
+  inertness come from the UA. Bottom-anchored on a phone, centred from 40 rem up.
+
+If something you need is genuinely missing, add it to `site.css` as a token-driven rule — never
+as an inline style, and never as a second hard-coded copy of a value that is already a token.
+
+## The one house rule that is graded by grep
+
+Every colour, type step, spacing step, radius, border width and duration is declared **once**, in
+`:root`. A raw hex, `rgb()`, `px` font-size or `px` spacing value anywhere below `:root` is a
+defect. The only survivors in the current file are the two `@media (min-width: …rem)` breakpoints,
+because media queries cannot read custom properties; both carry a `ponytail:` comment naming that
+ceiling.
+
+## The gates this passed, and what they cost
+
+Recorded so the next agent does not undo a deliberate choice by reflex.
+
+- **`impeccable detect … --viewport 390x844` — zero findings, exit 0.** It is worth knowing the
+  gate can fail: the first version of this design scored **11 findings** against these same files —
+  `overused-font` on `assets/site.css` line 33 and on all five pages (Inter), and `cream-palette`
+  on all five pages (`rgb(251, 248, 243)`). Both were real. Inter was replaced with Outfit +
+  JetBrains Mono, and the warm-cream surface with the cool rink grey. Re-flipping `--c-surface`
+  back to `#fbf8f3` was run as a negative control and the five `cream-palette` findings came
+  straight back, which is how we know the scan actually reads this stylesheet and applies it to
+  every page rather than passing vacuously over near-empty stubs.
+- **Two `@font-face` rules, 55,364 bytes of font.** Task 18's Lighthouse mobile gate is downstream
+  and §7.10 budgets the page payload; do not add a third family without paying for it somewhere.
+- **No `https://`, `fonts.googleapis`, or `cdn.` anywhere in `site.css`.** Asserted by the task's
+  own verification grep. Adding a webfont link or a remote `@import` breaks §9 outright.
+
+## What is still open for the owner
+
+- **The address.** Two sources disagree by about 20 km (decision #501). Nothing in this design
+  commits to a street, a suburb or a map pin; the contact block's address line stays flagged
+  `confirm` and the copy says Gauteng.
+- **iOS VoiceOver and the chip.** The chip's accessibility was measured in Chromium only
+  (`Accessibility.getFullAXTree`, 2026-09-15) because that is the one engine available offline.
+  `::after` content is not dependably announced by VoiceOver on iOS, which is the likeliest device
+  for the reader this demo is written for. Two things were done about it here — the CSS alt-text
+  form, and the standing requirement that every chipped element carry `aria-describedby` to the
+  page's one `.chip-legend` — but neither is a substitute for opening the demo on a real iPhone
+  with VoiceOver on and confirming the word "proposed" is reachable. **That spot-check is an owner
+  action, not something this build can close.**
+- **The canonical header at 390 px.** Measured, not estimated: the §6.0b five-link nav needs about
+  519 px of run (five labels at 14 px plus their padding and gaps) against a 358 px content box,
+  so it cannot be one row on a phone. It wraps to two clean rows — every link keeps its 44 px tap
+  height and `document.documentElement.scrollWidth === window.innerWidth === 390`, so nothing
+  overflows — but the header then costs **168 px** of an 844 px screen before any content. The
+  alternative, a single-row horizontal scroll strip, was rejected because it pushes the WhatsApp
+  CTA off-screen, which is worse for this pitch than a tall header. If the owner wants the first
+  screenful back, the lever is dropping a nav item in Task 8, not restyling in a screen task.
+- **Font attribution depth.** `assets/fonts/OFL.txt` carries the full OFL 1.1 text plus each
+  file's own copyright notice, version, weight axis and sha256, read out of the binaries. Upstream
+  release notes and designer credits were not available offline and were deliberately not guessed.
+  If the owner wants richer attribution before this is shown to Melony, that is a one-line fetch
+  from the two upstream projects named in the notices — it is not something this build should
+  invent.
