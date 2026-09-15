@@ -18,8 +18,8 @@
 
 - [x] Task 5: Design pass — impeccable PRODUCT.md, tokens, chip, base components — M · opus · deps: 1
 - [x] Task 6: Copy pass A — hand-authored data JSON + manifest.facts[] (nine illustrative ids incl. fitting-durations, per §6.0 — verified against the spec, not the shorter §11 gloss) — M · opus · deps: 3, 4
-- [ ] Task 7: Copy pass B — Melony-voice draft copy — S · opus · deps: 6
-- [ ] CHECKPOINT: design and copy foundation — impeccable clean, zero unsourced facts, nine §6.0 illustrative ids (aura-size-run covers both the size run and its stock states), no CDN/fonts leak
+- [x] Task 7: Copy pass B — Melony-voice draft copy — S · opus · deps: 6
+- [x] CHECKPOINT: design and copy foundation — impeccable clean (exit 0, cream-palette negative control reproduced), zero unsourced facts, nine §6.0 illustrative ids (renamed aura-size-stock-states per #505), no CDN/fonts leak · iOS VoiceOver chip spot-check still OPEN, owner action
 
 ## Phase 4: Shared chrome and the verify spine
 
