@@ -1,0 +1,325 @@
+{
+  "_meta": {
+    "marker": "draft copy — our words, not Mel's",
+    "source": "draft-copy",
+    "note": "Every string in this file is copy we wrote in Melony's voice for the pitch demo. It is a draft, never a promise: each block is recorded in manifest.facts[] with source \"draft-copy\" and carries no proposed chip. Chips belong to the nine illustrative ids only.",
+    "refConvention": "A key ending in \"Ref\" is a pointer, not prose. \"shared.fitGuarantee\" is a dot path inside this file. \"fittings.json#promise\" is file#dot-path inside this data directory. Renderers resolve the pointer and render the one canonical string. This exists so no string in the demo has two hand-typed copies that can drift.",
+    "screens": {
+      "home": "index.html",
+      "derby": "roller-derby.html",
+      "pdp": "aura-sky-100.html",
+      "finder": "size-finder.html",
+      "booking": "book-a-fitting.html",
+      "shared": "strings more than one page speaks (header, contact block, chip legend, guarantee terms)"
+    },
+    "screenCountNote": "Five pages, not six. The spec and the plan both say \"six screens\"; that is six URLs only if /demo and /demo/index.html are counted separately, as verify-mels-demo.mjs does. This file is keyed to the five files above plus shared."
+  },
+
+  "home": {
+    "hero": "South Africa's skate specialists since 2012. First roller derby shop in the country. Official Roll-Line dealer. Fitted by skaters in Gauteng, shipped everywhere.",
+    "heroNote": "Roll-Line's own dealer list is the evidence, and we are its only South African dealer.",
+    "ctaPrimary": "Find my size",
+    "ctaSecondary": "Book a fitting",
+    "promiseRow": {
+      "courierLabel": "Courier nationwide",
+      "courierLineRef": "contact.json#courier.line",
+      "courierNote": "Everything ships. The fitting happens in person, in Gauteng.",
+      "guaranteeLabel": "Fit Guarantee",
+      "guaranteeNoteRef": "shared.fitGuarantee.shortTerms",
+      "guaranteeLinkLabel": "Read the full terms",
+      "dealerLabel": "Official Roll-Line dealer",
+      "dealerNote": "Listed in Roll-Line's own dealer database.",
+      "whatsappLabel": "WhatsApp us"
+    },
+    "sizeFinderBand": {
+      "text": "Skate sizes are not shoe sizes, and they are not the same from one brand to the next. Measure your foot once and we will tell you the size in the brand you are actually buying.",
+      "cta": "Find my size"
+    },
+    "disciplines": {
+      "heading": "What we fit",
+      "note": "Counts are live from the catalogue.",
+      "liveSiteTag": "live site",
+      "derby": "Where this shop started. Boots, plates, wheels, toe stops and the protective set your league will ask for.",
+      "artistic": "Roll-Line country. Dance, figures and freestyle, sized by hand because no table exists for them.",
+      "recreational": "Rec quads for the promenade and the rink, from a first pair upward.",
+      "kidsAdjustable": "Adjustable pairs for feet that are still growing, and real boots in small sizes.",
+      "ice": "Complete ice and figure boots, plus blades, guards and soakers. Aura is the line we know best.",
+      "inline": "Inline for fitness and street, fitted the same way as everything else here."
+    },
+    "inStock": {
+      "heading": "In stock now",
+      "note": "Priced and stocked from the same catalogue the shop runs on. If it says in stock, it is on a shelf.",
+      "cta": "See the derby range"
+    },
+    "trustRow": {
+      "heading": "Why us, in things you can check",
+      "dealerCardLabel": "Roll-Line's only South African dealer",
+      "dealerCardNote": "The screenshot is Roll-Line's own dealer result. Their locator shows nothing without a search, so we link the screenshot and footnote the locator.",
+      "roadhouseCardLabel": "Roadhouse Roller Rink names us its recommended shop",
+      "roadhouseCardMeta": "Eastgate, Bedfordview",
+      "roadhouseCardNote": "That is on Roadhouse's own site, not ours — we link it so you can check.",
+      "reviewCardLabel": "One public review, and we will not pretend there are more",
+      "reviewAttribution": "Elizabeth de Lange · Facebook · 2 Nov 2022",
+      "reviewNote": "That is the only public review of this shop anywhere. We would rather show you the one real one than a wall of stars."
+    }
+  },
+
+  "derby": {
+    "eyebrow": "Roller derby",
+    "heading": "Derby, from a shop that was the first one here",
+    "categoryCopy": "Derby is where this shop started: we were the first roller derby shop to open in South Africa, and Roadhouse Roller Rink still names us its recommended shop. Eight products sit under Roller Derby itself, but the derby kit is spread across the shop — 27 protective sets, 38 wheels and bearings lines, 17 toe stops and jam plugs. The question is almost never which shop. It is which boot fits your foot, which plate fits that boot, and which wheels suit the floor you actually skate on. Work it in that order, and tell us what you skate: we will go through it with you.",
+    "faq": [
+      {
+        "q": "What size am I?",
+        "a": "Measure, do not guess. Heel to wall, standing, both feet, and use the larger one — the Size Finder walks you through it and gives you the size in the brand's own scale. Two honest warnings. Brands differ by 1-2 full sizes for the same foot, so a number off a chart is a starting point, not a fitting. And our size chart carries no table at all for Riedell or Sure-Grip, which are brands a derby skater may well end up in. For those, send us the measurement on WhatsApp and we size you by hand."
+      },
+      {
+        "q": "Which plate size for my boot?",
+        "a": "Plates are sized by wheelbase — axle to axle — against the boot, not by your shoe size. We publish the Pilot F-16 chart on our size chart page: plate sizes 5.0 to 8.5, mapped onto Q-4/Q-6, F-1 and Jackson boot sizes, with plate lengths from 218 mm to 309 mm. Check the size with us before you order. For Roll-Line there is no plate-to-boot table published anywhere we could find, so that one is a WhatsApp conversation: send us the boot and its size and we work it out with you."
+      },
+      {
+        "q": "What wheel hardness do I want for Roadhouse versus tarmac?",
+        "a": "The principle first, because the principle is the part that is always true. A softer compound grips and absorbs, which is what a rough outdoor surface takes out of you; a harder compound slides and rolls faster, which is what a smooth indoor floor rewards. What we will not do is put a number on this page. The right hardness for the floor at Roadhouse, and for the stretch of tarmac outside your house, depends on that surface, on your weight and on how you skate — and it is Melony who confirms it, not a chart. Tell us where you skate and what you weigh, on WhatsApp, and we will pick the set with you."
+      },
+      {
+        "q": "What does a league kit list need?",
+        "a": "The standard derby set is six things: skates, helmet, knee pads, elbow pads, wrist guards and a mouthguard. We carry 27 protective sets, and we would rather build the kit with you than hand you a list — we will tell you straight what we hold and what we bring in. Four South African leagues are running that we know of: Golden City Rollers, Durban Roller Derby, Cape Town Rollergirls and P-Town Roller Derby. What each one requires we are not going to guess at. Per-league kit lists are coming in the build; until then, tell us which league you are joining and we will work through it with you."
+      }
+    ],
+    "filters": {
+      "legend": "Where are you in this?",
+      "cards": [
+        "Starting derby — complete sets",
+        "Upgrading — boots & plates",
+        "Wheels: rink vs tarmac",
+        "Protective sets (league-required)",
+        "Kids & smaller sizes"
+      ],
+      "inStockToggle": "In stock only",
+      "inStockToggleNote": "On by default. Turn it off to see what we can look at bringing in for you.",
+      "resultCountTemplate": "Showing {shown} of {total}",
+      "resultCountFirstRender": "",
+      "resultCountNote": "This line is a template. It stays empty until a filter or the toggle actually changes something, so nothing is announced before it is true.",
+      "emptyState": "Nothing in stock under that filter right now. Turn off \"In stock only\" to see the rest, and tell us your deadline — we will tell you honestly whether we can get it."
+    },
+    "stock": {
+      "inStockLabel": "In stock",
+      "leadTimeLabel": "Imported to order",
+      "soldOutLabel": "Sold out",
+      "soldOutHandoff": "Tell us your deadline",
+      "soldOutNote": "Sold out is not a dead end. Tell us when you need it and we will tell you honestly whether we can get it there in time."
+    },
+    "credential": {
+      "quote": "Recommended shop",
+      "attribution": "Roadhouse Roller Rink · Eastgate, Bedfordview",
+      "leagueLine": "Kit lists for Golden City Rollers, Durban Roller Derby, Cape Town Rollergirls, P-Town — coming in the build",
+      "leagueCta": "Ask us on WhatsApp"
+    },
+    "links": {
+      "sizeGuide": "Derby size guide",
+      "sizeGuideNote": "Opens the Size Finder already set to derby."
+    }
+  },
+
+  "pdp": {
+    "banner": "Imported to order, approx. 2 weeks — faster than almost every made-to-order boot we benchmarked. The price is as of 30 July 2026 and can move with the exchange rate. We confirm your size with you on WhatsApp before we order, because there is no fit-based exchange on an imported-to-order boot.",
+    "colourNote": "There is a black record for this boot too, but its listing is a duplicate, so we confirm the colour with you before we order.",
+    "gallery": {
+      "bootCaption": "The Sky 100 in white.",
+      "selectionChartCaption": "Which Sky? Aura's own selection chart",
+      "sizeGuideCaption": "The same chart as Aura publishes it on the Sky 200 listing",
+      "videoSlotCaption": "60-second fit video — filmed in the build",
+      "videoSlotNote": "An empty slot, labelled, rather than a stock clip of someone else's skates."
+    },
+    "instalmentNote": "Pay-in-3 at 0%, once we are onboarded.",
+    "sizes": {
+      "legend": "Size (mm)",
+      "hint": "Aura sizes in millimetres, 210 to 300. Not sure? Find my size.",
+      "notSureLink": "Not sure? Find my size",
+      "brannockNote": "Aura sizes from the Brannock suggested size, which is a high-performance fit. Want it roomier? Add half a size — 5 mm. And if a boot feels tight, go up in width before you go up in length."
+    },
+    "fitNote": "This is a carbon boot, and Aura builds it to fit very snug before it is moulded. That is not a sizing error, it is the design: the carbon expands in width and volume onto your foot once it has been warmed. The heat-mould is not an upgrade on these — Aura publishes it as a requirement, so plan for it. We size from the Brannock suggested size rather than raw foot length. That suggested size is the high-performance fit; add half a size, 5 mm, if you want a comfort fit. And the rule we hold to at the bench is Aura's own: if the boot feels tight, move up in width before you add length. Width first, length second. Because we import this boot specifically for you, we confirm the size with you on WhatsApp before anything is ordered.",
+    "specTableNote": "Boot only — blades are sold separately. Level and stiffness are not published anywhere we could reach, so they are left out rather than guessed. Which sizes and widths we can actually order is the one line Melony still confirms.",
+    "services": {
+      "legend": "Add a service",
+      "heatMouldInStoreLabel": "Heat-mould & fit in store",
+      "heatMouldInStoreNote": "A foot-in-boot mould, done with you here. On an Aura it is required, not optional.",
+      "mailInLabel": "Mail-in heat-mould",
+      "mailInNote": "A bake before the boot ships, for skaters who cannot reach us. Whether we can do this at all is a question for Melony.",
+      "totalLabel": "Your total",
+      "priceSourceNote": "Service prices come from fittings.json and carry the proposed stamp."
+    },
+    "buyButtonLabel": "Add to cart — demo only",
+    "fulfilment": {
+      "text": "Imported to order, approx. 2 weeks from the day we place it. Courier after that:",
+      "courierLineRef": "contact.json#courier.line"
+    },
+    "demoSheet": {
+      "title": "This cart is a demo",
+      "body": "Cart and checkout land in month 1 of the build. Today this boot is ordered the way Mel's orders everything: one WhatsApp message. Tap below and the boot and your selected size are already in it.",
+      "cta": "Order this boot on WhatsApp",
+      "dismiss": "Keep looking"
+    },
+    "qa": [
+      {
+        "q": "What is a heat-mould?",
+        "a": "We warm the boot until the carbon softens, you stand in it in the sock you skate in, and it cools onto your heel, your instep and your ankle. On an Aura it is not a luxury step: Aura publishes the mould as a requirement. On the live site that is a phone call to the shop. Here you book it with the fitting and it happens in the same appointment."
+      },
+      {
+        "q": "Can I cancel?",
+        "a": "Before we order, nothing is committed — we only place the order once you have confirmed the size with us on WhatsApp, and that confirmation is the moment that matters. After we have ordered, the boot is being brought into the country for you specifically, so we are not going to print a policy here that we have not agreed with you. Message us and we will tell you honestly where the order has got to. Cancelling a fitting rather than a boot is simpler, and that policy is on the booking page."
+      },
+      {
+        "q": "What if it doesn't fit?",
+        "a": "Then we exchange it. In full, the terms we are proposing:",
+        "quotesRef": "shared.fitGuarantee",
+        "aAfter": "The carve-out is the line that matters on this boot, and it is why we confirm your size on WhatsApp before we order."
+      }
+    ],
+    "ctaWhatsapp": "Ask Melony about this boot",
+    "ctaLiveSite": "View on the live site",
+    "railA": "Goes with this boot",
+    "railB": "The Sky ladder"
+  },
+
+  "finder": {
+    "eyebrow": "Size Finder",
+    "heading": "Measure once. We will tell you the size in the brand you are buying.",
+    "lede": "Three steps on one screen. No wizard, no account, and no result we cannot stand behind.",
+    "steps": {
+      "one": "What are you buying",
+      "two": "How will you measure",
+      "three": "Your size"
+    },
+    "disciplinePickerLabel": "What are you buying skates for?",
+    "brandPickerLabel": "Which brand?",
+    "brandPickerHint": "We only ask where we stock more than one option.",
+    "measure": {
+      "heading": "Measure heel to wall",
+      "lede": "Two minutes, a sheet of paper and a pencil. Do it standing — your foot spreads under your own weight, and that is the foot the boot has to fit.",
+      "steps": [
+        "Put a sheet of paper on a hard floor, one short edge tight against the wall.",
+        "Stand on it with your heel against the wall and your weight on that foot.",
+        "Mark the paper at the end of your longest toe. That is not always the big toe.",
+        "Measure from the wall edge to the mark, in millimetres.",
+        "Now do the other foot. Feet differ. Use the larger number."
+      ],
+      "noteRef": "sizes.json#measure.note",
+      "unitLabel": "Foot length (mm)",
+      "altInputsLabel": "Or start from something you already know",
+      "altShoeSizeLabel": "Your current shoe size",
+      "altOwnSkateLabel": "A skate you already own",
+      "altOwnSkateHint": "Brand and size. What is wrong with the pair you have is the most useful thing you can tell us."
+    },
+    "whichSky": {
+      "heading": "Which Sky?",
+      "instruction": "Aura makes three Sky boots and its own chart picks between them. We need three things: your foot length in millimetres, your body weight, and whether you jump.",
+      "note": "This step is straight off Aura's selection chart. It is their matrix, not our opinion.",
+      "jumpLabel": "Do you jump?"
+    },
+    "result": {
+      "lead": "Your starting point",
+      "conversionLabel": "The same size, in every scale we have for this brand",
+      "liveRegionNote": "The result region is empty until a real result exists. No placeholder, nothing pre-announced.",
+      "disclaimerLead": "Read this before you order:",
+      "disclaimerRef": "sizes.json#disclaimer",
+      "ctaWhatsapp": "WhatsApp this result to Melony",
+      "ctaBooking": "Book a fitting"
+    },
+    "handoffs": {
+      "outOfRangeRef": "sizes.json#fallback",
+      "outOfRangeNote": "Not a dead end: the message already has your measurement in it, so nothing is retyped.",
+      "noTableHeading": "Some brands we stock have no table we can size you from",
+      "noTable": "We would rather say so than compute a number out of nothing. Roll-Line, one of our two flagship lines, publishes no size table anywhere we could find. Riedell has a tab on our size chart, but it sends you off to Riedell's own pages, and one of those links is broken as we published it. Sure-Grip's tab carries our own measuring method and a printable insole chart on our domain — the most personal sizing content on the site, and also the one thing a calculator cannot read. For any of those, send us your measurement on WhatsApp and we size you ourselves.",
+      "noTableCta": "Send my measurement to Melony"
+    }
+  },
+
+  "booking": {
+    "eyebrow": "Book a fitting",
+    "heading": "Come and have skates put on your feet",
+    "lede": "Four kinds of appointment, all by appointment, all with a person who skates. Durations and prices carry the proposed stamp because Mel publishes no fitting menu today.",
+    "typesHeading": "Pick the appointment",
+    "intake": {
+      "heading": "Before you come",
+      "lede": "None of this is compulsory. All of it makes the appointment shorter and the fit better.",
+      "items": [
+        "Measure both feet at home if you can — heel to wall, standing, in millimetres. Bring the numbers.",
+        "Wear or bring the socks you skate in. Sock thickness changes the size.",
+        "Bring your current skates if you own a pair, even wrong ones. What is wrong with them is the most useful thing you can tell us.",
+        "For an ice fitting, bring your blades if you already own them.",
+        "For a video consult, have paper, a pen, a tape measure, a wall and a hard floor ready before we call."
+      ],
+      "note": "Each appointment type lists what to bring; this is the short version of all four.",
+      "bringRef": "fittings.json#types[].bring"
+    },
+    "promise": {
+      "lead": "Every fitting is the same three steps",
+      "ref": "fittings.json#promise"
+    },
+    "cancellation": {
+      "lead": "If you need to move it",
+      "ref": "fittings.json#cancellation.text"
+    },
+    "availability": {
+      "lead": "By appointment",
+      "hoursRef": "contact.json#hours.detail",
+      "note": "We fit by appointment only, so book before you travel. One skater at a time is the point, not a queue."
+    },
+    "form": {
+      "heading": "Request an appointment",
+      "typeLabel": "Which fitting",
+      "dayLabel": "Preferred day",
+      "timeLabel": "Preferred time",
+      "nameLabel": "Your name",
+      "notesLabel": "Anything we should know",
+      "notesHint": "The brand you are after, your measurement, the league you skate for — whatever saves us a question.",
+      "submitLabel": "Request via WhatsApp",
+      "honestNoteRef": "fittings.json#bookingNote"
+    }
+  },
+
+  "shared": {
+    "chipLegend": "'proposed' marks something we're suggesting. Mel hasn't published it, and this demo won't pretend she has.",
+    "chipLegendLabel": "About the proposed stamp",
+    "fitGuarantee": {
+      "oneLiner": "Mel's Fit Guarantee — if it doesn't fit, we exchange it. 30 days, unworn outdoors.",
+      "shortTerms": "30 days, unworn outdoors · not on imported-to-order boots",
+      "terms": [
+        "What qualifies: unworn outdoors, in its original box, guards still unfitted.",
+        "Courier: you pay it to us, we pay it back to you.",
+        "How to start it: one WhatsApp message with your order number."
+      ],
+      "carveOut": "No fit-based exchange on custom or imported-to-order boots — size confirmed with us on WhatsApp before we order.",
+      "note": "This is the whole promise in prose. It is a draft: the named one-liner and its terms are ours, and they carry the proposed stamp wherever the guarantee appears."
+    },
+    "header": {
+      "brand": "Mel's Skate Shop",
+      "navHome": "Home",
+      "navDerby": "Roller Derby",
+      "navFinder": "Size Finder",
+      "navBooking": "Book a fitting",
+      "navWhatsapp": "WhatsApp us",
+      "skipLink": "Skip to content"
+    },
+    "contact": {
+      "heading": "Talk to us",
+      "phoneLabel": "Phone",
+      "whatsappLabel": "WhatsApp",
+      "emailLabel": "Email",
+      "hoursLabel": "Hours",
+      "facebookLabel": "Facebook",
+      "courierLabel": "Courier",
+      "liveSiteLabel": "Our live site",
+      "placeNote": "We fit in person in Gauteng, by appointment.",
+      "preferredNote": "WhatsApp is the fastest way to reach Melony. The phone number and the WhatsApp number are the same one."
+    },
+    "whatsapp": {
+      "defaultLabel": "WhatsApp us",
+      "fabLabel": "WhatsApp Mel's Skate Shop",
+      "prefillNote": "Every WhatsApp link on these pages arrives with the context already typed — the product, the size, or your measurement."
+    },
+    "demoNote": "This is a proposal demo built for Melony by Solafidei. It is not a live storefront: there is no cart, no checkout and no account, and every button says which of those it is.",
+    "imageCredit": "Product imagery © Mel's Skate Shop, reproduced for this proposal."
+  }
+}

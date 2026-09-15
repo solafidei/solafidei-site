@@ -398,6 +398,91 @@
       "id": "demo-buy-button",
       "text": "The buy button is a demo. Cart and checkout land in month 1; order this boot on WhatsApp now.",
       "source": "illustrative"
+    },
+    {
+      "id": "copy-home-hero",
+      "text": "Home hero positioning line and its Roll-Line note, in Melony's voice. Four clauses, each already a sourced fact: trading since 2012, first roller derby shop in South Africa, official Roll-Line dealer, fitted in person. Place is given as Gauteng only - decision #504 struck the suburb because neither published address survived scrutiny. Lives in draft-copy.json at home.hero.",
+      "source": "draft-copy"
+    },
+    {
+      "id": "copy-home-promise-row",
+      "text": "Promise-row labels and notes on Home: the courier label, the Fit Guarantee label and its one-line terms note, the Roll-Line dealer label and the WhatsApp label. The wording is ours; every figure is pointed at contact.json or at the fit-guarantee entry rather than retyped. Lives at home.promiseRow.",
+      "source": "draft-copy"
+    },
+    {
+      "id": "copy-home-cards",
+      "text": "Home Size Finder CTA band plus the six discipline-card blurbs and the in-stock section heading and note. One sentence each, saying what the shop fits rather than describing categories. Counts stay with store:categories; these are the words around them. Lives at home.sizeFinderBand, home.disciplines and home.inStock.",
+      "source": "draft-copy"
+    },
+    {
+      "id": "copy-home-trust-row",
+      "text": "Home trust-row card labels and notes: the Roll-Line dealer card, the Roadhouse Roller Rink recommended-shop card carrying \"Eastgate, Bedfordview\" as the rink's own location, and the one-review card attributed to Elizabeth de Lange, Facebook, 2 Nov 2022. The review copy says plainly that it is the only public review and refuses to imply others. Lives at home.trustRow.",
+      "source": "draft-copy"
+    },
+    {
+      "id": "copy-derby-category",
+      "text": "Derby hub category description, 105 words, in Melony's voice: who the hub is for, what the shop holds for derby using the real store:categories counts, what the decision actually is, and the order to work it in. Lives at derby.categoryCopy.",
+      "source": "draft-copy"
+    },
+    {
+      "id": "copy-derby-faq",
+      "text": "The four derby FAQ answers. What size (measure, plus the 1-2 size variance and the honest no-table position on Riedell and Sure-Grip); which plate size (wheelbase axle to axle, the published Pilot F-16 chart, and no Roll-Line plate table anywhere); wheel hardness for Roadhouse versus tarmac (the soft-grips / hard-slides principle, an explicit refusal to print a durometer number, and a handoff to Melony - the report names Roadhouse's surface as an open unknown); and what a league kit list needs (the six standard items, the four leagues named as leagues that exist, per-league lists coming in the build). Lives at derby.faq.",
+      "source": "draft-copy"
+    },
+    {
+      "id": "copy-derby-controls",
+      "text": "Derby hub control copy: the five decision-card labels, the in-stock toggle label and note, the result-count template and its empty first-render state, the empty-state line, the stock-state labels, the sold-out \"Tell us your deadline\" handoff, and the league line plus the Roadhouse credential attribution. Lives at derby.filters, derby.stock, derby.credential and derby.links.",
+      "source": "draft-copy"
+    },
+    {
+      "id": "copy-pdp-banner",
+      "text": "PDP top banner and gallery captions: imported to order at approx. 2 weeks, the price-as-of date and exchange-rate caveat, size confirmed on WhatsApp before ordering and no fit-based exchange on an imported boot; plus the black-record colour note and the four gallery captions including the labelled empty fit-video slot. Lives at pdp.banner, pdp.colourNote and pdp.gallery.",
+      "source": "draft-copy"
+    },
+    {
+      "id": "copy-pdp-fit-note",
+      "text": "The PDP fit note - Melony on how this boot actually fits. Carbon, built snug before moulding, the mould as a requirement rather than an upgrade, sizing from the Brannock suggested size with the half-size comfort allowance, and width before length. Every clause traces to an aura-* entry. Lives at pdp.fitNote, with the same rules echoed shorter at pdp.sizes.brannockNote.",
+      "source": "draft-copy"
+    },
+    {
+      "id": "copy-pdp-qa",
+      "text": "The three PDP question-and-answer pairs: what a heat-mould is, can I cancel, and what if it doesn't fit. The third quotes the drafted guarantee terms by reference to shared.fitGuarantee rather than retyping them, so there is one canonical copy of the terms in the demo. Lives at pdp.qa.",
+      "source": "draft-copy"
+    },
+    {
+      "id": "copy-pdp-commerce",
+      "text": "PDP commerce copy: the honest buy-button label, the demo sheet (cart and checkout land in month 1, order on WhatsApp now) and its two actions, the fulfilment line pointing at the courier fixture, the two service-checkbox labels and their notes, the spec-table note, the instalment note, the rail titles and the two calls to action including \"Ask Melony about this boot\". Lives at pdp.buyButtonLabel, pdp.demoSheet, pdp.fulfilment, pdp.services, pdp.specTableNote and the pdp cta keys.",
+      "source": "draft-copy"
+    },
+    {
+      "id": "copy-finder-measure",
+      "text": "Size Finder instruction copy: the three step headings, the picker labels, the five-step heel-to-wall method written to be followed on a phone with a pencil, the alternative inputs, the \"Which Sky?\" instruction, and the result lead with the 1-2 size variance disclaimer pointed at sizes.json. Lives at finder.steps, finder.measure, finder.whichSky and finder.result.",
+      "source": "draft-copy"
+    },
+    {
+      "id": "copy-finder-handoffs",
+      "text": "Size Finder dead-end copy: the out-of-range fallback pointed at sizes.json plus the note that the WhatsApp message already carries the measurement, and the no-table handoff written honestly per decision #507 - Roll-Line has no table anywhere, Riedell's tab sends the buyer off-site with one broken link, and Sure-Grip's tab is a printable insole chart a calculator cannot read. Names no brand that does not exist. Lives at finder.handoffs.",
+      "source": "draft-copy"
+    },
+    {
+      "id": "copy-booking",
+      "text": "Book a fitting copy: the page lede, the pre-appointment intake block written to agree with every bring array in fittings.json, the three-step promise and the cancellation policy both pointed at fittings.json rather than re-worded, the by-appointment availability line built on Mel's own published hours with no walk-in claim anywhere, and the form labels ending in \"Request via WhatsApp\" with the honest on-domain-calendar note. Lives at booking.*.",
+      "source": "draft-copy"
+    },
+    {
+      "id": "copy-guarantee-terms",
+      "text": "The full drafted Fit Guarantee prose: the named one-liner, the promise-row short terms, the three literal lines (what qualifies, who pays the courier each way, how to start it) and the imported-and-custom carve-out. This is the prose of the same promise the fit-guarantee entry compresses; the chip stays on that entry and this copy carries none. Lives at shared.fitGuarantee.",
+      "source": "draft-copy"
+    },
+    {
+      "id": "copy-chip-legend",
+      "text": "The chip legend sentence - the caption that explains what the proposed stamp means, shown visibly above the first chip on every page that has one and referenced by aria-describedby from every chipped element. It says plainly that the marked item is something Mel has not published and that we drafted it. Lives at shared.chipLegend.",
+      "source": "draft-copy"
+    },
+    {
+      "id": "copy-shared-chrome",
+      "text": "Shared chrome strings: the header brand and five nav labels plus the skip link, the contact-block field labels with the Gauteng-only place note and the WhatsApp-is-fastest note, the WhatsApp labels including the floating button, the demo note and the image credit. Lives at shared.header, shared.contact, shared.whatsapp, shared.demoNote and shared.imageCredit.",
+      "source": "draft-copy"
     }
   ],
   "images": [
