@@ -194,5 +194,66 @@
       ]
     }
   ],
-  "links": []
+  "links": [
+    {
+      "href": "https://melsskateshop.co.za/product-category/roller-skates/artistic-skates-roller-skates/",
+      "status": 200,
+      "checkedAt": "2026-09-15T08:11:55.100Z"
+    },
+    {
+      "href": "https://melsskateshop.co.za/product-category/roller-skates/recreational-roller-skates/",
+      "status": 200,
+      "checkedAt": "2026-09-15T08:11:55.601Z"
+    },
+    {
+      "href": "https://melsskateshop.co.za/product-category/roller-skates/adjustable-skates-roller-skates/",
+      "status": 200,
+      "checkedAt": "2026-09-15T08:11:56.079Z"
+    },
+    {
+      "href": "https://melsskateshop.co.za/product-category/ice-skates/",
+      "status": 200,
+      "checkedAt": "2026-09-15T08:11:56.584Z"
+    },
+    {
+      "href": "https://melsskateshop.co.za/product-category/inline-skates/",
+      "status": 200,
+      "checkedAt": "2026-09-15T08:11:57.111Z"
+    },
+    {
+      "href": "https://melsskateshop.co.za/product/aura-sky-100-ice-skate-boot/",
+      "status": 200,
+      "checkedAt": "2026-09-15T08:11:57.605Z"
+    },
+    {
+      "href": "https://roll-line.it/en/dealers",
+      "status": 200,
+      "checkedAt": "2026-09-15T08:11:58.527Z"
+    },
+    {
+      "href": "https://roadhouserollerrink.co.za/",
+      "status": 200,
+      "checkedAt": "2026-09-15T08:12:00.193Z"
+    },
+    {
+      "href": "https://facebook.com/melsskateshopofficial",
+      "status": "pending-manual",
+      "reason": "never fetched by this script (audit.json issue 10) — the owner opens it once in a real browser at CP1 and ticks manual-ok, or the link is dropped"
+    },
+    {
+      "href": "https://maps.google.com/?q=Swallow%20Drive%2020%2C%20Midrand%201686",
+      "status": "exempt",
+      "reason": "query deep link — status proves nothing about the address (decision #495)"
+    },
+    {
+      "href": "https://waze.com/ul?q=Swallow%20Drive%2020%2C%20Midrand%201686",
+      "status": "exempt",
+      "reason": "query deep link — status proves nothing about the address (decision #495)"
+    },
+    {
+      "href": null,
+      "status": "not-published",
+      "reason": "no buying-guide page exists on melsskateshop.co.za (verified against every href in the cached size-chart.html, task 4) — the report's cornerstone-guide mention (benchmark-report.md §5.30) is a recommendation for Mel, not a page her site has"
+    }
+  ]
 }

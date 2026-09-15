@@ -73,6 +73,38 @@ const USER_AGENT =
 
 const ALLOWED_METHODS = new Set(["GET", "HEAD"]); // spec §9: read-only public GET and HEAD only
 
+// Task 4: the outbound-link layer needs a WIDER host allow-list than the
+// melsskateshop.co.za-only check politeRequest() otherwise enforces — a
+// dealer listing on roll-line.it is supposed to succeed. Scoped strictly
+// to `kind: "link"` requests (see politeRequest() below): json/html/image
+// requests stay pinned to ORIGIN exactly as before, untouched. Widening
+// THAT check globally would silently permit e.g. an image fetch from
+// roll-line.it — precisely the regression spec §9's per-host boundary
+// exists to catch. This is a declared allow-list of EXACT hosts (a Set,
+// checked with .has()), never a startsWith/includes/suffix match — a
+// redirect landing anywhere else still hard-fails in politeRequest().
+//
+// facebook.com is deliberately ABSENT. It is on the demo's own <a href>
+// allow-list (spec §7.3 — the page may link there) but this script never
+// fetches it (audit.json issue 10): the Facebook candidate is recorded
+// `pending-manual` and never reaches politeRequest() at all, so leaving
+// it off this Set is a second, independent guard against ever fetching
+// it, not the only one. maps.google.com / waze.com / wa.me are equally
+// absent — they are `exempt` (decision #495) and cost zero requests.
+//
+// www.* variants are listed alongside the bare host for the two
+// third-party sites (roll-line.it, roadhouserollerrink.co.za) because
+// this script does not control either one and a bare-host request
+// commonly 30x's to its own www subdomain; both spellings are declared
+// explicitly rather than matched by suffix.
+const ALLOWED_LINK_HOSTS = new Set([
+  "melsskateshop.co.za",
+  "roll-line.it",
+  "www.roll-line.it",
+  "roadhouserollerrink.co.za",
+  "www.roadhouserollerrink.co.za",
+]);
+
 const MAX_REQUESTS_PER_SECOND = 2;
 const MIN_REQUEST_INTERVAL_MS = 1000 / MAX_REQUESTS_PER_SECOND;
 
@@ -211,7 +243,7 @@ function sleep(ms) {
 // `kind: "image" | "link"` reserves the matching hard budget (spec §9)
 // before the request is issued; omit it for the categories/product/
 // size-chart calls this task itself makes, which aren't budgeted.
-async function politeRequest(url, { method = "GET", accept, kind } = {}) {
+async function politeRequest(url, { method = "GET", accept, kind, throwOnError = true } = {}) {
   if (!ALLOWED_METHODS.has(method)) {
     throw new Error(`refused: only GET/HEAD are allowed (spec §9), got ${method}`);
   }
@@ -242,28 +274,51 @@ async function politeRequest(url, { method = "GET", accept, kind } = {}) {
   const rate = intervalMs && intervalMs > 0 ? 1000 / intervalMs : null;
   if (rate !== null && rate > peakRatePerSecond) peakRatePerSecond = rate;
 
-  const entry = { n: requestCount, method, url, status: res.status, intervalMs, rate };
+  const entry = { n: requestCount, method, url, status: res.status, intervalMs, rate, redirected: res.redirected };
   requestLog.push(entry);
   console.log(
     `[${entry.n}] ${method} ${url} -> ${res.status}` +
       (rate !== null ? ` (${intervalMs}ms since previous request, ${rate.toFixed(2)} req/s)` : ""),
   );
+  // Observability only (GitHub review #21 finding 3): fetch() above is
+  // called with redirect: "follow", so a 3xx hop is chased invisibly to
+  // both the >=500ms pacing and the per-call budget reservation above —
+  // one politeRequest() call can cost 2 physical requests for the price of
+  // one accounted request. Not changed here (would need live third-party
+  // testing this remediation pass cannot do without a network request);
+  // this line at least makes a redirect visible in the run log so a
+  // future audit can see it happened, and res.url below is still checked
+  // against the allowed host set regardless.
+  if (res.redirected) {
+    console.log(`  [${entry.n}] note: response was redirected to ${res.url} (see comment above)`);
+  }
 
-  // redirect: "follow" above means a 3xx from melsskateshop.co.za would
-  // otherwise be silently followed wherever it points — assert the landed
-  // response is still on ORIGIN's exact host (not a startsWith prefix
-  // check, which "melsskateshop.co.za.evil.example" would pass) before
-  // trusting anything about it. Never touch facebook.com (spec §9) is
-  // enforced here, not by hoping the server behaves.
+  // redirect: "follow" above means a 3xx would otherwise be silently
+  // followed wherever it points — assert the landed response host is on
+  // the allowed set (not a startsWith prefix check, which
+  // "melsskateshop.co.za.evil.example" would pass) before trusting
+  // anything about it. For `kind: "link"` requests (Task 4), the allowed
+  // set is ALLOWED_LINK_HOSTS above (melsskateshop.co.za + the two
+  // third-party sites §7.3 names); for every other request (json/html/
+  // image — Tasks 2/3, unchanged) it is exactly ORIGIN's host, same as
+  // before this task. Never touch facebook.com (spec §9) is enforced
+  // here, not by hoping the server behaves.
   const finalHost = new URL(res.url).host;
   const allowedHost = new URL(ORIGIN).host;
-  if (finalHost !== allowedHost) {
+  const hostOk = kind === "link" ? ALLOWED_LINK_HOSTS.has(finalHost) : finalHost === allowedHost;
+  if (!hostOk) {
     throw new Error(
-      `refused: response left ${allowedHost} — landed on ${res.url} (spec §9: no code path to any other host)`,
+      `refused: response left the allowed host set — landed on ${res.url} ` +
+        `(spec §9/§7.3: no code path to any other host; kind=${kind ?? "none"})`,
     );
   }
 
-  if (!res.ok) {
+  // throwOnError: false (Task 4's outbound-link HEAD checks only) lets the
+  // caller inspect a non-2xx status itself — specifically to detect a 405
+  // on HEAD and retry with GET (see headOutboundLink() below) instead of
+  // this generic message firing first. Every other call site keeps the
+  // default (true), so this is not a behaviour change for Tasks 2/3.
+  if (!res.ok && throwOnError) {
     throw new Error(`${method} ${url} failed: ${res.status} ${res.statusText}`);
   }
   return res;
@@ -742,6 +797,271 @@ async function processImagePlan(products, sizeChartHtml) {
   return { manifestImages, encoderUsed, downloadedCount, largestBytes, planned: IMAGE_JOBS.length };
 }
 
+// --- Task 4: outbound link layer ---------------------------------------------
+//
+// spec §6.1.3, §6.6, §7.3, §9, §10, §2.9. Every URL the demo will link off
+// -site is enumerated as DATA FIRST (buildOutboundLinkCandidates() below,
+// pure — no network) so the budget can be asserted (assertOutboundLinkBudget())
+// before a single request is issued. processLinkPlan() calls that assertion
+// as its very first statement, before any `await politeRequest(...)`, so
+// there is no code path that reaches the network without passing it first.
+//
+// Unlike Tasks 2/3's JSON/HTML/image fetches, link checks are NOT served
+// from the gitignored cache: link status is exactly the kind of fact that
+// can change between runs, so every `--force` re-run re-checks all of them
+// live and spends the budget again. This is deliberate, not an oversight —
+// §9's "one pass" default is what --force exists to override, once, and
+// link-status is precisely the datum a re-check is for.
+
+// spec §2.9 / §6.6 (ruled #489): the address is sourced from Roll-Line's
+// own dealer-listing entry, not from melsskateshop.co.za (which publishes
+// no address at all). `contact.json` (Task 6, the copy pass) does not
+// exist yet at this point in the build — Task 6 must import THIS constant
+// rather than re-typing the literal, so the two lanes can never drift.
+export const MIDRAND_ADDRESS = "Swallow Drive 20, Midrand 1686";
+
+// decision #495: these two are query deep links — a 200 from either proves
+// only that the *page* loads, nothing about whether the address itself is
+// right, so they are recorded `exempt` and never fetched (zero requests).
+const MAPS_WAZE_EXEMPT_REASON = "query deep link — status proves nothing about the address (decision #495)";
+
+// Host is deliberately maps.google.com (the classic query-URL host), NOT
+// www.google.com/maps/... — tasks/plan.md's own Task 4 prose example uses
+// the latter, but docs/specs/mels-skate-shop-pitch.md §7.3's allow-list
+// (echoed in tasks/plan.md's own task 10/group-3 description) names the
+// allowed host as exactly `maps.google.com`. The spec's allow-list is the
+// enforced boundary (§7.3, group 3's host check), so it wins over the
+// plan's own inconsistent example — flagged in this task's discrepancies
+// rather than silently picking one.
+function googleMapsUrl(address) {
+  return `https://maps.google.com/?q=${encodeURIComponent(address)}`;
+}
+
+function wazeUrl(address) {
+  return `https://waze.com/ul?q=${encodeURIComponent(address)}`;
+}
+
+// The exact 12 candidates named in tasks/plan.md Task 4 minus the buying
+// guide (see BUYING_GUIDE_NOT_PUBLISHED below — it is not a real URL, so
+// it is not one of these), leaving 11 real candidates:
+//
+// DISCREPANCY: plan.md Task 4's own "five unbuilt discipline-card category
+// pages" worked example cites category ids 120/96/202/151/246/234 while
+// demonstrating the nested-permalink hazard — but those are the SUB
+// -categories Task 2 pulled SKUs from for the derby grid (Sets, Wheels and
+// Bearings, Toe Stops, Ice Blades, Ice Accessories), not the five Home
+// discipline cards that actually get an outbound link. The five that do
+// are spec §6.1.3 / plan.md task 4's OWN opening clause / plan.md task
+// 12's build step: Home's six discipline cards (Roller Derby → the
+// built-in hub, not outbound; the other five → live category pages).
+// Their permalinks, read verbatim from .cache/mels-fixtures/categories.json
+// (never assembled from `slug` — these categories nest, e.g. 116/119/163
+// all have parent 114 "roller-skates"; see the actual href literals in
+// buildOutboundLinkCandidates() below rather than restated here, so this
+// comment doesn't carry a second copy of the URL path for the negative
+// -control sed in tasks/plan.md's Task 4 verification to snag on instead
+// of the real one):
+//   116 Artistic Roller Skates      (48) -> roller-skates > artistic-skates-roller-skates
+//   119 Recreational Roller Skates  (71) -> roller-skates > recreational-roller-skates
+//   163 Adjustable Roller Skates    (17) -> roller-skates > adjustable-skates-roller-skates
+//    98 Ice Skates                  (35) -> ice-skates
+//   150 Inline Skates               (28) -> inline-skates
+//
+// SECOND DISCREPANCY: §6.1.3's "Kids & Adjustable" card names TWO category
+// counts ("17 adjustable · 30 in kids sizes" — categories 163 and 117),
+// but plan.md Task 4 is explicit that there are only FIVE unbuilt card
+// links (not six), so this one card can carry only one href. 163
+// (Adjustable Roller Skates) is used here — a growing-foot adjustable
+// skate is itself squarely a "kids" product, so it is the single closer
+// match for a card literally titled "Kids & Adjustable" — but 117
+// ("Available in smaller/kids sizes") is an equally defensible reading.
+// Task 12 (Home build) should confirm this choice against the design
+// pass's actual card copy; not resolved here.
+function buildOutboundLinkCandidates() {
+  return [
+    {
+      href: "https://melsskateshop.co.za/product-category/roller-skates/artistic-skates-roller-skates/",
+      status: "to-fetch",
+      note: "Home discipline card: Artistic & Rhythm (48) — permalink, category 116",
+    },
+    {
+      href: "https://melsskateshop.co.za/product-category/roller-skates/recreational-roller-skates/",
+      status: "to-fetch",
+      note: "Home discipline card: Recreational Quad (71) — permalink, category 119",
+    },
+    {
+      href: "https://melsskateshop.co.za/product-category/roller-skates/adjustable-skates-roller-skates/",
+      status: "to-fetch",
+      note: "Home discipline card: Kids & Adjustable (17 adjustable · 30 in kids sizes) — permalink, category 163; see DISCREPANCY above re: 163 vs 117",
+    },
+    {
+      href: "https://melsskateshop.co.za/product-category/ice-skates/",
+      status: "to-fetch",
+      note: "Home discipline card: Ice & Figure (35) — permalink, category 98",
+    },
+    {
+      href: "https://melsskateshop.co.za/product-category/inline-skates/",
+      status: "to-fetch",
+      note: "Home discipline card: Inline (28) — permalink, category 150",
+    },
+    {
+      href: "https://melsskateshop.co.za/product/aura-sky-100-ice-skate-boot/",
+      status: "to-fetch",
+      note: "Aura Sky 100 PDP permalink, product 11919 (from .cache/mels-fixtures/product-11919.json)",
+    },
+    {
+      href: "https://roll-line.it/en/dealers",
+      status: "to-fetch",
+      note:
+        "Roll-Line dealer listing — the plain locator page, no query string (research report benchmark-report.md " +
+        "§2.15/L41 cites roll-line.it/en/dealers). A query-submission GET is the out-of-scope form interaction " +
+        "(§9 no forms) reserved for the owner at CP1; this bare GET is a normal page load, not that.",
+    },
+    {
+      href: "https://roadhouserollerrink.co.za/",
+      status: "to-fetch",
+      note: "Roadhouse Roller Rink — the \"Recommended shop\" credential (report benchmark-report.md L44)",
+    },
+    {
+      // Bare host, matching spec §6.6 ("facebook.com/melsskateshopofficial")
+      // and §7.3's allow-list literal ("facebook.com") exactly — NOT
+      // www.facebook.com. audit.json's "attempted" URL (issue 10) used
+      // www./m. variants because those are the hosts that bot-block; the
+      // spec's own canonical citation (and benchmark-report.md L55) is the
+      // bare host, and Task 11's group-3 link crawl will look up whatever
+      // href the rendered contact block uses verbatim in manifest.links[],
+      // so this literal must match that rendered href exactly (remediation
+      // of GitHub review #21 finding 2 — never fetched either way).
+      href: "https://facebook.com/melsskateshopofficial",
+      status: "pending-manual",
+      note: "never fetched by this script (audit.json issue 10) — the owner opens it once in a real browser at CP1 and ticks manual-ok, or the link is dropped",
+    },
+    { href: googleMapsUrl(MIDRAND_ADDRESS), status: "exempt", reason: MAPS_WAZE_EXEMPT_REASON },
+    { href: wazeUrl(MIDRAND_ADDRESS), status: "exempt", reason: MAPS_WAZE_EXEMPT_REASON },
+  ];
+}
+
+// spec §6.2.5 asks the derby hub to link "the buying guide (live-site
+// link)". Re-verified from the cache for THIS task (not taken on faith):
+// every melsskateshop.co.za href on the already-cached size-chart.html was
+// enumerated (grepped, captured in this task's own output) — the site has
+// /about/, /size-chart/, /shipping-information/, /return-policy/, the
+// policy/cart/account pages and the /product-category/ tree, and NO
+// buying guide. The only href on that page matching /guide/i is a
+// third-party Riedell sizing PDF on ice.riedellskates.com — not Mel's
+// guide, and not on the §7.3 allow-list. The research report's cornerstone
+// -guide mention (benchmark-report.md §5.30) is a RECOMMENDATION for Mel,
+// not a page her site currently has (docs/research/mels-skate-shop/
+// benchmark-report.md, read from the orchestrator repo for this task).
+//
+// So: not invented, not fetched, not silently dropped either — recorded
+// visibly in manifest.links[] with its own status so §6.2.5's ask is
+// answered rather than disappearing. Task 13 (derby hub) needs a
+// different second link, or none; not decided here. Flagged in this
+// task's `discrepancies` for the CP1 owner gate.
+const BUYING_GUIDE_NOT_PUBLISHED = {
+  href: null,
+  status: "not-published",
+  reason:
+    "no buying-guide page exists on melsskateshop.co.za (verified against every href in the cached size-chart.html, task 4) — " +
+    "the report's cornerstone-guide mention (benchmark-report.md §5.30) is a recommendation for Mel, not a page her site has",
+};
+
+function assertOutboundLinkBudget(candidates) {
+  const toFetch = candidates.filter((c) => c.status === "to-fetch");
+  if (toFetch.length > MAX_OUTBOUND_LINK_CHECKS) {
+    console.error(
+      `\nOUTBOUND LINK BUDGET EXCEEDED — before any request was issued: ${toFetch.length} candidates would need ` +
+        `fetching, > ${MAX_OUTBOUND_LINK_CHECKS} allowed (spec §9). Writing nothing. Full candidate list:`,
+    );
+    for (const c of candidates) {
+      // exempt candidates (Maps/Waze) carry their explanation in `reason`,
+      // not `note` — fall back so this failure listing is equally
+      // informative for every status, not just to-fetch/pending-manual
+      // (remediation of GitHub review #21 finding, minor).
+      const detail = c.note ?? c.reason;
+      console.error(`  [${c.status}] ${c.href ?? "(no href — not-published)"}${detail ? " — " + detail : ""}`);
+    }
+    throw new Error(
+      `outbound-link budget check failed before any request: ${toFetch.length} to fetch > ${MAX_OUTBOUND_LINK_CHECKS} (spec §9)`,
+    );
+  }
+  return toFetch;
+}
+
+// One HEAD through the polite choke point, GET on 405.
+//
+// BUDGET ACCOUNTING, decided deliberately (spec §9 / task instructions —
+// not left to luck): politeRequest() reserves the outbound-link budget
+// (reserveOutboundLinkCheckBudget(), via `kind: "link"`) on EVERY real
+// network call it makes, with no special case for a retry. So a HEAD->GET
+// retry here spends a SECOND slot for this one candidate — the choke
+// point does not know or care that it's "the same candidate" the second
+// time. That is intentional: the alternative (tracking per-candidate
+// reservations so a retry is "free") would be a second, separate budget
+// model duplicating the one the choke point already enforces, for a
+// saving that only matters if a host actually 405s a HEAD. With 8
+// candidates fetched against the 10 cap, there is headroom for up to 2
+// such retries across the whole run before reserveOutboundLinkCheckBudget()
+// itself throws and aborts mid-run — which is the correct backstop: the
+// pre-flight assertOutboundLinkBudget() above can only bound the STATIC
+// candidate count, since it cannot know in advance which third-party host
+// (if any) will 405 a HEAD.
+async function headOutboundLink(url) {
+  let res = await politeRequest(url, { method: "HEAD", kind: "link", throwOnError: false });
+  if (res.status === 405) {
+    console.log(`  [link] ${url} -> 405 on HEAD, retrying with GET (spends a second budget slot — see comment above)`);
+    res = await politeRequest(url, { method: "GET", kind: "link", throwOnError: false });
+  }
+  return res;
+}
+
+async function processLinkPlan() {
+  const candidates = buildOutboundLinkCandidates();
+  const toFetch = assertOutboundLinkBudget(candidates); // throws (naming every candidate) before any request if over budget
+
+  console.log(
+    `\n--- Task 4: outbound link layer (${candidates.length} candidates enumerated, ${toFetch.length} to fetch, ` +
+      `<= ${MAX_OUTBOUND_LINK_CHECKS} budget) ---`,
+  );
+  // Loud, deliberate reminder (GitHub review #21 finding 1): unlike the
+  // JSON/HTML/image layers above, link checks are never served from the
+  // gitignored cache — every invocation that reaches this function (a
+  // first run, or ANY future `--force`) re-issues these live requests
+  // against melsskateshop.co.za and the third-party hosts below. This is
+  // intentional (link status is exactly the fact a re-check is for), but
+  // it must not be a silent surprise to whoever runs `--force` next.
+  console.log(
+    `[link] re-checking ${toFetch.length} outbound link(s) live against 3rd-party hosts — link checks are never ` +
+      `cache-served, so this happens on every run including a future --force (spec §9 "one pass" governs the ` +
+      `JSON/image layers above, not this one).`,
+  );
+
+  const manifestLinks = [];
+  for (const c of candidates) {
+    if (c.status === "to-fetch") {
+      const res = await headOutboundLink(c.href);
+      if (res.status !== 200) {
+        throw new Error(
+          `outbound link check failed: ${c.href} -> ${res.status} ${res.statusText} (spec §9: exiting non-zero naming the URL)`,
+        );
+      }
+      manifestLinks.push({ href: c.href, status: res.status, checkedAt: new Date().toISOString() });
+    } else if (c.status === "exempt") {
+      manifestLinks.push({ href: c.href, status: "exempt", reason: c.reason });
+    } else if (c.status === "pending-manual") {
+      manifestLinks.push({ href: c.href, status: "pending-manual", reason: c.note });
+    }
+  }
+  manifestLinks.push({
+    href: BUYING_GUIDE_NOT_PUBLISHED.href,
+    status: BUYING_GUIDE_NOT_PUBLISHED.status,
+    reason: BUYING_GUIDE_NOT_PUBLISHED.reason,
+  });
+
+  return { manifestLinks, candidateCount: candidates.length, fetchedCount: toFetch.length };
+}
+
 // --- main --------------------------------------------------------------------
 
 const args = process.argv.slice(2);
@@ -759,8 +1079,17 @@ async function main() {
       console.log(`     -> ${r.label}`);
     });
     console.log(`\nRate limit in force: <= ${MAX_REQUESTS_PER_SECOND} req/s.`);
+    console.log(`Hard budget in force: <= ${MAX_IMAGES} images (Task 3, ${IMAGE_JOBS.length} planned).`);
+
+    // Pure/no-network — safe to build and print in a dry run.
+    const candidates = buildOutboundLinkCandidates();
+    const toFetch = candidates.filter((c) => c.status === "to-fetch");
+    const exempt = candidates.filter((c) => c.status === "exempt");
+    const pending = candidates.filter((c) => c.status === "pending-manual");
     console.log(
-      `Hard budgets in force (unused by this task): <= ${MAX_IMAGES} images, <= ${MAX_OUTBOUND_LINK_CHECKS} outbound link checks.`,
+      `Hard budget in force: <= ${MAX_OUTBOUND_LINK_CHECKS} outbound link checks (Task 4, ${candidates.length} ` +
+        `candidates enumerated: ${toFetch.length} to fetch, ${exempt.length} exempt, ${pending.length} pending-manual; ` +
+        `+1 not-published, not counted — the buying guide, see BUYING_GUIDE_NOT_PUBLISHED).`,
     );
     console.log(`\nrequests issued: 0`);
     return;
@@ -838,16 +1167,18 @@ async function main() {
     sizeChartHtml,
   );
 
-  // Manifest is assembled by MERGE, never overwrite — facts[] (task 6) and
-  // links[] (task 4) survive a --force re-run of this file; only images[]
-  // is ours to replace.
+  const { manifestLinks, candidateCount, fetchedCount } = await processLinkPlan();
+
+  // Manifest is assembled by MERGE, never overwrite — facts[] (task 6)
+  // survives a --force re-run of this file; images[] (task 3) and links[]
+  // (task 4) are ours to replace, freshly computed above every run.
   const existingManifest = existsSync(MANIFEST_JSON_PATH)
     ? JSON.parse(readFileSync(MANIFEST_JSON_PATH, "utf8"))
     : { facts: [], images: [], links: [] };
   const manifest = {
     facts: existingManifest.facts ?? [],
     images: manifestImages,
-    links: existingManifest.links ?? [],
+    links: manifestLinks,
   };
   writeFileSync(MANIFEST_JSON_PATH, JSON.stringify(manifest, null, 2) + "\n");
 
@@ -857,6 +1188,9 @@ async function main() {
       `(merged: facts=${manifest.facts.length}, images=${manifest.images.length}, links=${manifest.links.length}).`,
   );
   console.log(
+    `Links: ${candidateCount} candidates enumerated, ${fetchedCount} fetched this run (<= ${MAX_OUTBOUND_LINK_CHECKS} budget).`,
+  );
+  console.log(
     `Images: ${planned} planned, ${downloadedCount} newly downloaded this run, encoder=${encoderUsed ?? "n/a"}, ` +
       `largest webp=${largestBytes} bytes (cap ${MAX_IMAGE_BYTES} bytes).`,
   );
@@ -864,7 +1198,15 @@ async function main() {
   console.log(`peak observed rate: ${peakRatePerSecond.toFixed(2)} req/s (limit ${MAX_REQUESTS_PER_SECOND.toFixed(2)} req/s)`);
 }
 
-main().catch((err) => {
-  console.error(err.stack || String(err));
-  process.exitCode = 1;
-});
+// Guard main()'s invocation so importing this module (e.g. Task 6 pulling
+// in the exported MIDRAND_ADDRESS constant, per this task's instructions)
+// does not also re-trigger the whole fetch pipeline as a side effect —
+// `node scripts/fetch-mels-fixtures.mjs [...]` (every usage in this repo)
+// still runs it exactly as before.
+const isMainModule = import.meta.url === `file://${process.argv[1]}`;
+if (isMainModule) {
+  main().catch((err) => {
+    console.error(err.stack || String(err));
+    process.exitCode = 1;
+  });
+}
