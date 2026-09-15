@@ -1,0 +1,126 @@
+{
+  "marker": "demo data — confirm with Mel",
+  "currency": "ZAR",
+  "illustrativeIds": {
+    "durations": "fitting-durations",
+    "prices": "fitting-prices"
+  },
+  "note": "Mel publishes no fitting menu, no durations and no prices. Every duration and every price below is ours, not hers (decision #490), and each carries the proposed chip.",
+  "types": [
+    {
+      "key": "quad-fitting",
+      "name": "Quad fitting",
+      "durationMinutes": 30,
+      "durationLabel": "30 min",
+      "priceCents": 35000,
+      "priceLabel": "R350",
+      "source": "illustrative",
+      "illustrative": [
+        "fitting-durations",
+        "fitting-prices"
+      ],
+      "blurb": "Both feet measured standing, boot tried on the plate you would actually skate, laces and toe stop set before you leave.",
+      "bring": [
+        "The socks you skate in",
+        "Your current skates if you have a pair"
+      ]
+    },
+    {
+      "key": "ice-boot-fitting-heat-mould",
+      "name": "Ice boot fitting + heat-mould",
+      "durationMinutes": 60,
+      "durationLabel": "60 min",
+      "priceCents": 85000,
+      "priceLabel": "R850",
+      "source": "illustrative",
+      "illustrative": [
+        "fitting-durations",
+        "fitting-prices"
+      ],
+      "blurb": "Measured on the Brannock, sized to Aura's own suggested size, then baked and moulded to your foot while you wear it.",
+      "bring": [
+        "The socks you skate in",
+        "Your blades if you already own them"
+      ],
+      "relatedServiceKey": "heat-mould-in-store"
+    },
+    {
+      "key": "kids-fitting",
+      "name": "Kids fitting",
+      "durationMinutes": 20,
+      "durationLabel": "20 min",
+      "priceCents": 25000,
+      "priceLabel": "R250",
+      "source": "illustrative",
+      "illustrative": [
+        "fitting-durations",
+        "fitting-prices"
+      ],
+      "blurb": "Growing feet, so we size for now and tell you honestly how long it will last. Adjustable options shown alongside.",
+      "bring": [
+        "The socks they skate in"
+      ]
+    },
+    {
+      "key": "video-consult",
+      "name": "Video consult",
+      "durationMinutes": 20,
+      "durationLabel": "20 min",
+      "priceCents": 20000,
+      "priceLabel": "R200",
+      "source": "illustrative",
+      "illustrative": [
+        "fitting-durations",
+        "fitting-prices"
+      ],
+      "blurb": "For skaters outside Gauteng. You trace and measure both feet on camera with us, we size the brand you want and send the result in writing.",
+      "bring": [
+        "A sheet of paper, a pen and a tape measure",
+        "A wall and a hard floor"
+      ]
+    }
+  ],
+  "services": [
+    {
+      "key": "heat-mould-in-store",
+      "id": "heat-mould-price",
+      "name": "Heat-mould & fit in store",
+      "priceCents": 85000,
+      "priceLabel": "R850",
+      "source": "illustrative",
+      "blurb": "A foot-in-boot custom mould. Mel's own product page says these boots must be heat moulded and to phone the shop for it, so the service is real; the price here is ours."
+    },
+    {
+      "key": "mail-in-heat-mould",
+      "id": "mail-in-heat-mould",
+      "name": "Mail-in heat-mould",
+      "priceCents": 65000,
+      "priceLabel": "R650 + courier",
+      "source": "illustrative",
+      "flags": [
+        "confirm"
+      ],
+      "blurb": "A pre-ship bake before the boot leaves us. Whether Mel offers a mail-in bake at all is an open question for the call."
+    }
+  ],
+  "promise": {
+    "steps": [
+      "Measure",
+      "Try",
+      "Adjust"
+    ],
+    "text": "Measure both feet standing. Try the boot on the plate or blade you would actually skate. Adjust before you leave — lacing, toe stop, heel lift."
+  },
+  "cancellation": {
+    "id": "cancellation-policy",
+    "source": "illustrative",
+    "text": "Move or cancel a fitting up to 24 hours before, by WhatsApp, at no charge; after that the fitting fee is due."
+  },
+  "availability": {
+    "text": "By appointment.",
+    "detail": "Wed 12:00-18:00 through Sun 09:30-16:00",
+    "source": "audit.json",
+    "note": "Mel publishes by-appointment hours only. Nothing in this demo suggests the shop can be visited without booking first; that is another shop's practice, not hers."
+  },
+  "bookingNote": "This form composes a WhatsApp message. In the build it is a live on-domain calendar."
+}

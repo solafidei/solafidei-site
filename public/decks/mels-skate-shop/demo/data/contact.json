@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "doNotRender": true,
+    "addressOmitted": true,
+    "reason": "Ruled by decision #504: two public sources disagree by about 20 km about where the shop is and neither survived scrutiny, so this file carries no address field and no map links. Spec section 6.6's address clause and section 2.9 are superseded. It is a question for Mel on the call, not something this demo answers."
+  },
+  "business": "Mel's Skate Shop",
+  "phone": {
+    "label": "+27 82 370 6771",
+    "href": "tel:+27823706771",
+    "source": "audit.json"
+  },
+  "whatsapp": {
+    "label": "WhatsApp Melony",
+    "number": "27823706771",
+    "href": "https://wa.me/27823706771",
+    "source": "audit.json"
+  },
+  "email": {
+    "label": "melony@melsskateshop.co.za",
+    "href": "mailto:melony@melsskateshop.co.za",
+    "source": "audit.json"
+  },
+  "hours": {
+    "label": "By appointment",
+    "detail": "Wed 12:00-18:00 through Sun 09:30-16:00",
+    "source": "audit.json",
+    "note": "Mel's published by-appointment hours. The demo never implies the shop takes unbooked visitors."
+  },
+  "socials": [
+    {
+      "key": "facebook",
+      "label": "Facebook",
+      "href": "https://facebook.com/melsskateshopofficial",
+      "status": "manual-ok",
+      "source": "audit.json"
+    }
+  ],
+  "socialsNote": "Facebook is the only social account with a real URL. Every social icon on Mel's current site links to # rather than a profile, so nothing else is listed here.",
+  "courier": {
+    "line": "R100 Gauteng · R150 elsewhere · 1-3 days",
+    "tiers": [
+      {
+        "where": "Gauteng",
+        "priceCents": 10000,
+        "priceLabel": "R100"
+      },
+      {
+        "where": "Elsewhere in South Africa",
+        "priceCents": 15000,
+        "priceLabel": "R150"
+      }
+    ],
+    "days": "1-3 days",
+    "source": "report L46",
+    "note": "Homepage figures. Mel's /shipping-information/ page states R100 JHB/PTA and R180 other regions. The demo uses the homepage figures everywhere and the deck names the contradiction."
+  },
+  "liveSite": {
+    "label": "melsskateshop.co.za",
+    "href": "https://melsskateshop.co.za/"
+  }
+}

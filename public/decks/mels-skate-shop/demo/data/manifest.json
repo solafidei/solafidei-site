@@ -1,5 +1,405 @@
 {
-  "facts": [],
+  "facts": [
+    {
+      "id": "trading-since-2012",
+      "text": "Mel's Skate Shop has traded since 2012.",
+      "source": "audit.json"
+    },
+    {
+      "id": "first-derby-shop-sa",
+      "text": "Mel's own site states: We were the first roller derby shop to open in South Africa.",
+      "source": "audit.json"
+    },
+    {
+      "id": "in-person-fitting",
+      "text": "Mel's fits skates in person and runs a custom/special-order path for sizes not held in stock.",
+      "source": "audit.json"
+    },
+    {
+      "id": "roll-line-dealer",
+      "text": "Roll-Line's own dealer database lists Mel's Skate Shop, and Mel's is its only South African dealer.",
+      "source": "roll-line.it"
+    },
+    {
+      "id": "roadhouse-recommended",
+      "text": "Roadhouse Roller Rink names Mel's its \"RECOMMENDED SHOP\".",
+      "source": "report L44"
+    },
+    {
+      "id": "roadhouse-location",
+      "text": "Roadhouse Roller Rink is at Eastgate Shopping Centre, Bedfordview.",
+      "source": "report L655"
+    },
+    {
+      "id": "roadhouse-sessions",
+      "text": "Roadhouse Roller Rink publishes R100 entry, R150 with rental skates, R190 with skates plus full pads.",
+      "source": "report L44"
+    },
+    {
+      "id": "one-public-review",
+      "text": "Mel's has one public review anywhere: Elizabeth de Lange, Facebook, 2 November 2022.",
+      "source": "report L16"
+    },
+    {
+      "id": "derby-leagues",
+      "text": "Four South African roller derby leagues are confirmed: Golden City Rollers (Johannesburg, 2010), Durban Roller Derby (2012), Cape Town Rollergirls and P-Town Roller Derby.",
+      "source": "report L657"
+    },
+    {
+      "id": "count-roller-skates",
+      "text": "Roller Skates: 98 products.",
+      "source": "store:categories"
+    },
+    {
+      "id": "count-roller-derby",
+      "text": "Roller Derby: 8 products.",
+      "source": "store:categories"
+    },
+    {
+      "id": "count-artistic",
+      "text": "Artistic Roller Skates: 48 products.",
+      "source": "store:categories"
+    },
+    {
+      "id": "count-recreational",
+      "text": "Recreational Roller Skates: 71 products.",
+      "source": "store:categories"
+    },
+    {
+      "id": "count-adjustable",
+      "text": "Adjustable Roller Skates: 17 products.",
+      "source": "store:categories"
+    },
+    {
+      "id": "count-kids-sizes",
+      "text": "Available in smaller/kids sizes: 30 products.",
+      "source": "store:categories"
+    },
+    {
+      "id": "count-ice-skates",
+      "text": "Ice Skates: 35 products.",
+      "source": "store:categories"
+    },
+    {
+      "id": "count-ice-blades",
+      "text": "Ice Blades: 2 products.",
+      "source": "store:categories"
+    },
+    {
+      "id": "count-ice-accessories",
+      "text": "Ice Accessories: 10 products.",
+      "source": "store:categories"
+    },
+    {
+      "id": "count-inline",
+      "text": "Inline Skates: 28 products.",
+      "source": "store:categories"
+    },
+    {
+      "id": "count-sets",
+      "text": "Protective Gear / Sets: 27 products.",
+      "source": "store:categories"
+    },
+    {
+      "id": "count-wheels-bearings",
+      "text": "Wheels and Bearings: 38 products.",
+      "source": "store:categories"
+    },
+    {
+      "id": "count-toe-stops",
+      "text": "Toe Stops/Jam plugs: 17 products.",
+      "source": "store:categories"
+    },
+    {
+      "id": "aura-sky-100-price",
+      "text": "Aura Sky 100 Ice Skate Boot White is R12,050.",
+      "source": "store:11919"
+    },
+    {
+      "id": "aura-sky-50-price",
+      "text": "Aura Sky 50 Ice Skate Boot White is R7,850.",
+      "source": "store:11905"
+    },
+    {
+      "id": "aura-sky-200-price",
+      "text": "Aura Sky 200 Ice Skate Boot White is R15,550.",
+      "source": "store:11924"
+    },
+    {
+      "id": "aura-white-colourway",
+      "text": "The demo shows the white Sky 100, product id 11919. The black record, id 11938, is a WooCommerce duplicate: its slug ends -white-copy and its only boot photo is the Sky 200's, so it is not used or linked.",
+      "source": "store:11938"
+    },
+    {
+      "id": "aura-imported-to-order",
+      "text": "Aura Sky boots are imported specifically on order and are not kept in stock, with an approx. 2-week lead time.",
+      "source": "audit.json"
+    },
+    {
+      "id": "aura-lead-time-benchmark",
+      "text": "Approx. 2 weeks beats almost every made-to-order boot benchmarked: Bont 6-8 weeks semi-custom and 8-12 full custom, Riedell ice full custom 12-14 weeks, Riedell ColorLab 8-10 weeks plus shipping, Jackson 6-8 weeks modified.",
+      "source": "report L693"
+    },
+    {
+      "id": "aura-price-date",
+      "text": "Mel's product page states the price is as of 30 July 2026 and may move with the exchange rate.",
+      "source": "melsskateshop.co.za"
+    },
+    {
+      "id": "aura-heat-mould-phone",
+      "text": "Mel's product page says the heat-mould is fitted only by phoning the shop directly.",
+      "source": "audit.json"
+    },
+    {
+      "id": "aura-heat-mould-required",
+      "text": "Aura publishes the heat-mould as a requirement, not an option: AURA skates must always be heat molded. The carbon construction lets the boot expand in width and volume and conform to the foot, and the boots are designed to fit very snug before moulding.",
+      "source": "melsskateshop.co.za"
+    },
+    {
+      "id": "aura-size-run-mm",
+      "text": "AURA skates are sized in millimeters from 210-300 mm and are designed to be heat molded for a custom fit.",
+      "source": "melsskateshop.co.za"
+    },
+    {
+      "id": "aura-size-run-published",
+      "text": "Aura's full per-model size run is published on Mel's own size-chart page, with a per-size width grid for each of Sky 50, Sky 100 and Sky 200 in men's and women's fits. The grids print four width columns B, C, D and E, but offer E in no size at all; men's fits are C and D only, women's fits add B.",
+      "source": "melsskateshop.co.za"
+    },
+    {
+      "id": "aura-selection-matrix",
+      "text": "Which Sky to order comes from Aura's own selection matrix: foot-length band in millimetres crossed with body weight and jump level, giving Sky 50, Sky 100 or Sky 200.",
+      "source": "melsskateshop.co.za"
+    },
+    {
+      "id": "aura-brannock-rule",
+      "text": "Aura sizes from the Brannock Suggested Size, not raw foot length alone. The suggested size is a High-Performance fit; add 1/2 size, 5 mm, for a Comfort fit.",
+      "source": "melsskateshop.co.za"
+    },
+    {
+      "id": "aura-width-before-length",
+      "text": "Aura's key rule: if the skate feels tight, move up in width before increasing length.",
+      "source": "melsskateshop.co.za"
+    },
+    {
+      "id": "aura-blade-chart",
+      "text": "Aura publishes an optimal blade size in inches for every boot size from 210 mm to 300 mm.",
+      "source": "melsskateshop.co.za"
+    },
+    {
+      "id": "aura-spec-table",
+      "text": "Spec table: boot only, blade sold separately; carbon construction; heat-mouldable and required to be; sized in millimetres from 210 to 300; widths C and D in men's fits and B, C and D in women's fits, the E column being printed on Aura's grids but offered in no size. Level and stiffness are published nowhere reachable and are left out rather than guessed. Which of these sizes and widths Mel can actually order is hers to confirm.",
+      "source": "melsskateshop.co.za",
+      "flags": [
+        "confirm"
+      ]
+    },
+    {
+      "id": "size-chart-images-only",
+      "text": "Mel's size-chart page carries no HTML table at all: every brand chart on it is published as an image.",
+      "source": "melsskateshop.co.za"
+    },
+    {
+      "id": "size-chart-roll-line-missing",
+      "text": "Roll-Line, one of Mel's two flagship lines, has no size table on the size-chart page.",
+      "source": "report L188"
+    },
+    {
+      "id": "size-chart-no-riedell-sure-grip",
+      "text": "Riedell and Sure-Grip each have a tab on Mel's size-chart page, but neither publishes a size table. Riedell's tab sends the buyer off-site to Riedell's own sizing pages, and its roller link is broken as published, truncated to \"/Support/Sizing-Hel\". Sure-Grip's tab carries Mel's own measuring method and a printable insole chart PDF on her domain - her most personal sizing content, but not something a size finder can read. Both are brands a derby or recreational buyer would be offered.",
+      "source": "melsskateshop.co.za"
+    },
+    {
+      "id": "size-variance-disclaimer",
+      "text": "Brands differ by 1-2 full sizes for the same foot, so a finder result is a starting point, not a fitting.",
+      "source": "report L182"
+    },
+    {
+      "id": "sizes-rio",
+      "text": "Rio Roller: UK 11J to 12, EU 29 to 47, insole length 200 mm to 300 mm.",
+      "source": "melsskateshop.co.za",
+      "flags": [
+        "confirm"
+      ]
+    },
+    {
+      "id": "sizes-sfr",
+      "text": "SFR Galaxy: UK J10 to 10A, EU 28 to 44.5, foot length 166 mm to 302 mm, with a ball-girth column.",
+      "source": "melsskateshop.co.za",
+      "flags": [
+        "confirm"
+      ]
+    },
+    {
+      "id": "sizes-chaya-emerald",
+      "text": "Chaya Emerald: US 4 to 13, UK 3.5 to 12, 227 mm to 289 mm.",
+      "source": "melsskateshop.co.za",
+      "flags": [
+        "confirm"
+      ]
+    },
+    {
+      "id": "sizes-chaya-sapphire",
+      "text": "Chaya Sapphire: US 4 to 15, UK 2 to 13, 228 mm to 301 mm.",
+      "source": "melsskateshop.co.za",
+      "flags": [
+        "confirm"
+      ]
+    },
+    {
+      "id": "sizes-atom",
+      "text": "Atom Vertigo boot chart, all models (Q6, Q4, F1): US women's 4 to 12 with a wider unisex run 6 to 13, 217 mm to 294 mm, EU 36.5 to 46.5.",
+      "source": "melsskateshop.co.za",
+      "flags": [
+        "confirm"
+      ]
+    },
+    {
+      "id": "plate-f16",
+      "text": "The Pilot F-16 derby plate chart maps plate size 5.0 to 8.5, axle to axle, onto Q-4/Q-6, F-1 and Jackson boot sizes, with plate length 218 mm to 309 mm.",
+      "source": "melsskateshop.co.za",
+      "flags": [
+        "confirm"
+      ]
+    },
+    {
+      "id": "sizes-untranscribed",
+      "text": "Powerslide, Playlife, Jackson, Destiny and S1 each publish a chart on Mel's size-chart page as an image, as does a second SFR model in a tab titled \"SFR Vision\" - so SFR has two model charts and only the Galaxy one is transcribed. Those images are not transcribed here and the finder hands off to WhatsApp for them.",
+      "source": "melsskateshop.co.za"
+    },
+    {
+      "id": "size-finder-rarity",
+      "text": "Interactive size calculators are rare: across 26 shop teardowns only ProSkaters Place and Pigeon's ship one.",
+      "source": "report L601"
+    },
+    {
+      "id": "by-appointment-hours",
+      "text": "Mel's publishes by-appointment hours: Wed 12:00-18:00 through Sun 09:30-16:00.",
+      "source": "audit.json"
+    },
+    {
+      "id": "phone-number",
+      "text": "Mel's phone is +27 82 370 6771, the same number on WhatsApp.",
+      "source": "audit.json"
+    },
+    {
+      "id": "email-address",
+      "text": "Mel's email is melony@melsskateshop.co.za.",
+      "source": "audit.json"
+    },
+    {
+      "id": "facebook-page",
+      "text": "Mel's Facebook page is facebook.com/melsskateshopofficial.",
+      "source": "audit.json"
+    },
+    {
+      "id": "courier-two-tier",
+      "text": "R100 Gauteng · R150 elsewhere · 1-3 days.",
+      "source": "report L46"
+    },
+    {
+      "id": "courier-conflict",
+      "text": "Mel's own pages disagree on shipping: the homepage says R100 Gauteng and R150 elsewhere, /shipping-information/ says R100 JHB/PTA and R180 other regions. This demo uses the homepage figures everywhere.",
+      "source": "report L60"
+    },
+    {
+      "id": "booking-off-domain",
+      "text": "Mel's Book An Appointment link leaves the site for Koalendar, and /book-an-appointment/ returns 404.",
+      "source": "audit.json"
+    },
+    {
+      "id": "booking-rarity",
+      "text": "On-domain booking with named service types is rare: of 16 new teardowns, 4 route booking off-domain and 5 have no booking at all.",
+      "source": "report L608"
+    },
+    {
+      "id": "contact-paths-404",
+      "text": "/contact-us/ and /book-an-appointment/ both 404; the working contact page is /contact/, and it carries no address, no map and no social links.",
+      "source": "audit.json"
+    },
+    {
+      "id": "no-results-placeholder",
+      "text": "Mel's ships a hidden \"No results\" live-search placeholder on /shop/ and on two category pages.",
+      "source": "audit.json"
+    },
+    {
+      "id": "social-icons-dead",
+      "text": "Every social icon on Mel's current site links to # rather than to a real profile.",
+      "source": "audit.json"
+    },
+    {
+      "id": "notify-me-adhoc",
+      "text": "One Mel's product line carries an ad-hoc back-in-stock note. There is no systematic notify-me.",
+      "source": "report L287"
+    },
+    {
+      "id": "no-waitlist",
+      "text": "Mel's interleaves sold-out accessories with in-stock R12,050 boots and offers no waitlist.",
+      "source": "report L846"
+    },
+    {
+      "id": "pjn-pay-in-3",
+      "text": "PayJustNow is Pay-in-3 at 0%.",
+      "source": "report L418"
+    },
+    {
+      "id": "pjn-onboarding-open",
+      "text": "Whether Mel's can offer PayJustNow is unsettled: confirming PayJustNow and Ozow SME onboarding terms is an open question in the report.",
+      "source": "report L921"
+    },
+    {
+      "id": "no-instalments-today",
+      "text": "Mel's offers no instalments today, against a catalogue topping out at R15,550.",
+      "source": "report L861"
+    },
+    {
+      "id": "fit-guarantee",
+      "text": "Mel's Fit Guarantee — if it doesn't fit, we exchange it. 30 days, unworn outdoors. What qualifies: unworn outdoors, original box, guards unfitted. Who pays the courier each way is stated. To start it, one WhatsApp message with the order number. No fit-based exchange on custom or imported-to-order boots — size confirmed with us on WhatsApp before we order.",
+      "source": "illustrative"
+    },
+    {
+      "id": "pjn-instalments",
+      "text": "or 3 interest-free instalments of R4,016.67 — PayJustNow, once onboarded.",
+      "source": "illustrative"
+    },
+    {
+      "id": "fitting-prices",
+      "text": "Fitting prices: Quad fitting R350 · Ice boot fitting + heat-mould R850 · Kids fitting R250 · Video consult R200.",
+      "source": "illustrative"
+    },
+    {
+      "id": "fitting-durations",
+      "text": "Fitting durations: Quad fitting 30 min · Ice boot fitting + heat-mould 60 min · Kids fitting 20 min · Video consult 20 min.",
+      "source": "illustrative"
+    },
+    {
+      "id": "cancellation-policy",
+      "text": "Move or cancel a fitting up to 24 hours before, by WhatsApp, at no charge; after that the fitting fee is due.",
+      "source": "illustrative"
+    },
+    {
+      "id": "heat-mould-price",
+      "text": "Heat-mould & fit in store — R850. Mel says on her own product page that these boots must be heat moulded and that she fits it, so the service is real; the price is ours.",
+      "source": "illustrative"
+    },
+    {
+      "id": "mail-in-heat-mould",
+      "text": "Mail-in heat-mould — R650 + courier. A pre-ship bake rather than a foot-in-boot mould. Whether Mel does a mail-in bake at all is a question for the call.",
+      "source": "illustrative",
+      "flags": [
+        "confirm"
+      ]
+    },
+    {
+      "id": "aura-size-stock-states",
+      "text": "Per-size stock states on the Aura size selector — in stock, imported to order with a lead time, or notify me. The size run and its widths are real and published by Aura; which size is on a shelf on any given day is not published anywhere, so the states are structure, not stock truth.",
+      "source": "illustrative"
+    },
+    {
+      "id": "demo-buy-button",
+      "text": "The buy button is a demo. Cart and checkout land in month 1; order this boot on WhatsApp now.",
+      "source": "illustrative"
+    }
+  ],
   "images": [
     {
       "file": "logo.webp",
@@ -248,18 +648,20 @@
       "status": "exempt",
       "reason": "query deep link — status proves nothing about the address (decision #495)",
       "flags": [
-        "address-conflict-unresolved"
+        "address-conflict-unresolved",
+        "dropped-from-demo"
       ],
-      "conflict": "UNRESOLVED ADDRESS CONFLICT (spec §2.9 confirm-flag, decision #489, still open). Two live sources disagree by ~20 km: (a) \"Swallow Drive 20, Midrand 1686\" — roll-line.it dealer listing + facebook.com Intro panel; (b) \"Eastgate Shopping Centre, 43 Bradford Rd, Bedfordview, Germiston 2008\" — Google Business Profile, which carries the matching phone 082 370 6771, the matching site melsskateshop.co.za, trading hours, an interior photo and walk-in directions. This href was built from (a) and geocodes to -26.0027,28.0882; the Google pin for the business name is -26.1786,28.1143. OWNER RULING REQUIRED before T06 writes contact.json — a pitch that sends Mel's own customers to the wrong door is worse than no map link."
+      "resolution": "Resolved by decision #504: neither candidate address survived scrutiny, so the demo asserts no location at all. This entry is retained as an audit trail only and is emitted by no page. Section 7 group 3 asserts demo href to manifest entry, never the reverse."
     },
     {
       "href": "https://waze.com/ul?q=Swallow%20Drive%2020%2C%20Midrand%201686",
       "status": "exempt",
       "reason": "query deep link — status proves nothing about the address (decision #495)",
       "flags": [
-        "address-conflict-unresolved"
+        "address-conflict-unresolved",
+        "dropped-from-demo"
       ],
-      "conflict": "UNRESOLVED ADDRESS CONFLICT (spec §2.9 confirm-flag, decision #489, still open). Two live sources disagree by ~20 km: (a) \"Swallow Drive 20, Midrand 1686\" — roll-line.it dealer listing + facebook.com Intro panel; (b) \"Eastgate Shopping Centre, 43 Bradford Rd, Bedfordview, Germiston 2008\" — Google Business Profile, which carries the matching phone 082 370 6771, the matching site melsskateshop.co.za, trading hours, an interior photo and walk-in directions. This href was built from (a) and geocodes to -26.0027,28.0882; the Google pin for the business name is -26.1786,28.1143. OWNER RULING REQUIRED before T06 writes contact.json — a pitch that sends Mel's own customers to the wrong door is worse than no map link."
+      "resolution": "Resolved by decision #504: neither candidate address survived scrutiny, so the demo asserts no location at all. This entry is retained as an audit trail only and is emitted by no page. Section 7 group 3 asserts demo href to manifest entry, never the reverse."
     },
     {
       "href": null,
