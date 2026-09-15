@@ -225,6 +225,32 @@ hr {
 
 .u-measure { max-width: var(--measure); }
 
+/* Skip link (decision #519(i)). `.u-visually-hidden` is not the right tool
+   here — it stays hidden even when focused, and this must become visible on
+   keyboard focus. Off-screen above the viewport until focused, using the
+   spacing scale rather than a raw px offset so the "how far off-screen" value
+   stays a token. Reuses --z-fab: it is still the only stacking context this
+   demo needs, just also covering the moment the skip link sits over the
+   header. */
+.skip-link {
+  position: absolute;
+  top: calc(var(--s-9) * -1);
+  left: var(--s-2);
+  z-index: var(--z-fab);
+  background: var(--c-accent);
+  color: var(--c-ink-inverse);
+  padding: var(--s-2) var(--s-4);
+  border-radius: var(--r-md);
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--t-md);
+  text-decoration: none;
+  transition: top var(--dur-fast) var(--ease);
+}
+.skip-link:focus {
+  top: var(--s-2);
+}
+
 /* Measured values — millimetres, size conversions, prices, lead times. The
    one place the mono face is allowed, and the reason it is in the system. */
 .num {
@@ -1024,10 +1050,20 @@ legend[data-illustrative]::after { vertical-align: middle; }
   dialog.sheet { margin: auto; border-radius: var(--r-lg); }
 }
 
+/* ponytail: this is NOT a third layout tier — it is the floating WhatsApp
+   button's own component-visibility breakpoint, pinned by spec §6.6 ("on
+   <= 768px", inclusive) rather than chosen here. It was wrongly living
+   inside the 64rem/1024px layout-tier block above (decision #518); 768px is
+   the number spec, issue #26 and plan task 8 actually ask for. The query
+   itself fires at 48.0625rem (769px), one step above 768, because CSS
+   min-width is inclusive and 768 itself must stay visible per "<=768". */
+@media (min-width: 48.0625rem) {
+  .whatsapp-fab { display: none; }
+}
+
 @media (min-width: 64rem) {
   :root { --gutter: var(--s-6); }
   .page__main { padding-block: var(--s-7) var(--s-9); }
   .site-footer { padding-block: var(--s-6) var(--s-8); }
   .promise-row { grid-template-columns: repeat(4, 1fr); }
-  .whatsapp-fab { display: none; }
 }

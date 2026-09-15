@@ -389,9 +389,12 @@ as an inline style, and never as a second hard-coded copy of a value that is alr
 
 Every colour, type step, spacing step, radius, border width and duration is declared **once**, in
 `:root`. A raw hex, `rgb()`, `px` font-size or `px` spacing value anywhere below `:root` is a
-defect. The only survivors in the current file are the two `@media (min-width: …rem)` breakpoints,
-because media queries cannot read custom properties; both carry a `ponytail:` comment naming that
-ceiling.
+defect. The survivors in the current file are the two `@media (min-width: …rem)` layout-tier
+breakpoints (40rem, 64rem), because media queries cannot read custom properties — both carry a
+`ponytail:` comment naming that ceiling — plus one further `@media (min-width: 48.0625rem)` block
+that hides `.whatsapp-fab` one step above spec §6.6's own inclusive "<=768px" breakpoint (decision
+#518, corrected from where it had drifted into the 64rem block), which is component visibility
+pinned by the spec, not a third layout tier.
 
 ## The gates this passed, and what they cost
 

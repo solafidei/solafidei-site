@@ -9,11 +9,16 @@
 //   node scripts/verify-mels-demo.mjs --only=1      # run just group 1
 //   BASE_URL=http://localhost:4000 node scripts/verify-mels-demo.mjs
 import { chromium } from "playwright";
-import { existsSync, readdirSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 const DECK = `${BASE}/decks/mels-skate-shop`;
+const DEMO_DIR = join(__dirname, "..", "public", "decks", "mels-skate-shop", "demo");
+const DEMO_PAGES = ["index", "roller-derby", "aura-sky-100", "size-finder", "book-a-fitting"];
 
 const onlyArg = process.argv.find((a) => a.startsWith("--only="));
 const only = onlyArg ? Number(onlyArg.slice("--only=".length)) : null;
@@ -59,6 +64,82 @@ async function groupCleanUrlsAndTwins(page) {
   return { pass: true, detail: `${checks.length}/${checks.length} URLs returned 200` };
 }
 
+// --- group 4 -------------------------------------------------------------
+// The <!-- shared:header --> and <!-- shared:contact --> blocks are
+// byte-identical across the five demo pages (task 8). Byte-identity is a
+// property of the files on disk, so this reads the five .html files with
+// node:fs rather than driving the browser (the harness's `page` argument is
+// accepted but unused, per its own contract).
+//
+// TRAP: extraction must be by STRING INDEX, not by line. The plan's negative
+// control appends a character on the marker's own line, immediately after
+// the opening marker — `sed -i 's/<!-- shared:header -->/<!-- shared:header
+// -->X/'`. Extracting "the lines strictly between the two markers" leaves
+// that X outside the compared region and the control passes vacuously.
+// Extracting from the END of the opening marker's string index to the START
+// of the closing marker's string index catches it.
+function extractBetween(html, openMarker, closeMarker, pageLabel, blockLabel) {
+  const openIdx = html.indexOf(openMarker);
+  const closeIdx = html.indexOf(closeMarker);
+  if (openIdx === -1 || closeIdx === -1 || closeIdx < openIdx) {
+    throw new Error(`${pageLabel}: missing a ${blockLabel} marker pair`);
+  }
+  return html.slice(openIdx + openMarker.length, closeIdx);
+}
+
+function assertBlockIdentical(blockLabel, openMarker, closeMarker, contents) {
+  const extracted = contents.map(({ page, html }) =>
+    extractBetween(html, openMarker, closeMarker, `${page}.html`, blockLabel)
+  );
+  const [first, ...rest] = extracted;
+  const mismatches = [];
+  rest.forEach((value, i) => {
+    if (value !== first) {
+      mismatches.push(contents[i + 1].page);
+    }
+  });
+  if (mismatches.length > 0) {
+    return {
+      pass: false,
+      detail: `${blockLabel} differs on: ${mismatches.join(", ")} (compared against ${contents[0].page})`,
+    };
+  }
+  return { pass: true };
+}
+
+async function groupSharedBlocksByteIdentical() {
+  let contents;
+  try {
+    contents = DEMO_PAGES.map((page) => ({
+      page,
+      html: readFileSync(join(DEMO_DIR, `${page}.html`), "utf8"),
+    }));
+  } catch (err) {
+    return { pass: false, detail: `could not read a demo page: ${err.message || err}` };
+  }
+
+  const header = assertBlockIdentical(
+    "shared:header",
+    "<!-- shared:header -->",
+    "<!-- /shared:header -->",
+    contents
+  );
+  if (!header.pass) return header;
+
+  const contact = assertBlockIdentical(
+    "shared:contact",
+    "<!-- shared:contact -->",
+    "<!-- /shared:contact -->",
+    contents
+  );
+  if (!contact.pass) return contact;
+
+  return {
+    pass: true,
+    detail: `shared:header and shared:contact both byte-identical across all ${DEMO_PAGES.length} pages`,
+  };
+}
+
 // --- registry ------------------------------------------------------------
 // number -> { title, task, run(page) | null for "not yet implemented" }
 // Ownership map (spec §7 group -> owning task):
@@ -80,9 +161,9 @@ const GROUPS = {
     run: null,
   },
   4: {
-    title: "<!-- shared:contact --> block is byte-identical across the five pages",
+    title: "<!-- shared:header --> and <!-- shared:contact --> blocks are byte-identical across the five pages",
     task: "T8",
-    run: null,
+    run: groupSharedBlocksByteIdentical,
   },
   5: {
     title: "findSize()/whichSky() fixtures, including the out-of-range WhatsApp fallback",
