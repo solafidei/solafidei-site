@@ -306,14 +306,14 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 **Description:** Implement the four page-agnostic groups that check structure and performance rather than content, landing separately from task 11's content-integrity groups so each subsystem — and its own negative controls — reviews on its own. Group 2: zero console errors, zero warnings and zero failed requests on all six pages, with the listener attached before navigation. Group 8: at 390 × 844, `scrollWidth <= innerWidth` on every page and every primary CTA ≥ 44 × 44 px. Group 9: every `<img>` alt non-empty and equal to its `img-alt.json` entry, no `<img>` rendered wider than its `manifest.images[].width`, exactly one `<h1>`, `noindex` on all six. Group 10: ≤ 1.5 MB transferred per demo page on a cold load, with the per-page figure printed.
 
 **Acceptance criteria:**
-- [ ] `node scripts/verify-mels-demo.mjs` reports groups 1, 2, 4, 8, 9, 10 PASS (5, 6, 7, 3, 11 remain SKIPPED with their owning task ids), exiting non-zero only if a landed group fails.
-- [ ] Group 10 prints the measured transfer for each of the six pages.
-- [ ] Groups 8 and 9 run headless at 390 × 844 with no manual viewport step.
-- [ ] The script still imports only `playwright` and node builtins; `--only=2`, `--only=8`, `--only=9`, `--only=10` each run in isolation.
+- [x] `node scripts/verify-mels-demo.mjs` reports groups 1, 2, 4, 8, 9, 10 PASS (5, 6, 7, 3, 11 remain SKIPPED with their owning task ids), exiting non-zero only if a landed group fails.
+- [x] Group 10 prints the measured transfer for each of the six pages.
+- [x] Groups 8 and 9 run headless at 390 × 844 with no manual viewport step.
+- [x] The script still imports only `playwright` and node builtins; `--only=2`, `--only=8`, `--only=9`, `--only=10` each run in isolation.
 
 **Verification:**
-- [ ] `. ~/.nvm/nvm.sh && nvm use 24 && cd ~/solafidei-site && (npm run dev &) && sleep 10 && node scripts/verify-mels-demo.mjs --only=2 && node scripts/verify-mels-demo.mjs --only=8 && node scripts/verify-mels-demo.mjs --only=9 && node scripts/verify-mels-demo.mjs --only=10 && node scripts/verify-mels-demo.mjs; echo "exit=$?"`
-- [ ] `cd ~/solafidei-site && npm run lint`
+- [x] `. ~/.nvm/nvm.sh && nvm use 24 && cd ~/solafidei-site && (npm run dev &) && sleep 10 && node scripts/verify-mels-demo.mjs --only=2 && node scripts/verify-mels-demo.mjs --only=8 && node scripts/verify-mels-demo.mjs --only=9 && node scripts/verify-mels-demo.mjs --only=10 && node scripts/verify-mels-demo.mjs; echo "exit=$?"`
+- [x] `cd ~/solafidei-site && npm run lint`
 
 **Dependencies:** 8, 9 · **Model:** sonnet · **Estimated scope:** S
 **Files likely touched:** `scripts/verify-mels-demo.mjs`

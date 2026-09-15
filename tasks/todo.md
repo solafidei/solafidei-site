@@ -25,7 +25,7 @@
 
 - [x] Task 8: Shared header + contact block byte-identical across five pages (group 4) via scripts/gen-shared-blocks.mjs — deviation from spec §5 tree noted — M · sonnet · deps: 5, 7
 - [x] Task 9: site.js — WhatsApp link builder, isBuyable(), stock-state map (split out from the old combined task 8; independent of task 8, both consumed starting task 12) — S · sonnet · deps: 2, 5
-- [ ] Task 10: Verify spine A — structural/performance groups 2, 8, 9, 10 — S · sonnet · deps: 8, 9
+- [x] Task 10: Verify spine A — structural/performance groups 2, 8, 9, 10 — S · sonnet · deps: 8, 9
 - [ ] Task 11: Verify spine B — content-integrity groups 3, 11 with all six negative controls (self-contained injections — no screen exists yet) — M · sonnet · deps: 10
 - [ ] CHECKPOINT: spine green — eight groups PASS, three SKIPPED, six negative controls demonstrated and captured
 
