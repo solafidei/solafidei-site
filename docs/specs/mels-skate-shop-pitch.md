@@ -208,12 +208,12 @@ Static, boring, honest. One snippet shows the conventions:
     <strong>No fit-based exchange on imported-to-order boots — size confirmed on WhatsApp before we order.</strong>
   </p>
   <fieldset class="sizes" data-role="sizes">
-    <legend data-illustrative="aura-size-run">Size (mm)</legend>
+    <legend>Size (mm)</legend>   <!-- no chip: the mm run and its width grid are Aura's own published data (#505) -->
     <button type="button" class="size" data-size="240" data-state="in_stock">240 <small>UK 6</small></button>
     <button type="button" class="size" data-size="250" data-state="lead_time" data-weeks="2">250 <small>UK 7</small></button>
   </fieldset>
   <p class="availability">Choose a size to see availability.
-    <span data-role="availability" aria-live="polite"></span>   <!-- empty until a size is picked: nothing static inside a live region (report §5.10 rule 5) -->
+    <span data-role="availability" data-illustrative="aura-size-stock-states" aria-live="polite"></span>   <!-- empty until a size is picked: nothing static inside a live region (report §5.10 rule 5). The chip sits HERE, not on the legend: #505 ruled the size run real and only the per-size stock states illustrative. -->
   </p>
 </section>
 ```
