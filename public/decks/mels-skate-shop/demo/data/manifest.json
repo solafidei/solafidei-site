@@ -752,6 +752,12 @@
       "href": null,
       "status": "not-published",
       "reason": "no buying-guide page exists on melsskateshop.co.za (verified against every href in the cached size-chart.html, task 4) — the report's cornerstone-guide mention (benchmark-report.md §5.30) is a recommendation for Mel, not a page her site has"
+    },
+    {
+      "href": "https://melsskateshop.co.za/",
+      "status": "manual-ok",
+      "reason": "Owner-authorised single manual browser load 2026-09-16. 200, no redirects, title \"Mel's Skate Shop - Roller Skating in South Africa\" (the live separator is an en dash, transcribed ASCII here as at index 8). Never fetched by the script.",
+      "checkedAt": "2026-09-16T00:00:00.000Z"
     }
   ]
 }
