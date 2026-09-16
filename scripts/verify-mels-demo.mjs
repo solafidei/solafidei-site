@@ -8,6 +8,9 @@
 //   node scripts/verify-mels-demo.mjs              # run every implemented group
 //   node scripts/verify-mels-demo.mjs --only=1      # run just group 1
 //   BASE_URL=http://localhost:4000 node scripts/verify-mels-demo.mjs
+//   CHIPS_COMPLETE=1 node scripts/verify-mels-demo.mjs --only=11   # tighten group 11's
+//     assertion B from subset to full set-equality against the manifest illustrative
+//     set (default off; can only turn a PASS red, never the reverse) — the T17 gate.
 import { chromium } from "playwright";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -482,6 +485,506 @@ async function groupPagePayload(page, browser) {
   return { pass: true, detail: details.join(" | ") };
 }
 
+// --- group 3 ---------------------------------------------------------------
+// Every href on every demo page resolves correctly and is where it claims to
+// be. Restructured from §7.3's literal wording per decisions #536/#516/#538:
+//
+//   - maps.google.com and waze.com are BANNED, not allow-listed-and-exempt.
+//     The plan's own rule ("allow-listed host, present in manifest.links[]
+//     at 200/manual-ok") is satisfied by BOTH halves for the rejected
+//     Midrand address (manifest index 9), so as written it would BLESS
+//     re-introducing it. Both hosts fail immediately, citing #504.
+//   - wa.me / mailto: / tel: are entirely ABSENT from manifest.links[] (not
+//     one of the 13 entries is any of them) -- a literal "present in
+//     manifest.links[]" rule fails all five pages on all five of these. They
+//     are checked by host + validated against contact.json instead.
+//   - manifest.links[] is a superset by design (2 exempt audit rows, 1 null
+//     not-published row): direction is always demo href -> manifest entry,
+//     never the reverse (#516/#529).
+//
+// SCOPE: SIX_PAGES (the deck is crawled too -- roll-line.it is rendered only
+// there once T12 swaps in the local screenshot, §6.7 slide 2) but EXEMPT
+// from every count floor via `label !== "deck"`, the same idiom group 8 uses
+// for CTA_COUNT_FLOOR and group 10 uses for PAYLOAD_FLOOR_BYTES. The deck
+// has zero href attributes today.
+//
+// SELECTOR: a[href], not [href] -- each demo page carries 13 href
+// attributes, 12 on <a> and 1 on the site.css <link rel=stylesheet>. That
+// 13th is already covered: group 2 fails on any response >= 400, naming its
+// URL, so a dead stylesheet is a group-2 failure, not group 3's job.
+const ALLOWED_HOSTS = ["melsskateshop.co.za", "roll-line.it", "roadhouserollerrink.co.za", "facebook.com"];
+// Exact hostname EQUALITY only, never endsWith/includes -- "evilwa.me" and
+// "melsskateshop.co.za.evil.com" must not pass as roadhouserollerrink.co.za
+// or melsskateshop.co.za respectively.
+const BANNED_HOSTS = ["maps.google.com", "waze.com"]; // decision #504: the demo asserts no location at all
+const WHATSAPP_HOST = "wa.me";
+const CANARY_404_PATH = `${DECK}/demo/__verify-canary-404`;
+
+// Per-demo-page floors, measured identical on all five pages today. Deck is
+// exempt (label !== "deck") -- it has none of these.
+const HREF_COUNT_FLOOR = 12; // a[href] elements
+const DISTINCT_HREF_FLOOR = 10; // distinct href values
+const INTERNAL_FETCH_FLOOR = 4; // internal paths actually fetched at 200
+const FRAGMENT_CHECKED_FLOOR = 1; // #main, the skip link, always first
+const EXTERNAL_DISTINCT_FLOOR = 5; // wa.me, mailto:, tel:, facebook.com, liveSite root
+const MANIFEST_CHECKED_FLOOR = 2; // facebook.com (index 8) + liveSite root (index 12)
+
+async function groupLinkCrawl(page, browser) {
+  let manifest, contact;
+  try {
+    manifest = JSON.parse(readFileSync(join(DEMO_DIR, "data", "manifest.json"), "utf8"));
+    contact = JSON.parse(readFileSync(join(DEMO_DIR, "data", "contact.json"), "utf8"));
+  } catch (err) {
+    return { pass: false, detail: `could not read fixtures: ${err.message || err}` };
+  }
+  // manifest.links[11] is {href: null, status: "not-published"} -- no
+  // buying-guide page exists on melsskateshop.co.za. Any string method (a
+  // Map key included) over a null href throws, so it is filtered out here
+  // rather than crashing group 3 on the very entry that documents an absent
+  // page. EXACT FULL-URL keys only -- decision #530 rejected origin matching:
+  // "an origin match would weaken group 3 for every future link -- a dead
+  // deep link on a live host would pass."
+  const linkRows = manifest.links.filter((l) => typeof l.href === "string");
+  const byHref = new Map(linkRows.map((l) => [l.href, l]));
+
+  const failures = [];
+  const details = [];
+
+  await forEachSixPages(browser, null, async (p, { label, url }) => {
+    const gate = (msg) => failures.push(`${label}: ${msg}`);
+
+    let hrefs;
+    try {
+      await p.goto(url, { waitUntil: "domcontentloaded" });
+      hrefs = await p.evaluate(() =>
+        Array.from(document.querySelectorAll("a[href]")).map((a) => a.getAttribute("href"))
+      );
+    } catch (err) {
+      gate(`errored loading page: ${err.message || err}`);
+      return;
+    }
+
+    const distinctHrefs = new Set(hrefs);
+    if (label !== "deck" && hrefs.length < HREF_COUNT_FLOOR) {
+      gate(`a[href] matched ${hrefs.length}, expected >= ${HREF_COUNT_FLOOR} -- selector may be broken`);
+    }
+    if (label !== "deck" && distinctHrefs.size < DISTINCT_HREF_FLOOR) {
+      gate(`only ${distinctHrefs.size} distinct href value(s), expected >= ${DISTINCT_HREF_FLOOR}`);
+    }
+
+    const pageOrigin = new URL(url);
+    let internalFetched = 0;
+    let fragmentChecked = 0;
+    let manifestChecked = 0;
+    const externalDistinct = new Set();
+
+    // for...of + await, NEVER .forEach(async ...) and never an un-awaited
+    // .map -- either shape would read failures[] empty and print PASS with
+    // zero links actually checked. The count floors above are the second
+    // line of defence against a zero-iteration loop; this loop shape is the
+    // first.
+    for (const raw of hrefs) {
+      const v = (raw ?? "").trim();
+
+      // 1. Empty href first: new URL("", base) resolves to the page's own
+      // URL and 200s vacuously.
+      if (v === "") {
+        gate(`empty href attribute`);
+        continue;
+      }
+
+      // 2. Fragment branch, BEFORE any URL construction: new URL("#main",
+      // pageUrl) collapses to the page's own URL, indistinguishable from a
+      // real link, so a naive crawler that fetches it gets a vacuous 200.
+      // Kept GENERAL (any leading #), not special-cased to the literal
+      // "#main", so a second in-page anchor from T14-T17 is covered free.
+      // This mechanically pins the <main id="main"> element #519 created.
+      if (v.startsWith("#")) {
+        const targetId = decodeURIComponent(v.slice(1));
+        const found = await p.evaluate((id) => !!document.getElementById(id), targetId);
+        if (!found) {
+          gate(`fragment "${v}" has no matching id in the DOM`);
+        } else {
+          fragmentChecked++;
+        }
+        continue;
+      }
+
+      let u;
+      try {
+        u = new URL(v, url);
+      } catch (err) {
+        gate(`href "${v}" is not a valid URL: ${err.message || err}`);
+        continue;
+      }
+
+      // 3. Protocol switch BEFORE hostname classification. mailto:/tel:
+      // hostnames are "" -- an `if (!hostname) continue` would silently skip
+      // them AND any future javascript:/data: href.
+      if (u.protocol === "mailto:") {
+        externalDistinct.add(v);
+        if (v !== contact.email.href) {
+          gate(`mailto href "${v}" does not match contact.json email.href "${contact.email.href}"`);
+        }
+        continue;
+      }
+      if (u.protocol === "tel:") {
+        externalDistinct.add(v);
+        if (v !== contact.phone.href) {
+          gate(`tel href "${v}" does not match contact.json phone.href "${contact.phone.href}"`);
+        }
+        continue;
+      }
+      if (u.protocol !== "http:" && u.protocol !== "https:") {
+        gate(`href "${v}" uses unrecognised protocol "${u.protocol}"`);
+        continue;
+      }
+
+      // 4. Hostname classification, strictly in this order.
+      if (u.hostname === pageOrigin.hostname) {
+        // 4a. internal -- fetch, do not follow redirects (§9's one-network-
+        // pass cap, and a 3xx must be reported naming the href, not wherever
+        // it ends up -- same reasoning as #527).
+        let resp;
+        try {
+          resp = await p.request.get(u.href, { maxRedirects: 0 });
+        } catch (err) {
+          gate(`internal href "${v}" errored: ${err.message || err}`);
+          continue;
+        }
+        const status = resp.status();
+        if (status >= 300 && status < 400) {
+          let location = null;
+          try {
+            location = resp.headers()["location"] ?? null;
+          } catch {
+            // headers() unavailable -- report without the location rather
+            // than throwing the whole group.
+          }
+          gate(`internal href "${v}" redirected (${status}) to "${location}", not followed`);
+        } else if (status !== 200) {
+          gate(`internal href "${v}" returned ${status}, expected 200`);
+        } else {
+          internalFetched++;
+        }
+        continue;
+      }
+
+      externalDistinct.add(v);
+
+      if (BANNED_HOSTS.includes(u.hostname)) {
+        // 4b. banned -- decision #504/#536. Name the host and the manifest
+        // audit-trail index, but NEVER the href or a manifest reason string:
+        // indices 9 and 10 carry the rejected address URL-encoded, and this
+        // control's output is saved for the PR (#521's evidence gate is
+        // zero Midrand/Swallow/Bradford/maps/waze across every changed file).
+        const idx = manifest.links.findIndex(
+          (l) => typeof l.href === "string" && l.href.startsWith(`https://${u.hostname}`)
+        );
+        gate(
+          `href on banned host "${u.hostname}" -- decision #504 ruled the demo asserts no location; ` +
+            `manifest.links index ${idx} is a retained audit-trail row emitted by no page`
+        );
+        continue;
+      }
+
+      if (u.hostname === WHATSAPP_HOST) {
+        // 4c. wa.me -- digits against contact.json, NOT string equality
+        // against whatsapp.href: site.js's buildWhatsAppLink appends an
+        // encoded ?text= that T12 wires through the FAB and the promise row,
+        // so exact-href equality is a booby trap two tasks from now.
+        const digits = u.pathname.replace(/^\//, "");
+        if (digits !== contact.whatsapp.number) {
+          gate(
+            `wa.me href "${v}" path "${digits}" does not match contact.json whatsapp.number "${contact.whatsapp.number}"`
+          );
+        } else if (u.hash) {
+          gate(`wa.me href "${v}" carries a hash fragment, not allowed`);
+        } else {
+          const extraParams = [...u.searchParams.keys()].filter((k) => k !== "text");
+          if (extraParams.length > 0) {
+            gate(`wa.me href "${v}" carries unexpected query param(s): ${extraParams.join(",")}`);
+          }
+        }
+        continue;
+      }
+
+      if (ALLOWED_HOSTS.includes(u.hostname)) {
+        // 4d. manifest-presence rule. No fetch here -- the manifest IS the
+        // record of the fetch (§9's one-network-pass cap).
+        const entry = byHref.get(v);
+        if (!entry) {
+          gate(`href "${v}" (host "${u.hostname}") is not present in manifest.links[]`);
+          continue;
+        }
+        if (entry.status !== 200 && entry.status !== "manual-ok") {
+          gate(`href "${v}" is present in manifest.links[] but status is "${entry.status}", expected 200 or "manual-ok"`);
+          continue;
+        }
+        // §7.3 requires "status: 200 AND a checkedAt date written by
+        // fetch-mels-fixtures.mjs" (or manual-ok, which is also always dated
+        // at CP1) -- a hand-typed {href, status: 200} row that was never
+        // actually fetched must not pass. Both rows that reach this rule
+        // today (facebook.com index 8, liveSite root index 12) carry
+        // checkedAt, so this is a closed hole, not a behavior change.
+        if (typeof entry.checkedAt !== "string" || entry.checkedAt === "") {
+          gate(`href "${v}" is present in manifest.links[] at status "${entry.status}" but has no checkedAt date`);
+          continue;
+        }
+        if (Array.isArray(entry.flags) && entry.flags.includes("dropped-from-demo")) {
+          gate(`href "${v}" is present in manifest.links[] but flagged "dropped-from-demo"`);
+          continue;
+        }
+        manifestChecked++;
+        continue;
+      }
+
+      // 4e. off-allow-list.
+      gate(`href "${v}" is on an off-allow-list host "${u.hostname}"`);
+    }
+
+    if (label !== "deck") {
+      if (internalFetched < INTERNAL_FETCH_FLOOR) {
+        gate(`only ${internalFetched} internal href(s) fetched at 200, expected >= ${INTERNAL_FETCH_FLOOR}`);
+      }
+      if (fragmentChecked < FRAGMENT_CHECKED_FLOOR) {
+        gate(`only ${fragmentChecked} fragment href(s) checked, expected >= ${FRAGMENT_CHECKED_FLOOR}`);
+      }
+      if (externalDistinct.size < EXTERNAL_DISTINCT_FLOOR) {
+        gate(`only ${externalDistinct.size} distinct external href(s), expected >= ${EXTERNAL_DISTINCT_FLOOR}`);
+      }
+      if (manifestChecked < MANIFEST_CHECKED_FLOOR) {
+        gate(`only ${manifestChecked} manifest.links[] entr(y/ies) matched, expected >= ${MANIFEST_CHECKED_FLOOR}`);
+      }
+    }
+
+    details.push(
+      `${label}: ${hrefs.length} href(s)/${distinctHrefs.size} distinct, ${internalFetched} internal, ` +
+        `${fragmentChecked} fragment, ${externalDistinct.size} external distinct, ${manifestChecked} manifest-checked`
+    );
+  });
+
+  // PERMANENT CANARY: fetch a path that must never exist, on every run, not
+  // just once at T11 time on one machine -- proves the dead-link branch can
+  // still see a dead link.
+  try {
+    const canaryResp = await page.request.get(CANARY_404_PATH, { maxRedirects: 0 });
+    if (canaryResp.status() === 200) {
+      failures.push(`canary: ${CANARY_404_PATH} returned 200 -- the 404 detector is not detecting`);
+    }
+  } catch (err) {
+    failures.push(`canary: errored requesting ${CANARY_404_PATH}: ${err.message || err}`);
+  }
+
+  if (failures.length > 0) {
+    return { pass: false, detail: failures.join("; ") };
+  }
+  return { pass: true, detail: `${details.join(" | ")} | canary 404-detector OK` };
+}
+
+// --- group 11 --------------------------------------------------------------
+// data-illustrative chip ids <-> manifest.facts[] illustrative set (spec
+// §7.11, §6.0). Restructured into four independent assertions per decision
+// #535: §7.11's literal wording ("the set... equals... across the five
+// pages") cannot PASS today -- zero data-illustrative attributes exist
+// anywhere in the repo (real chips land in T12-T17), so DOM-observed {}
+// against the manifest's 9-member set is FALSE by construction.
+//
+//   A: fixture pin, no DOM -- catches a 10th illustrative id, a rename or a
+//      drop. The only assertion that can fail before any screen exists.
+//   B: orphan gate, DOM -> manifest, one direction only -- catches a chip id
+//      invented by a later screen task that was never in the manifest.
+//      CHIPS_COMPLETE=1 (default off) tightens B from subset to full
+//      set-equality; it can only turn a PASS red, never the reverse.
+//   C: render probe -- the ONLY assertion with a DOM instrument that can go
+//      red today, replacing the deleted "getComputedStyle(...).content"
+//      ratchet (#537: that check is TRUE for every element on every page --
+//      content's initial value is "normal" and computes to "none" only ON a
+//      pseudo-element, so it was 100% vacuous with no symptom in the output).
+//   D: every REAL observed chip is visible (non-hidden, non-zero box).
+//      Vacuous today -- zero real chips exist until T12 -- and that is
+//      expected; C is what bites at T11.
+//
+// NO RATCHET, NO LOOSENING FLAG (#535): a ratchet only asserts "the number
+// did not go down since someone last edited this line" and costs six
+// hand-edits across T12-T17. A flag that LOOSENS a gate is a hole regardless
+// of its banner, because the banner lives in stdout and stdout is the
+// evidence pasted into the PR.
+//
+// SCOPE: the FIVE demo pages (DEMO_PAGES), NOT SIX_PAGES -- §7.11 says
+// "across the five pages", and decisively the deck (444-byte placeholder)
+// loads no stylesheet at all (its <head> carries only charset, viewport,
+// robots and title), so the pill cannot render there and assertion C is
+// unprovable on it. forEachSixPages is reused (not duplicated) with an
+// explicit `if (label === "deck") return` skip inside the callback.
+const CHIP_PROBE_MIN_WIDTH_PX = 40; // half PRODUCT.md's measured 80.016 CSS px pill (lines 283-287), same runtime-injection technique
+// FROZEN_NINE: the nine illustrative ids. Per decision #505 the ninth id is
+// aura-size-stock-states (renamed from the now-dead aura-size-run, retired
+// from spec/plan by commit 6acdd39 under #533). NOT parsed from spec §6.0 --
+// §6.0 (spec line 102) names SEVEN comma-delimited PROSE PHRASES and ZERO
+// ids, so this cannot be described as "the ids §6.0 enumerates". Each id is
+// justified against the section that actually pins it:
+//   fit-guarantee          -- §6.0 + §6.1.1
+//   pjn-instalments         -- §6.0 + §6.3.4
+//   fitting-prices          -- §6.0's "fitting prices AND durations"
+//   fitting-durations       -- §6.0's "fitting prices AND durations"
+//   cancellation-policy     -- §6.0 + §6.5.3
+//   heat-mould-price        -- §6.0's plural "heat-mould prices" + §6.3.9's "(chips)" plural
+//   mail-in-heat-mould      -- §6.0's plural "heat-mould prices" + §6.3.9's "(chips)" plural
+//   aura-size-stock-states  -- §6.0 as narrowed by #505 + §6.3.6
+//   demo-buy-button         -- §6.0 + §6.3.10
+const FROZEN_NINE = [
+  "fit-guarantee",
+  "pjn-instalments",
+  "fitting-prices",
+  "fitting-durations",
+  "cancellation-policy",
+  "heat-mould-price",
+  "mail-in-heat-mould",
+  "aura-size-stock-states",
+  "demo-buy-button",
+];
+
+function setEqual(a, b) {
+  if (a.size !== b.size) return false;
+  for (const x of a) if (!b.has(x)) return false;
+  return true;
+}
+function setDiff(a, b) {
+  return [...a].filter((x) => !b.has(x));
+}
+
+async function groupChipsManifest(page, browser) {
+  let manifest;
+  try {
+    manifest = JSON.parse(readFileSync(join(DEMO_DIR, "data", "manifest.json"), "utf8"));
+  } catch (err) {
+    return { pass: false, detail: `could not read manifest: ${err.message || err}` };
+  }
+  // NEVER compare against the unfiltered 92-entry facts array: aura-size-run-mm
+  // and aura-size-run-published (both source melsskateshop.co.za) are strict
+  // superstrings of the dead id, and 2 of the 4 "heat-mould" ids are NOT
+  // illustrative. All comparisons below are EXACT Set membership -- never
+  // startsWith/includes/some() in either direction.
+  const manifestIllustrative = new Set(
+    manifest.facts.filter((f) => f.source === "illustrative").map((f) => f.id)
+  );
+
+  const failures = [];
+
+  // ASSERTION A -- fixture pin. Not a length check, not a sorted-join, not a
+  // subset test: report BOTH sides separately so a rename can never masquerade
+  // as a match.
+  const frozen = new Set(FROZEN_NINE);
+  if (!setEqual(manifestIllustrative, frozen)) {
+    const inManifestNotFrozen = setDiff(manifestIllustrative, frozen);
+    const inFrozenNotManifest = setDiff(frozen, manifestIllustrative);
+    failures.push(
+      `A: manifest illustrative set != FROZEN_NINE -- in manifest but not FROZEN_NINE: [${inManifestNotFrozen.join(", ")}]; ` +
+        `in FROZEN_NINE but not manifest: [${inFrozenNotManifest.join(", ")}]`
+    );
+  }
+
+  const chipsComplete = process.env.CHIPS_COMPLETE === "1";
+  const observed = new Set();
+  const probeDeltas = [];
+
+  await forEachSixPages(browser, { width: 390, height: 844 }, async (p, { label, url }) => {
+    if (label === "deck") return; // group 11 scope is the five demo pages only
+
+    try {
+      await p.goto(url, { waitUntil: "load" });
+    } catch (err) {
+      failures.push(`${label}: errored loading page: ${err.message || err}`);
+      return;
+    }
+
+    // ASSERTION B ingredient: observed chip ids on this page, DOM -> manifest
+    // only, never the reverse.
+    const pageObserved = await p.evaluate(() =>
+      Array.from(document.querySelectorAll("[data-illustrative]")).map((el) =>
+        el.getAttribute("data-illustrative")
+      )
+    );
+    for (const id of pageObserved) {
+      observed.add(id);
+      if (!manifestIllustrative.has(id)) {
+        failures.push(`B: orphan chip "${id}" observed on ${label} but not in manifest illustrative set`);
+      }
+    }
+
+    // ASSERTION C -- render probe. Created, measured and REMOVED inside ONE
+    // evaluate, and run before assertion D's crawl -- a probe left in the DOM
+    // is itself an orphan chip that would self-fail B.
+    const delta = await p.evaluate(() => {
+      const wrapper = document.createElement("div");
+      wrapper.style.position = "fixed";
+      wrapper.style.left = "-9999px";
+      wrapper.style.top = "0";
+      wrapper.style.whiteSpace = "nowrap";
+      const plain = document.createElement("span");
+      plain.textContent = "x";
+      const chipped = document.createElement("span");
+      chipped.textContent = "x";
+      chipped.setAttribute("data-illustrative", "__probe__");
+      wrapper.appendChild(plain);
+      wrapper.appendChild(chipped);
+      document.body.appendChild(wrapper);
+      const plainWidth = plain.getBoundingClientRect().width;
+      const chippedWidth = chipped.getBoundingClientRect().width;
+      wrapper.remove();
+      return chippedWidth - plainWidth;
+    });
+    probeDeltas.push(delta);
+    if (delta < CHIP_PROBE_MIN_WIDTH_PX) {
+      failures.push(
+        `C: render probe delta on ${label} was ${delta.toFixed(1)}px, below the ${CHIP_PROBE_MIN_WIDTH_PX}px floor`
+      );
+    }
+
+    // ASSERTION D -- every REAL observed chip element is visible. Vacuous
+    // today (zero real chips); that is expected until T12.
+    const invisible = await p.evaluate(() =>
+      Array.from(document.querySelectorAll("[data-illustrative]"))
+        .filter((el) => el.hasAttribute("hidden") || el.getClientRects().length === 0)
+        .map((el) => el.getAttribute("data-illustrative"))
+    );
+    for (const id of invisible) {
+      failures.push(`D: chip "${id}" on ${label} is not visible (hidden or zero-size box)`);
+    }
+  });
+
+  // The one permitted flag, load-bearing at T11 (plan verification command
+  // #4's second half needs it, else it cannot bite under subset-only
+  // semantics) and the T17 checkpoint gate that replaces the ratchet's
+  // "must reach 9" property. It can only TIGHTEN.
+  if (chipsComplete && !setEqual(observed, manifestIllustrative)) {
+    const missing = setDiff(manifestIllustrative, observed);
+    const extra = setDiff(observed, manifestIllustrative);
+    failures.push(
+      `B (CHIPS_COMPLETE=1): observed chip set != manifest illustrative set -- ` +
+        `observed (${observed.size}): [${[...observed].sort().join(", ")}]; ` +
+        `missing: [${missing.join(", ")}]; extra: [${extra.join(", ")}]`
+    );
+  }
+
+  if (failures.length > 0) {
+    return { pass: false, detail: failures.join("; ") };
+  }
+
+  const bDetail =
+    observed.size === 0
+      ? `0 chip ids observed across ${DEMO_PAGES.length} pages -- NO CHIP HAS BEEN OBSERVED ON ANY PAGE`
+      : `${observed.size} chip id(s) observed across ${DEMO_PAGES.length} pages: [${[...observed].sort().join(", ")}]`;
+  const cDetail = probeDeltas.map((d) => d.toFixed(1)).join("/");
+  const detail =
+    `A: manifest illustrative set == FROZEN_NINE (${FROZEN_NINE.length} ids) | ` +
+    `B: ${bDetail} | ` +
+    `C: probe delta ${cDetail} px vs floor ${CHIP_PROBE_MIN_WIDTH_PX} | ` +
+    `D: every real observed chip visible (vacuous until T12)`;
+  return { pass: true, detail };
+}
+
 // --- registry ------------------------------------------------------------
 // number -> { title, task, run(page) | null for "not yet implemented" }
 // Ownership map (spec §7 group -> owning task):
@@ -498,9 +1001,10 @@ const GROUPS = {
     run: groupZeroConsoleErrors,
   },
   3: {
-    title: "Every href on every demo page resolves (internal 200, external allow-listed + manifest.links[])",
+    title:
+      "Every href on every demo page resolves: internal 200 not-followed-redirect, external host allow-listed + present in manifest.links[] at status 200/manual-ok with a checkedAt date, banned hosts (maps/waze) rejected outright, mailto:/tel:/wa.me checked against contact.json, fragment targets resolved in the DOM, six per-page count floors, permanent 404 canary",
     task: "T11",
-    run: null,
+    run: groupLinkCrawl,
   },
   4: {
     title: "<!-- shared:header --> and <!-- shared:contact --> blocks are byte-identical across the five pages",
@@ -538,9 +1042,10 @@ const GROUPS = {
     run: groupPagePayload,
   },
   11: {
-    title: "data-illustrative chip ids == manifest.facts[] ids with source: illustrative; chips visible at 390px",
+    title:
+      "Chips <-> manifest, four assertions: A) manifest illustrative set == FROZEN_NINE (fixture pin, no DOM) B) every observed data-illustrative id is a manifest member, DOM -> manifest only (CHIPS_COMPLETE=1 tightens to full set-equality) C) a runtime render probe proves a chip would be visible at 390px D) every real observed chip is non-hidden with a non-zero box",
     task: "T11",
-    run: null,
+    run: groupChipsManifest,
   },
 };
 
