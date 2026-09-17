@@ -314,6 +314,30 @@ ${cardButtonsHtml}
   const liveRegionHtml = `<p class="live live--result" aria-live="polite" data-derby-count></p>
     <p class="fine">${esc(derby.filters.resultCountNote)}</p>`;
 
+  // -- 4b. the empty state (#569). The copy was authored in draft-copy.json
+  // and NOTHING rendered it -- `grep -rn emptyState scripts/ public/` outside
+  // the fixture returned nothing -- while "Wheels" with the default toggle
+  // shows exactly ONE card. That is one fixture stock flip away from a blank
+  // grid under a live region reading "Showing 0 of 3", with no copy on screen
+  // and no way out of the state.
+  //
+  // Three placement constraints, each load-bearing:
+  //   * OUTSIDE the <ul>, so group 7 assertion B's constant node count of 15
+  //     is untouched;
+  //   * no data-derby-set, so site.js's `cards` list never picks it up and it
+  //     can never be counted into {shown}/{total};
+  //   * no data-illustrative, so group 11 assertion D (which fails any chip
+  //     shipped `hidden`) has no opinion about it.
+  //
+  // Baked visibility is COMPUTED from the same predicate the cards use, not
+  // hard-coded `hidden`: if a future fixture ever bakes an empty grid, the
+  // note ships visible with JavaScript off too. Unlike the live-region
+  // template, this string is NOT duplicated in site.js -- baking it here
+  // keeps draft-copy.json the single source and makes drift impossible
+  // rather than merely detectable.
+  const bakedShown = gridProducts.filter((p) => isBuyable(p)).length;
+  const emptyStateHtml = `<p class="note" data-derby-empty${bakedShown === 0 ? "" : " hidden"}>${esc(derby.filters.emptyState)}</p>`;
+
   const filterAndGridHtml = `<section class="section" data-derby-filters>
       <div class="wrap">
         ${filtersHtml}
@@ -322,6 +346,7 @@ ${cardButtonsHtml}
         <ul class="grid" data-derby-grid>
 ${gridCardsHtml}
         </ul>
+        ${emptyStateHtml}
       </div>
     </section>`;
 

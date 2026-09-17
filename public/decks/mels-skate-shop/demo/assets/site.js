@@ -70,6 +70,9 @@ export function initDerbyFilters(root) {
   const cardButtons = Array.from(root.querySelectorAll('[data-derby-card]'));
   const toggleButton = root.querySelector('[data-derby-toggle]');
   const liveRegion = root.querySelector('[data-derby-count]');
+  // #569. Optional on purpose: a later page that reuses this wiring without an
+  // empty-state note (T16's Size Finder, T17's Book a fitting) must not throw.
+  const emptyState = root.querySelector('[data-derby-empty]');
   const cards = Array.from(root.querySelectorAll('[data-derby-set]'));
   if (!toggleButton || cards.length === 0) return;
 
@@ -100,6 +103,14 @@ export function initDerbyFilters(root) {
       card.hidden = !visible;
       if (visible) shown += 1;
     }
+    // decision #569: the authored empty-state copy, shown exactly when the
+    // current filter combination leaves nothing on screen. Recomputed
+    // unconditionally for the same reason the cards' `hidden` is -- what is
+    // VISIBLE must never depend on whether this call is allowed to announce.
+    // The generator bakes this element's text and its initial `hidden` from
+    // draft-copy.json, so there is no second copy of the string here.
+    if (emptyState) emptyState.hidden = shown !== 0;
+
     // Only the live region's TEXT is conditional on `announce`. `hidden` is
     // always recomputed above, so a card's visibility never depends on
     // whether this call is allowed to announce.

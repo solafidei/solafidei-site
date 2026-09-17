@@ -785,10 +785,27 @@ async function groupLinkCrawl(page, browser) {
 // --- group 11 --------------------------------------------------------------
 // data-illustrative chip ids <-> manifest.facts[] illustrative set (spec
 // §7.11, §6.0). Restructured into four independent assertions per decision
-// #535: §7.11's literal wording ("the set... equals... across the five
-// pages") cannot PASS today -- zero data-illustrative attributes exist
-// anywhere in the repo (real chips land in T12-T17), so DOM-observed {}
-// against the manifest's 9-member set is FALSE by construction.
+// #535, stated as it was measured WHEN #535 WAS TAKEN: §7.11's literal
+// wording ("the set... equals... across the five pages") could not PASS,
+// because zero data-illustrative attributes existed anywhere in the repo, so
+// DOM-observed {} against the manifest's 9-member set was FALSE by
+// construction.
+//
+// As of T13 that paragraph is stale in its premise and still correct in its
+// conclusion. #570 repairs the premise rather than deleting the history:
+// SIX data-illustrative elements now ship -- Home's 5 from T12 plus the derby
+// hub's 1 section-level chip from T13 -- carrying TWO distinct ids
+// (fit-guarantee, pjn-instalments) out of the manifest's nine. Full
+// set-equality therefore STILL cannot pass until the remaining chips land in
+// T14-T17, which is exactly what CHIPS_COMPLETE=1 below turns on. Both
+// numbers are printed by this group's own detail line on every run (assertion
+// B's id list, assertion D's element count), so they cannot go stale again
+// without the output disagreeing with this comment in the same terminal.
+//
+// This is recorded rather than quietly rewritten because for one commit the
+// paragraph above contradicted assertion D's note fifteen lines below, which
+// already said the chips were live -- the #540/#565 defect class reproducing
+// itself inside the file that names it.
 //
 //   A: fixture pin, no DOM -- catches a 10th illustrative id, a rename or a
 //      drop. The only assertion that can fail before any screen exists.
@@ -932,10 +949,49 @@ async function buriedControlCount(page) {
   );
 }
 
+// ponytail: this wrapper exists for one reason -- to stop group 7 discarding
+// its own diagnosis. Decision #571: every `await` in the body below can throw
+// (a click on a node a regression has just hidden or detached, a navigation, a
+// timeout) and the body reports its verdict only at its LAST statement, so
+// before this wrapper existed a mid-flight throw dropped every failure already
+// computed and printed a bare `threw:` line in their place.
+//
+// Demonstrated failing control (#528), run on the pre-wrapper code: assertion
+// B's expected load count temporarily set to 16 (so a real failure is pushed
+// on load) plus a click on `[data-derby-card="__CONTROL_NO_SUCH_CARD__"]`
+// injected into the assertion-C loop. The output reported ONLY `threw:
+// locator.click: Timeout 1500ms exceeded` -- the B failure, already in the
+// array, never appeared. Re-run with the wrapper in place, the same control
+// prints the B failure AND the throw.
+//
+// That is also why a group-7 "control" which works by throwing proves nothing
+// about the assertions it never reached: the K-control built that way would
+// print byte-identical output with assertion K deleted outright. K's
+// non-vacuity rests on the second K-control and on the direct probe, not on
+// that one.
+//
+// Generalises past this group, which is why it is written here rather than in
+// a commit message: a verify function that accumulates failures in an array
+// and returns them only at its last statement converts any mid-flight throw
+// into a silent, all-clear-shaped crash.
 async function groupDerbyFilters(page) {
   const failures = [];
   const details = [];
+  try {
+    await derbyFiltersBody(page, failures, details);
+  } catch (err) {
+    failures.push(`threw before finishing: ${(err && err.message) || String(err)}`);
+  }
+  if (failures.length > 0) {
+    return { pass: false, detail: failures.join("; ") };
+  }
+  return { pass: true, detail: details.join(" | ") };
+}
 
+// The group's actual body. It takes the two accumulators rather than owning
+// them, so a throw anywhere inside still leaves the caller holding everything
+// that was measured before it. Nothing else about the body changed.
+async function derbyFiltersBody(page, failures, details) {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(DERBY_URL, { waitUntil: "load" });
 
@@ -985,6 +1041,30 @@ async function groupDerbyFilters(page) {
     .count();
   if (buyableVisibleOnLoad !== 11) {
     failures.push(`sanity: ${buyableVisibleOnLoad} buyable card(s) visible on load, expected 11`);
+  }
+
+  // ASSERTION L (part 1 of 3, #569) -- the GENERATOR'S BAKE, read before any
+  // click. It has to live up here with A/B/F/G/H, not down with the rest of L,
+  // for the reason this file's own load-block comment already states: site.js's
+  // apply() recomputes this note's `hidden` on EVERY interaction, so a read
+  // taken after even one click measures the JS and never the bake.
+  //
+  // The first version of this check sat at the bottom with the rest of L and
+  // therefore could not fail. Measured by the audit, not argued: serving the
+  // page with the baked ` hidden` stripped off the note gives a visitor a
+  // 133 px "Nothing in stock under that filter right now" panel sitting over
+  // 11 visible in-stock cards at first paint -- and group 7 still printed
+  // PASS. Moving the read up here is what makes it the spine's only cover for
+  // the bake half of #569. With JS off it is the ONLY thing between a visitor
+  // and that note, because site.js deliberately never calls apply() on init.
+  const emptyNote = page.locator("[data-derby-empty]");
+  const emptyNoteCount = await emptyNote.count();
+  if (emptyNoteCount !== 1) {
+    failures.push(`L: expected exactly 1 [data-derby-empty] note, found ${emptyNoteCount}`);
+  } else if (!(await emptyNote.evaluate((el) => el.hasAttribute("hidden")))) {
+    failures.push(
+      `L: the empty-state note is baked VISIBLE on first paint, with ${buyableVisibleOnLoad} card(s) on screen`
+    );
   }
 
   // --- click 1: toggle OFF. Exercises the real handler, not baked markup. --
@@ -1090,6 +1170,17 @@ async function groupDerbyFilters(page) {
     failures.push(`A/I: Wheels + toggle on shows ids [${wheelsVisibleIds.join(",")}], expected [4368]`);
   }
 
+  // ASSERTION L (part 2 of 3, #569) -- the note must be ABSENT at shown === 1,
+  // sampled here because the page is already in that state. Without this the
+  // group only ever sees the note at 11 cards and at 0, so a predicate loosened
+  // from `shown !== 0` to `shown > 1` would pass while showing "Nothing in
+  // stock under that filter right now" on the three natural one-result filters
+  // (Wheels, Toe stops, and Starting derby with the toggle off). Free: no extra
+  // click, no extra state.
+  if (emptyNoteCount === 1 && !(await emptyNote.evaluate((el) => el.hasAttribute("hidden")))) {
+    failures.push(`L: the empty-state note is visible with 1 card on screen`);
+  }
+
   // ASSERTION K (8 of 8 checkpoints) -- after pressing Wheels with the
   // toggle on (the state that hides the most cards at once: 14 of 15).
   const buriedAfterWheels = await buriedControlCount(page);
@@ -1158,14 +1249,88 @@ async function groupDerbyFilters(page) {
     }
   }
 
-  details.push(
-    `A/B/F/G/H verified on load and after toggle | C: all 5 card id-sets matched | D: press-again clears | E: single-select held | I: "11 of 15"/"1 of 3"/"15 of 15" all matched | J: chip contract on this page | K: 0 buried controls at all 8 checkpoints`
-  );
+  // ASSERTION L (part 3 of 3, #569) -- the empty state actually renders. No card+toggle
+  // combination reaches zero with today's fixture (Wheels + toggle on is the
+  // narrowest at 1 of 3), so this DRIVES the state instead of waiting for a
+  // stock change to make it reachable: flip the one buyable Wheels card's
+  // data-derby-buyable to "false" in the DOM, press Wheels, and site.js's
+  // apply() -- which re-reads the dataset on every call -- computes shown === 0
+  // for real. Nothing is faked: the real handler runs, the real live region
+  // updates, and the note un-hides or it does not.
+  //
+  // Fixture-independent by construction, so a later stock change can never
+  // make it vacuous -- unlike a check that waited for an empty set to occur
+  // naturally, which would pass silently forever by never running.
+  //
+  // Demonstrated failing (#528): deleting the single
+  // `if (emptyState) emptyState.hidden = shown !== 0;` line from site.js
+  // leaves the note hidden and prints
+  // `L: the empty-state note is still hidden with 0 cards shown`.
+  //
+  // Runs LAST and restores the flag BEFORE the clearing click, so apply() puts
+  // the grid back through the real handler and the DOM mutation cannot
+  // contaminate assertions A-K above.
+  if (emptyNoteCount === 1) {
+    const wheelsBuyable = await page.$('[data-derby-set="wheels"][data-derby-buyable="true"]');
+    if (!wheelsBuyable) {
+      failures.push(`L: no buyable Wheels card to drive the empty state with`);
+    } else {
+      await wheelsBuyable.evaluate((el) => {
+        el.dataset.derbyBuyable = "false";
+      });
+      await page.locator('[data-derby-card="wheels"]').click();
 
-  if (failures.length > 0) {
-    return { pass: false, detail: failures.join("; ") };
+      const shownZero = await page.locator("[data-derby-set]:not([hidden])").count();
+      const zeroText = ((await liveRegion.textContent()) ?? "").trim();
+      const hiddenDuring = await emptyNote.evaluate((el) => el.hasAttribute("hidden"));
+
+      // The note's OWN text, against the fixture the generator baked it from.
+      // Un-hiding an empty <p> would otherwise pass every check above: the
+      // audit's point is that "the note appeared" and "the note says the thing
+      // Melony's copy says" are different claims. Reading the data file here is
+      // in-idiom -- group 11 does exactly this with manifest.json -- and it
+      // closes the same drift class gen-roller-derby.mjs already guards for
+      // resultCountTemplate.
+      let expectedEmptyCopy = null;
+      try {
+        expectedEmptyCopy = JSON.parse(readFileSync(join(DEMO_DIR, "data", "draft-copy.json"), "utf8"))
+          .derby.filters.emptyState;
+      } catch (err) {
+        failures.push(`L: could not read derby.filters.emptyState from draft-copy.json: ${err.message || err}`);
+      }
+      const noteText = ((await emptyNote.textContent()) ?? "").trim();
+      if (expectedEmptyCopy !== null && noteText !== expectedEmptyCopy.trim()) {
+        failures.push(`L: the empty-state note reads "${noteText}", expected draft-copy's derby.filters.emptyState`);
+      }
+      if (shownZero !== 0) {
+        failures.push(`L: the probe left ${shownZero} card(s) visible, expected 0 -- it never reached the empty state`);
+      } else if (hiddenDuring) {
+        failures.push(`L: the empty-state note is still hidden with 0 cards shown (live region reads "${zeroText}")`);
+      }
+      if (zeroText !== "Showing 0 of 3") {
+        failures.push(`L: live region reads "${zeroText}" in the empty state, expected "Showing 0 of 3"`);
+      }
+
+      // Restore the flag FIRST, then clear the card, so the real handler
+      // recomputes every card's `hidden` from the restored dataset.
+      await wheelsBuyable.evaluate((el) => {
+        el.dataset.derbyBuyable = "true";
+      });
+      await page.locator('[data-derby-card="wheels"]').click();
+      const hiddenAfter = await emptyNote.evaluate((el) => el.hasAttribute("hidden"));
+      const restoredVisible = await page.locator("[data-derby-set]:not([hidden])").count();
+      if (!hiddenAfter) {
+        failures.push(`L: the empty-state note stayed visible after the grid refilled`);
+      }
+      if (restoredVisible !== 11) {
+        failures.push(`L: ${restoredVisible} card(s) visible after restoring the probe, expected 11`);
+      }
+    }
   }
-  return { pass: true, detail: details.join(" | ") };
+
+  details.push(
+    `A/B/F/G/H verified on load and after toggle | C: all 5 card id-sets matched | D: press-again clears | E: single-select held | I: "11 of 15"/"1 of 3"/"15 of 15" all matched | J: chip contract on this page | K: 0 buried controls at all 8 checkpoints | L: empty state rendered at "Showing 0 of 3" and withdrawn again`
+  );
 }
 
 async function groupChipsManifest(page, browser) {
