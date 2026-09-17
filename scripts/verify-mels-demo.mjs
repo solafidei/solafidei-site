@@ -529,6 +529,18 @@ const FRAGMENT_CHECKED_FLOOR = 1; // #main, the skip link, always first
 const EXTERNAL_DISTINCT_FLOOR = 5; // wa.me, mailto:, tel:, facebook.com, liveSite root
 const MANIFEST_CHECKED_FLOOR = 2; // facebook.com (index 8) + liveSite root (index 12)
 
+// Ruling #584 (T14 build brief §10.2): an internal href that carries a
+// #fragment (e.g. Home's cross-page ".../aura-sky-100#fit-guarantee") must
+// resolve to a matching id in the TARGET page, not just a 200. The existing
+// fragment branch above (step 2) only fires on hrefs that START WITH "#" --
+// a full cross-page URL with a trailing fragment takes the internal-fetch
+// branch (4a) instead and the fragment was never checked, which is exactly
+// how the PDP's dead #fit-guarantee anchor shipped invisibly for two tasks.
+// SUITE-LEVEL floor, not per-page (#538's per-page floors are the wrong
+// shape here): only Home currently carries a cross-page fragment link, so a
+// per-page floor would fail the other five pages that are correct.
+const CROSS_PAGE_FRAGMENT_FLOOR = 1;
+
 async function groupLinkCrawl(page, browser) {
   let manifest, contact;
   try {
@@ -549,6 +561,7 @@ async function groupLinkCrawl(page, browser) {
 
   const failures = [];
   const details = [];
+  let crossPageFragmentChecked = 0; // suite-level counter, #584
 
   await forEachSixPages(browser, null, async (p, { label, url }) => {
     const gate = (msg) => failures.push(`${label}: ${msg}`);
@@ -666,6 +679,34 @@ async function groupLinkCrawl(page, browser) {
           gate(`internal href "${v}" returned ${status}, expected 200`);
         } else {
           internalFetched++;
+          // #584: a fragment does not travel over HTTP, so this 200 body IS
+          // the target page's full markup regardless of the hash -- read it
+          // and assert the id actually exists there. u.hash is "" when the
+          // href carries no fragment; skip those (this is the "carries a
+          // #fragment" branch, not every internal href).
+          if (u.hash) {
+            const frag = decodeURIComponent(u.hash.slice(1));
+            let body;
+            try {
+              body = await resp.text();
+            } catch (err) {
+              gate(`cross-page fragment "${v}" -- could not read response body: ${err.message || err}`);
+              body = "";
+            }
+            // A plain substring search for `id="${frag}"` also matches
+            // `data-id="${frag}"`, `aria-id="${frag}"` etc -- an attribute
+            // that merely ENDS in "id=" is not the "id" attribute. Require
+            // no identifier/hyphen character immediately before "id=" so
+            // only the real attribute name matches; the frag itself is
+            // escaped since it comes from an href, not a literal.
+            const escapedFrag = frag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            const idAttrRe = new RegExp(`(?<![-\\w])id=(["'])${escapedFrag}\\1`);
+            if (idAttrRe.test(body)) {
+              crossPageFragmentChecked++;
+            } else {
+              gate(`cross-page fragment "${v}" has no matching id in ${u.pathname}`);
+            }
+          }
         }
         continue;
       }
@@ -764,6 +805,16 @@ async function groupLinkCrawl(page, browser) {
     );
   });
 
+  // Suite-level anti-vacuity floor (#584/#532): a crawl that silently
+  // visited zero cross-page fragments would read as PASS with nothing
+  // checked. Suite-level, not per-page -- see the floor's own comment above.
+  if (crossPageFragmentChecked < CROSS_PAGE_FRAGMENT_FLOOR) {
+    failures.push(
+      `only ${crossPageFragmentChecked} cross-page fragment href(s) resolved to a matching id, expected >= ${CROSS_PAGE_FRAGMENT_FLOOR}`
+    );
+  }
+  details.push(`cross-page fragments resolved: ${crossPageFragmentChecked}`);
+
   // PERMANENT CANARY: fetch a path that must never exist, on every run, not
   // just once at T11 time on one machine -- proves the dead-link branch can
   // still see a dead link.
@@ -791,16 +842,18 @@ async function groupLinkCrawl(page, browser) {
 // DOM-observed {} against the manifest's 9-member set was FALSE by
 // construction.
 //
-// As of T13 that paragraph is stale in its premise and still correct in its
-// conclusion. #570 repairs the premise rather than deleting the history:
-// SIX data-illustrative elements now ship -- Home's 5 from T12 plus the derby
-// hub's 1 section-level chip from T13 -- carrying TWO distinct ids
-// (fit-guarantee, pjn-instalments) out of the manifest's nine. Full
-// set-equality therefore STILL cannot pass until the remaining chips land in
-// T14-T17, which is exactly what CHIPS_COMPLETE=1 below turns on. Both
-// numbers are printed by this group's own detail line on every run (assertion
-// B's id list, assertion D's element count), so they cannot go stale again
-// without the output disagreeing with this comment in the same terminal.
+// As of T13 that paragraph was stale in its premise and still correct in its
+// conclusion; #570 repaired the premise once already. As of T14 the count
+// moved again -- NINE data-illustrative elements now ship -- Home's 5 from
+// T12, the derby hub's 1 section-level chip from T13, and the PDP's 3
+// (banner + Fit Guarantee section + instalment line) from T14 -- still
+// carrying only TWO distinct ids (fit-guarantee, pjn-instalments) out of the
+// manifest's nine. Full set-equality therefore STILL cannot pass until the
+// remaining chips land in T15-T17, which is exactly what CHIPS_COMPLETE=1
+// below turns on. Both numbers are printed by this group's own detail line
+// on every run (assertion B's id list, assertion D's element count), so they
+// cannot go stale again without the output disagreeing with this comment in
+// the same terminal.
 //
 // This is recorded rather than quietly rewritten because for one commit the
 // paragraph above contradicted assertion D's note fifteen lines below, which

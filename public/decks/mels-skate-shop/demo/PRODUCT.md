@@ -446,12 +446,17 @@ Recorded so the next agent does not undo a deliberate choice by reflex.
 Home is the first real screen, so two obligations it cannot discharge itself are recorded here
 rather than left in a code comment. Both were found by T12's provenance review, not by a gate.
 
-- **T14 owes `id="fit-guarantee"` on the Aura PDP.** Home's promise row carries the one link that
-  keeps no page a dead end (#493/#547): `.../demo/aura-sky-100#fit-guarantee`. **No gate catches it
-  if the anchor never lands** — verify group 3's fragment branch only fires on hrefs that start
-  with `#`, so a cross-page `...#fit-guarantee` takes the internal branch and the fragment is never
-  checked. The PDP will 200 without it and the link will silently go nowhere. `scripts/gen-home.mjs`
-  (the `ROUTE_AURA_PDP_FIT_GUARANTEE` constant) points here.
+- **DISCHARGED by T14.** `id="fit-guarantee"` now lands on the Aura PDP's Fit Guarantee section,
+  so Home's promise row link (#493/#547, `.../demo/aura-sky-100#fit-guarantee`,
+  `scripts/gen-home.mjs`'s `ROUTE_AURA_PDP_FIT_GUARANTEE` constant) resolves to something real.
+  The gate gap is closed too, not just the anchor: `scripts/verify-mels-demo.mjs` group 3 gained a
+  cross-page fragment assertion (ruling #584) that fires on an internal href carrying a `#fragment`
+  even when the href is a full cross-page URL rather than a bare `#id` — the shape the old
+  fragment branch (which only fired on hrefs that START WITH `#`) missed. It reads the target
+  page's response body and asserts the id is actually there, with a suite-level anti-vacuity floor
+  of 1. A demonstrated failing control is on record for this task: run before `id="fit-guarantee"`
+  landed, the assertion named `#fit-guarantee` and failed group 3; run after, it passed with the
+  counter at 1.
 - **DISCHARGED by T13.** `scripts/verify-mels-demo.mjs`'s group 11 stdout hard-coded
   `D: every real observed chip visible (vacuous until T12)` at three sites (not two — this passage
   itself undercounted; one of the three does not contain the word "vacuous" and a `vacuous`-only
@@ -460,11 +465,13 @@ rather than left in a code comment. Both were found by T12's provenance review, 
 
 ## What T14+ inherits from the Roller Derby hub (T13)
 
-- **The derby hub is the second link this build owes.** T14 must add `id="fit-guarantee"` on the
-  Aura PDP for Home's link (above) to land on anything; T13 also points a plain `.note` link at
-  `/decks/mels-skate-shop/demo/aura-sky-100` (no fragment) so the hub is not a dead end either
-  (#547/#567). Neither PDP anchor exists yet — the PDP is still a stub until T14 — so both links
-  currently 200 into an empty page, which is expected and not a defect at this point in the build.
+- **The derby hub was the second link this build owed — DISCHARGED by T14.** T13 pointed a plain
+  `.note` link at `/decks/mels-skate-shop/demo/aura-sky-100` (no fragment) so the hub would not be
+  a dead end (#547/#567), the same PDP Home's link (above) also targets. Both links depended on
+  the PDP existing and on `id="fit-guarantee"` landing on it; as of T14 the PDP is no longer a
+  stub, the id is on the page, and group 3's cross-page fragment assertion (#584) gates it — see
+  the discharge note above in "What the next tasks inherit from Home". Both links now resolve to
+  real content, not an empty page.
 - **`site.js` now has DOM wiring.** `initDerbyFilters()` is guarded behind
   `typeof document !== "undefined"` and queries `[data-derby-filters]`; a page with no derby grid
   (T16's Size Finder, T17's Book a fitting) safely finds no root and does nothing. T17's floating
@@ -512,6 +519,47 @@ rather than left in a code comment. Both were found by T12's provenance review, 
   per-card instalment line is gone in favour of the one section-level chip above (#557, same
   constraint as the previous bullet); 6.2.5's buying-guide link does not exist and
   `manifest.links[11].href` is `null` (#559).
+
+## What T15+ inherits from the Aura PDP, part A (T14)
+
+Five more spec overrides are live, this time against §6.3, and the spec does not reflect any of
+them either — the same "repair" risk as the register above, so they are recorded here rather
+than left for a later builder to rediscover by re-reading `docs/specs/mels-skate-shop-pitch.md`:
+
+- **§6.3.2's gallery item 3 is Aura's real published size-and-width grid**, re-encoded from
+  `.cache/mels-fixtures/size-chart-aura-size-width-grids.png`, not the byte-identical duplicate of
+  the selection chart the spec describes. Its caption is the new `pdp.gallery.widthGridCaption`;
+  the spec's caption "Aura size guide — from the Sky 200 listing" and its `store:11941` sourcing
+  do not ship (#572).
+- **§6.3.3's title is `esc(p.name)`** — `"Aura Sky 100 Ice Skate Boot White"`, the fixture name —
+  not the spec's em-dashed `"… — White"`, which exists in no fixture and which the spec
+  contradicts itself about (§2.1 quotes it without the em dash) (#579).
+- **§6.3.8 omits level and stiffness.** Both are published nowhere reachable, so they are left
+  out rather than guessed (#577).
+- **§6.3.8's spec-table size and width values are the Sky 100's own**, measured off Aura's
+  published grid image, not the brand-level "210 to 300" the `aura-spec-table` manifest fact
+  states — that string is true of the brand (Sky 50/100/200 together) and false of this boot
+  alone: 300 mm exists only on the Sky 200 men's panel (#582).
+- **§6.3.1's banner carries the `fit-guarantee` chip**, which the spec does not give it — its
+  final clause is the same unpublished carve-out the guarantee states behind a chip (#576).
+
+**Recorded for T15:** `draft-copy.json`'s `pdp.sizes.hint` reads *"Aura sizes in millimetres, 210
+to 300."* — that is the same brand-level range that over-claims for the Sky 100, this time on the
+size selector's own hint text. T15 renders that string on this page; narrow it to the Sky 100's
+own run (men's 210–285, women's 210–280) rather than shipping the brand-level figure a second
+time. Also: plan Task 15's verification bullet at `plan.md:433` (`grep -nE 'R ?7[,. ]?850|R
+?15[,. ]?550' …`) is the same shape of generator-incompatible grep this task's own brief replaced
+in its §11.4 — a generator bakes `R7,850` and `R15,550` into the bytes exactly as it bakes
+`R12,050` here, so that literal grep will report a match and read as a failure when it is not
+one. T15 should replace it the same way, not run it as written.
+
+Also: `scripts/gen-home.mjs:158-162`'s comment above `ROUTE_AURA_PDP_FIT_GUARANTEE` is now false
+in both of its clauses ("The PDP is a stub until T14/T15 and no gate catches a missing anchor" —
+the PDP is no longer a stub as of this task, and group 3 gained the #584 cross-page fragment
+assertion that does catch a missing anchor). T14 does not edit `gen-home.mjs` (out of scope — the
+brief forbids it and its `ponytail:` comment is a separate, ruled transcription this file must not
+touch), so the false statement is recorded here instead: whoever is next authorised to touch
+`gen-home.mjs` should update that comment to say the PDP now exists and the anchor is gated.
 
 ## What is still open for the owner
 

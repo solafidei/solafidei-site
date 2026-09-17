@@ -528,6 +528,16 @@
       ]
     },
     {
+      "file": "aura-size-width-grid.webp",
+      "from": "melsskateshop.co.za",
+      "width": 523,
+      "flags": [
+        "below_hero_floor"
+      ],
+      "source": "https://melsskateshop.co.za/size-chart/",
+      "note": "Aura's per-model size-and-width grids, as published on Mel's own size-chart page. Decoded to PNG under .cache/mels-fixtures/ with zero network, then re-encoded here. This is the only decoded chart that ships as an image."
+    },
+    {
       "file": "product-2925.webp",
       "from": "store:2925",
       "width": 225,

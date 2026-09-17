@@ -132,7 +132,8 @@
       "selectionChartCaption": "Which Sky? Aura's own selection chart",
       "sizeGuideCaption": "The same chart as Aura publishes it on the Sky 200 listing",
       "videoSlotCaption": "60-second fit video — filmed in the build",
-      "videoSlotNote": "An empty slot, labelled, rather than a stock clip of someone else's skates."
+      "videoSlotNote": "An empty slot, labelled, rather than a stock clip of someone else's skates.",
+      "widthGridCaption": "Aura's own size and width grid, as published on Mel's size-chart page"
     },
     "instalmentNote": "Pay-in-3 at 0%, once we are onboarded.",
     "sizes": {
