@@ -26,6 +26,7 @@ import {
   stockState,
   buildWhatsAppLink,
 } from "../public/decks/mels-skate-shop/demo/assets/site.js";
+import { instalments } from "../public/decks/mels-skate-shop/demo/assets/pdp.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DEMO = join(__dirname, "..", "public", "decks", "mels-skate-shop", "demo");
@@ -120,20 +121,14 @@ function moneyCents(cents) {
   })}`;
 }
 
-// ponytail: T15 owns the canonical instalments(priceCents, n = 3) in
-// assets/pdp.js (spec §8) and spine group 6 asserts it. That file does not
-// exist yet, so the three cent amounts are computed here. THE PIN IS THE
-// ANCHOR, NOT THE PROSE (decision #549): instalments(1205000) must return
-// [401667, 401667, 401666] and display R4,016.67 — the figure spec:31,
-// spec:127, spec:203 and the pjn-instalments manifest fact all print. §8's
-// "remainder on the first" wording would give R4,016.68 and is the loose
-// description, not the rule. When T15 lands pdp.js, delete this and call it;
-// the anchor must still hold.
-const instalments = (cents, n = 3) => {
-  const base = Math.floor(cents / n);
-  const rem = cents - base * n; // 0 <= rem < n
-  return Array.from({ length: n }, (_, i) => base + (i < rem ? 1 : 0));
-};
+// instalments() is imported from assets/pdp.js above (ruling #573: that file
+// is canonical) — this used to be a local copy pending pdp.js's existence
+// (ruling #587). pdp.js has shipped since task 14 and this repair (task 15,
+// ruling #587) deletes the copy. THE PIN IS THE ANCHOR, NOT THE PROSE
+// (decision #549): instalments(1205000) must return [401667, 401667, 401666]
+// and display R4,016.67 — the figure spec:31, spec:127, spec:203 and the
+// pjn-instalments manifest fact all print. §8's "remainder on the first"
+// wording would give R4,016.68 and is the loose description, not the rule.
 
 // --- fixture lookups ---------------------------------------------------------
 function fact(manifest, id) {
@@ -157,10 +152,12 @@ const ROUTE_SIZE_FINDER = "/decks/mels-skate-shop/demo/size-finder";
 const ROUTE_BOOKING = "/decks/mels-skate-shop/demo/book-a-fitting";
 // #493 + #547: the one link Home carries to the PDP, discharging both "the
 // guarantee terms link to the full terms on the PDP" and "Home gains one
-// link so no page is a dead end". The PDP is a stub until T14/T15 and no gate
-// catches a missing anchor (group 3's fragment branch only fires on hrefs
-// starting with "#"), so T14's obligation to add id="fit-guarantee" to the PDP
-// is recorded in PRODUCT.md — "What the next tasks inherit from Home".
+// link so no page is a dead end". Corrected by ruling #587 (task 15): the PDP
+// shipped its static half in task 14 and is no longer a stub, and group 3's
+// #584 cross-page fragment assertion demonstrably fires on a missing anchor
+// (re-run in both directions during task 14's re-verify, driving the whole
+// spine to exit 1 on a decoy page) — so a missing id="fit-guarantee" here is
+// caught, not silent.
 const ROUTE_AURA_PDP_FIT_GUARANTEE = "/decks/mels-skate-shop/demo/aura-sky-100#fit-guarantee";
 
 const IMG_ROOT = "/decks/mels-skate-shop/img";

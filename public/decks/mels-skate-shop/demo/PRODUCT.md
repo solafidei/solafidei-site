@@ -561,6 +561,111 @@ brief forbids it and its `ponytail:` comment is a separate, ruled transcription 
 touch), so the false statement is recorded here instead: whoever is next authorised to touch
 `gen-home.mjs` should update that comment to say the PDP now exists and the anchor is gated.
 
+## What T16+ inherits from the Aura PDP, part B (T15)
+
+- **The `aura-size-stock-states` trap named above (T14's note) was discharged, not just
+  avoided.** The chip sits on `.availability`'s wrapping `<p>` — an element that is always
+  rendered and always visible — with the empty `<span aria-live="polite" data-pdp-availability>`
+  nested inside it. Group 6 asserts the region is empty on first paint (read from the raw HTML
+  bytes on disk, before Playwright ever loads the page, and again from the live DOM before any
+  click) and group 11 assertion D never sees a zero-size box for this chip, on load or after any
+  size selection.
+- **§8's STATES map really did survive with one entry** (ruling #589), now living in
+  `assets/pdp.js` as `export const STATES = { leadTime: (mm) => ... }`, not in `site.js` —
+  `site.js`'s own `STATES` is a different concern (product stock/sold-out badges for Rail A,
+  reused via `stockState()`), not the per-size lead-time line. Group 6's own expected strings are
+  typed as literals in `verify-mels-demo.mjs`, independent of this map, so a regression in either
+  file is caught (build brief §10's tautology warning).
+- **New DOM wiring landed in `assets/pdp.js`, not `site.js`.** PRODUCT.md's earlier note ("T17's
+  floating WhatsApp button work lands in the same guarded region of this file, not a new module")
+  is about `site.js`'s own guarded block and does not bind the PDP: this build's brief explicitly
+  assigns the PDP's interactive module to `assets/pdp.js` (ruling #573 already made that file
+  canonical for this page's money maths), and `pdp.js` is not "a new module" — it has existed
+  since task 14. `pdp.js` imports `buildWhatsAppLink` from `site.js` for the WhatsApp links (no new
+  dependency: same-repo file, and `site.js`'s own bottom guard is a no-op on a page with no
+  `[data-derby-filters]`, exactly as documented above for a later page reusing it). Recorded here
+  so a later builder does not read the older note as forbidding this.
+- **The buy sheet is a native `<dialog>`**, matching `site.css`'s pre-existing `dialog.sheet`
+  rules (written for this exact spec section, per that CSS block's own comment) — focus trapping,
+  Escape-to-close and inertness all come from the UA, not from hand-rolled JS. `pdp.js` composes
+  the WhatsApp CTA text fresh on every open (so a size picked after the sheet was last opened is
+  reflected) and returns focus to the buy button on `close` (fires on both Escape and the dismiss
+  button, one listener covers both).
+- **Rail A renders all six ice-category SKUs with an image on disk** (6395, 6403, 4901, 7941,
+  9665, 12043) — no new image, no new `img-alt.json` entry. 6395/6403 (`price: "0"`, out of
+  stock) render no price at all rather than a naive "R0"; 4901 carries a `price_range`
+  (33000-36000) wider than its flat `price` (33000), rendered as "From R330" rather than a flat
+  figure that under-claims the top of the range — a decision taken here, not ruled, and flagged
+  as such in task 15's return. **Rail B ships no `<img>`** — there is no photograph of the Sky 50
+  or the Sky 200, and reusing `aura-boot.webp` (the Sky 100's own photo) for either would be a
+  false image claim.
+- **`manifest.json` was not touched.** The live-site product URL brief §14 asked to "record" was
+  already present at `manifest.links[5]`, checked 200 — a second row would have been an
+  unruled fixture edit. `pdp.ctaLiveSite` points at `product.permalink` for id 11919, which is
+  byte-identical to that existing link.
+- **`gen-home.mjs`'s two false comments are both gone now**, not just the one #587 named. Measured
+  during this task: the `ponytail:` block above the old local `instalments()` copy (T15 deletes it,
+  imports the pdp.js version) was equally false as of `5d3077f` (`pdp.js` existed, and ownership
+  had moved to T14 per #573, not T15) — both are rewritten to state what is actually true, not
+  just the one comment the ruling named by line number. `gen-home.mjs`'s own `moneyWhole()`/
+  `moneyCents()` copies are untouched — no ruling reaches them (only `instalments()` moved).
+
+### T15 review — adjudicated findings (amended into the T15 commit)
+
+Five review lenses reported on the commit above; here is what each finding turned into.
+
+- **FIXED (blocker) — the availability line shipped a tilde, banned by ruling #512 for T12-T17.**
+  `assets/pdp.js`'s `STATES.leadTime` and `verify-mels-demo.mjs`'s matching literal both read
+  `Size <n> · imported to order, ~2 weeks`. `site.css`'s font subset excludes `~`/`\`/`^`; this
+  would have been the site's first tilde, rendering off-family in the fallback stack, and group 6
+  pinned the same literal so the gate blessed it. Reproduced live: sabotaging `pdp.js` back to the
+  tilde while the spine literal reads "approx." drove GROUP 6 to FAIL on all 16 sizes naming the
+  exact mismatch; restoring by file copy returned it to PASS (both transcripts are in the task's
+  return). Fixed to `Size <n> · imported to order, approx. 2 weeks` — the same house form T14's
+  banner and fulfilment note already use for this identical fact.
+- **FIXED (major) — `gen-aura-sky-100.mjs`'s own header still called itself a "static half"
+  renderer and made three now-false claims about `gen-home.mjs`** (that gen-home.mjs keeps its
+  instalments() copy; that deleting it is "not this task's call"; that the interactive half
+  "lands... below" as future work). All were true when T14 wrote them and became false the moment
+  this same commit finished the work they were describing. Rewritten to describe what the file
+  does today, including the runtime `console.log` that printed "(static half)" on every
+  regeneration. `pdp.js`'s own header enumeration of gen-home.mjs's "copy" was also tightened to
+  name only `instalments()` as deleted, since `moneyWhole()`/`moneyCents()` remain local there.
+- **FIXED (major) — the demo sheet claimed a size was "already in it" even when none was
+  selected.** The buy button's click handler was unconditional, so a visitor could open the sheet
+  before picking a size and the composed WhatsApp message would then carry no size at all, while
+  `pdp.demoSheet.body` (verbatim, rendered) told them otherwise. Fixed by baking the buy button
+  `disabled` (house `.btn[disabled]` treatment, already in `site.css`) and having `initPdp()`
+  enable it the moment a size is first selected, so the sheet is never reachable in the state the
+  copy says doesn't happen. No copy string changed. Verified end to end with a Playwright script:
+  sheet unreachable before selection, reachable and correctly WhatsApp-linked with the size after.
+  Group 8's 44px tap-target floor is unaffected (`.btn[disabled]` only changes opacity).
+- **REFUTED (major, only partially) — the finding's premise about #591(1)/legend chipping and
+  manifest.json's diff being empty was itself correct** (confirmed independently, no fix needed
+  there); it is the header-comment portion of that same finding that was real and is fixed above.
+- **NOT FIXED, filed for the owner (minor) — `manifest.json`'s `aura-size-stock-states` fact text
+  still enumerates the three plan states (in stock / imported / notify-me) after #589 collapsed the
+  page to one.** The finding is correct and the fixture is stale relative to what ships, but brief
+  measured fact F is explicit that this task's `manifest.json` diff must be empty — "if your
+  `manifest.json` diff is non-empty, you have made a mistake" — and no ruling in §15 authorizes
+  editing an illustrative fact's prose (only `links[]` was in scope, and that entry was already
+  present). Group 11 keys the bijection on ids, not text, so nothing mechanical breaks; the fact
+  text is simply describing a broader mechanism than the one branch this page implements. Left for
+  an owner ruling to either narrow the text or record it as describing the general mechanism.
+
+- **FIXED (major, found only in the main-session re-verify) — `pdp.js`'s own top header still
+  read "This module has no DOM access and does no DOM wiring".** That was true when T14 wrote it
+  about the three money exports and became false the moment this same commit added `initPdp()`
+  below it — lines 89–186 are nothing but `querySelector`/`addEventListener`/`showModal`. It is
+  also flatly contradicted by this document's own note above ("New DOM wiring landed in
+  `assets/pdp.js`, not `site.js`"), so the file and its design record disagreed and the file was
+  the wrong one. **The fourth instance of the #540/#587/#592 stale-comment class in four tasks,
+  and the first to land in the very file the task's work went into** — five build lenses and the
+  adjudicating fixer all missed it while fixing the identical class in `gen-aura-sky-100.mjs`.
+  Rewritten to scope the pure-maths claim to the three exports and to state what the rest of the
+  file now does. Comment-only: the full spine re-runs exit 0 with the same ten PASS / group 5
+  SKIPPED, and every generator still regenerates to an empty diff.
+
 ## What is still open for the owner
 
 - **The address — CLOSED, no longer open.** Two sources disagreed by about 20 km (decision #501);

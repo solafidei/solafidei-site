@@ -34,8 +34,8 @@
 - [x] Task 12: Home (§6.1, items 1-7) — M · sonnet · deps: 11
 - [x] Task 13: Roller Derby hub (§6.2) + in-stock toggle and filters (group 7) — M · sonnet · deps: 12
 - [x] Task 14: Aura PDP part A — banner, gallery, price, instalments, Fit Guarantee, spec table — M · sonnet · deps: 13 *(fixed: was 12, breaking the strict-serial chain)*
-- [ ] Task 15: Aura PDP part B — sizes, services, buy sheet, rails, Q&A + group 6 — M · sonnet · deps: 14
-- [ ] CHECKPOINT: three screens up — groups 1-4, 6-11 pass (group 6 lands with task 15); instalments sums exactly; nothing hard-coded in HTML
+- [x] Task 15: Aura PDP part B — sizes, services, buy sheet, rails, Q&A + group 6 — M · sonnet · deps: 14
+- [x] CHECKPOINT: three screens up — groups 1-4, 6-11 pass (group 6 lands with task 15); instalments sums exactly; nothing hard-coded in HTML
 - [ ] Task 16: Size Finder (§6.4) + pure findSize()/whichSky() (group 5) — M · sonnet · deps: 15
 - [ ] Task 17: Book a fitting (§6.5) — now chips BOTH duration and price per fitting type, per §6.0's own text — S · sonnet · deps: 16
 - [ ] CHECKPOINT: all six screens green — eleven groups pass; owner phone walkthrough of the full path (owner gate)

@@ -15,6 +15,13 @@ import { chromium } from "playwright";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+// Group 6 (T15) tests the ACTUAL exported function against literals fixed by
+// ruling #549/#580, independent of pdp.js's internals -- this is the same
+// shape build brief gate §13.3 already runs standalone, not the "read the
+// expected string out of the same map the page renders from" tautology
+// warned against in §10: nothing here is DERIVED from pdp.js, it is compared
+// against hard literals typed in this file.
+import { instalments, moneyCents } from "../public/decks/mels-skate-shop/demo/assets/pdp.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -1518,6 +1525,275 @@ async function groupChipsManifest(page, browser) {
   return { pass: true, detail };
 }
 
+// --- group 6 (task 15, issue #33) ------------------------------------------
+// PDP: size selection, service checkbox total, instalments(), static price
+// vs products.json. Wrapper/body split in ONE try (#571, same shape as group
+// 7's groupDerbyFilters/derbyFiltersBody) so a mid-flight throw never
+// discards failures already accumulated.
+const PDP_URL = `${DECK}/demo/aura-sky-100`;
+const PDP_PRODUCT_ID = 11919;
+// Literal size run, typed here independently of the generator's own loop
+// (build brief §3.1, ruling #590) -- 16 values, 5 mm steps, 210-285.
+const PDP_SIZE_RUN = Array.from({ length: 16 }, (_, i) => 210 + i * 5);
+// Literal expected availability strings (ruling #589) -- typed once, NEVER
+// imported from pdp.js's STATES map (that would be the exact tautology named
+// in build brief §10: "reading the expected string out of the same STATES
+// map the page renders from"). Each pins the FULL string including the size
+// number, so a size->string mapping that returns the wrong size's text (or
+// the same text for every button) is caught, not just "contains the phrase".
+// "approx.", not "~" (ruling #512): a tilde is outside site.css's font
+// subset and would be the site's first. Matches pdp.js's STATES.leadTime.
+const pdpExpectedAvailability = (mm) => `Size ${mm} · imported to order, approx. 2 weeks`;
+// Literal arithmetic (build brief §10 trap #4): the four combinations are
+// typed here, not recomputed from the page's own total function or from
+// fittings.json at runtime.
+const PDP_BASE_CENTS = 1205000;
+const PDP_HEAT_MOULD_CENTS = 85000;
+const PDP_MAIL_IN_CENTS = 65000;
+const PDP_TOTAL_NONE = "R12,050";
+const PDP_TOTAL_HEAT_MOULD = "R12,900";
+const PDP_TOTAL_MAIL_IN = "R12,700";
+const PDP_TOTAL_BOTH = "R13,550";
+
+async function groupPdpInteractive(page) {
+  const failures = [];
+  const details = [];
+  try {
+    await pdpInteractiveBody(page, failures, details);
+  } catch (err) {
+    failures.push(`threw before finishing: ${(err && err.message) || String(err)}`);
+  }
+  if (failures.length > 0) {
+    return { pass: false, detail: failures.join("; ") };
+  }
+  return { pass: true, detail: details.join(" | ") };
+}
+
+async function pdpInteractiveBody(page, failures, details) {
+  // --- STATIC (JS-off) proof, read from disk, before the browser touches the
+  // page at all (build brief §10 trap #8: a gate that only ever measures
+  // post-JS state cannot tell a baked page from an injected one). ------------
+  let staticHtml;
+  try {
+    staticHtml = readFileSync(join(DEMO_DIR, "aura-sky-100.html"), "utf8");
+  } catch (err) {
+    failures.push(`STATIC: could not read aura-sky-100.html from disk: ${err.message || err}`);
+    staticHtml = "";
+  }
+  if (staticHtml) {
+    // the live region is baked EMPTY -- nothing between its open/close tags.
+    const liveMatch = /<span[^>]*data-pdp-availability[^>]*>([^<]*)<\/span>/.exec(staticHtml);
+    if (!liveMatch) {
+      failures.push(`STATIC: no [data-pdp-availability] span found in the baked HTML`);
+    } else if (liveMatch[1] !== "") {
+      failures.push(`STATIC: [data-pdp-availability] is baked with text "${liveMatch[1]}", expected empty`);
+    }
+    // all 16 size buttons are baked, not injected.
+    const bakedSizeCount = (staticHtml.match(/data-pdp-size="\d+"/g) || []).length;
+    if (bakedSizeCount !== 16) {
+      failures.push(`STATIC: ${bakedSizeCount} baked [data-pdp-size] button(s) found, expected 16`);
+    }
+    // the script tag is root-absolute (measured fact A) -- a relative src
+    // resolves against whatever trailing slash the clean URL carries and a
+    // miss 404s, failing group 2 on the spot.
+    if (!staticHtml.includes('<script type="module" src="/decks/mels-skate-shop/demo/assets/pdp.js">')) {
+      failures.push(`STATIC: no root-absolute <script type="module" src="/decks/mels-skate-shop/demo/assets/pdp.js"> tag found`);
+    }
+    // non-interactive copy (Q&A, rails) is in the markup, not injected.
+    if (!staticHtml.includes("What is a heat-mould?")) {
+      failures.push(`STATIC: Q&A question "What is a heat-mould?" not found in baked HTML`);
+    }
+    if (!staticHtml.includes("Aura Sky 50 Ice Skate Boot- White")) {
+      failures.push(`STATIC: Rail B's 11905 fixture name (no space before the hyphen, #579) not found baked`);
+    }
+  }
+
+  // --- LOAD, before any click ------------------------------------------------
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(PDP_URL, { waitUntil: "load" });
+
+  const availability = page.locator("[data-pdp-availability]");
+  const sizeButtons = page.locator("[data-pdp-size]");
+
+  const sizeButtonCount = await sizeButtons.count();
+  if (sizeButtonCount !== 16) {
+    failures.push(`selector: [data-pdp-size] matched ${sizeButtonCount} button(s), expected 16 -- selector may be broken`);
+  }
+
+  // ASSERTION: the aria-live region is EMPTY before any selection, on first
+  // paint -- read BEFORE any click (build brief §10 trap #3).
+  const firstPaintText = ((await availability.textContent()) ?? "").trim();
+  if (firstPaintText !== "") {
+    failures.push(`region: [data-pdp-availability] textContent on first paint was "${firstPaintText}", expected empty`);
+  }
+  const liveAttr = await availability.getAttribute("aria-live");
+  if (liveAttr !== "polite") {
+    failures.push(`region: [data-pdp-availability] carries aria-live="${liveAttr}", expected "polite"`);
+  }
+
+  // the chip lives on the ALWAYS-VISIBLE wrapper, never inside the (empty at
+  // first paint) live region itself (measured fact C / group 11 assertion D):
+  // an element with zero client rects would fail that assertion on load.
+  const chipHost = page.locator('[data-illustrative="aura-size-stock-states"]');
+  const chipHostCount = await chipHost.count();
+  if (chipHostCount !== 1) {
+    failures.push(`chip: expected exactly 1 [data-illustrative="aura-size-stock-states"], found ${chipHostCount}`);
+  } else {
+    const chipBox = await chipHost.first().boundingBox();
+    if (!chipBox || chipBox.width === 0 || chipBox.height === 0) {
+      failures.push(`chip: aura-size-stock-states host has a zero-size box on first paint`);
+    }
+    const chipInsideLive = await chipHost.first().evaluate((el) => el.querySelector("[data-pdp-availability]") !== null);
+    if (!chipInsideLive) {
+      failures.push(`chip: aura-size-stock-states is not the live region's wrapper (expected to contain [data-pdp-availability])`);
+    }
+  }
+
+  // --- ASSERTION: static price equals products.json for 11919 --------------
+  let productsJson;
+  try {
+    productsJson = JSON.parse(readFileSync(join(DEMO_DIR, "data", "products.json"), "utf8"));
+  } catch (err) {
+    failures.push(`price: could not read products.json: ${err.message || err}`);
+  }
+  const priceAttr = await page.locator("[data-price]").getAttribute("data-price");
+  const priceCents = Number(priceAttr);
+  if (priceCents !== PDP_BASE_CENTS) {
+    failures.push(`price: page's data-price is "${priceAttr}", expected literal ${PDP_BASE_CENTS}`);
+  }
+  if (productsJson) {
+    const fixtureProduct = productsJson.products.find((p) => p.id === PDP_PRODUCT_ID);
+    const fixtureCents = fixtureProduct ? Number(fixtureProduct.prices.price) : null;
+    if (fixtureCents !== PDP_BASE_CENTS) {
+      failures.push(`price: products.json id ${PDP_PRODUCT_ID} price is ${fixtureCents}, expected literal ${PDP_BASE_CENTS}`);
+    }
+  }
+
+  // --- ASSERTION: instalments(1205000) sums to exactly 1205000 and displays
+  // R4,016.67 -- checked BOTH ways: against the real exported function
+  // (compared to a hard literal, not derived from it) AND against the page's
+  // own baked instalment sentence, so a regression in either the function or
+  // the generator's use of it is caught. -------------------------------------
+  const instalmentsResult = instalments(PDP_BASE_CENTS);
+  if (JSON.stringify(instalmentsResult) !== JSON.stringify([401667, 401667, 401666])) {
+    failures.push(`instalments: instalments(${PDP_BASE_CENTS}) returned ${JSON.stringify(instalmentsResult)}, expected [401667,401667,401666]`);
+  }
+  if (instalmentsResult.reduce((a, b) => a + b, 0) !== PDP_BASE_CENTS) {
+    failures.push(`instalments: sum is ${instalmentsResult.reduce((a, b) => a + b, 0)}, expected exactly ${PDP_BASE_CENTS}`);
+  }
+  if (moneyCents(instalmentsResult[0]) !== "R4,016.67") {
+    failures.push(`instalments: moneyCents(${instalmentsResult[0]}) is "${moneyCents(instalmentsResult[0])}", expected "R4,016.67"`);
+  }
+  const instalmentSentence = ((await page.locator(".price__instalment").textContent()) ?? "");
+  if (!instalmentSentence.includes("R4,016.67")) {
+    failures.push(`instalments: the page's own .price__instalment sentence does not contain the literal "R4,016.67" (reads "${instalmentSentence.trim()}")`);
+  }
+
+  // --- each size button, CLICKED, drives the correct availability string ---
+  let sizesVerified = 0;
+  const seenTexts = new Set();
+  for (const mm of PDP_SIZE_RUN) {
+    const button = page.locator(`[data-pdp-size="${mm}"]`);
+    const buttonCount = await button.count();
+    if (buttonCount !== 1) {
+      failures.push(`size ${mm}: expected exactly 1 button, found ${buttonCount}`);
+      continue;
+    }
+    await button.click();
+    const text = ((await availability.textContent()) ?? "").trim();
+    if (text === "") {
+      failures.push(`size ${mm}: region is still empty after clicking`);
+      continue;
+    }
+    const expected = pdpExpectedAvailability(mm);
+    if (text !== expected) {
+      failures.push(`size ${mm}: region reads "${text}", expected "${expected}"`);
+    }
+    seenTexts.add(text);
+    sizesVerified++;
+  }
+  if (sizesVerified < 16) {
+    failures.push(`sizes: only ${sizesVerified} of 16 size buttons were verified (floor 16)`);
+  }
+  // Different sizes must yield DIFFERENT strings -- catches a completely
+  // broken size->string mapping that always renders the same (correct-looking)
+  // text (build brief §10, trap #1).
+  if (seenTexts.size < 16) {
+    failures.push(`sizes: only ${seenTexts.size} distinct availability string(s) observed across 16 clicks, expected 16`);
+  }
+
+  // --- services: each checkbox changes the total by the right amount, and
+  // restores it exactly on untick. Read the RENDERED TEXT throughout, never
+  // `.checked` (build brief §10 trap #5). -------------------------------------
+  const serviceInputs = page.locator("[data-pdp-service]");
+  const serviceCount = await serviceInputs.count();
+  if (serviceCount !== 2) {
+    failures.push(`services: [data-pdp-service] matched ${serviceCount} checkbox(es), expected 2 -- selector may be broken`);
+  }
+  const totalAmount = page.locator("[data-pdp-total-amount]");
+
+  const totalBefore = ((await totalAmount.textContent()) ?? "").trim();
+  if (totalBefore !== PDP_TOTAL_NONE) {
+    failures.push(`total: before any tick reads "${totalBefore}", expected literal "${PDP_TOTAL_NONE}"`);
+  }
+
+  // Resolve the two checkboxes by their own data-price-cents rather than by
+  // an assumed DOM order, so a re-ordering in the generator cannot silently
+  // swap which combination this test exercises.
+  const heatMould = page.locator(`[data-pdp-service][data-price-cents="${PDP_HEAT_MOULD_CENTS}"]`);
+  const mailIn = page.locator(`[data-pdp-service][data-price-cents="${PDP_MAIL_IN_CENTS}"]`);
+  const heatMouldCount = await heatMould.count();
+  const mailInCount = await mailIn.count();
+  if (heatMouldCount !== 1) failures.push(`services: expected exactly 1 checkbox at ${PDP_HEAT_MOULD_CENTS} cents, found ${heatMouldCount}`);
+  if (mailInCount !== 1) failures.push(`services: expected exactly 1 checkbox at ${PDP_MAIL_IN_CENTS} cents, found ${mailInCount}`);
+
+  let combosVerified = 0;
+
+  if (heatMouldCount === 1) {
+    await heatMould.check();
+    const t1 = ((await totalAmount.textContent()) ?? "").trim();
+    if (t1 !== PDP_TOTAL_HEAT_MOULD) failures.push(`total: heat-mould ticked reads "${t1}", expected literal "${PDP_TOTAL_HEAT_MOULD}"`);
+    else combosVerified++;
+
+    await heatMould.uncheck();
+    const tRestored1 = ((await totalAmount.textContent()) ?? "").trim();
+    if (tRestored1 !== PDP_TOTAL_NONE) failures.push(`total: heat-mould unticked reads "${tRestored1}", expected restore to literal "${PDP_TOTAL_NONE}"`);
+    else combosVerified++;
+  }
+
+  if (mailInCount === 1) {
+    await mailIn.check();
+    const t2 = ((await totalAmount.textContent()) ?? "").trim();
+    if (t2 !== PDP_TOTAL_MAIL_IN) failures.push(`total: mail-in ticked reads "${t2}", expected literal "${PDP_TOTAL_MAIL_IN}"`);
+    else combosVerified++;
+  }
+
+  if (heatMouldCount === 1 && mailInCount === 1) {
+    await heatMould.check();
+    const tBoth = ((await totalAmount.textContent()) ?? "").trim();
+    if (tBoth !== PDP_TOTAL_BOTH) failures.push(`total: both ticked reads "${tBoth}", expected literal "${PDP_TOTAL_BOTH}"`);
+    else combosVerified++;
+
+    await heatMould.uncheck();
+    await mailIn.uncheck();
+    const tRestoredBoth = ((await totalAmount.textContent()) ?? "").trim();
+    if (tRestoredBoth !== PDP_TOTAL_NONE) failures.push(`total: both unticked reads "${tRestoredBoth}", expected restore to literal "${PDP_TOTAL_NONE}"`);
+    else combosVerified++;
+  }
+
+  if (combosVerified < 4) {
+    failures.push(`total: only ${combosVerified} combination(s) verified (floor 4)`);
+  }
+
+  details.push(
+    `STATIC: live region baked empty, 16 size buttons baked, root-absolute script tag, Q&A + Rail B copy baked | ` +
+      `region empty on load, aria-live="polite", chip on the always-visible wrapper | ` +
+      `price: data-price ${PDP_BASE_CENTS} == products.json | instalments(): [401667,401667,401666] -> R4,016.67, baked sentence matches | ` +
+      `${sizesVerified}/16 size buttons verified, ${seenTexts.size} distinct strings | ` +
+      `${combosVerified}/4+ total combinations verified: ${PDP_TOTAL_NONE}/${PDP_TOTAL_HEAT_MOULD}/${PDP_TOTAL_MAIL_IN}/${PDP_TOTAL_BOTH}`
+  );
+}
+
 // --- registry ------------------------------------------------------------
 // number -> { title, task, run(page) | null for "not yet implemented" }
 // Ownership map (spec §7 group -> owning task):
@@ -1552,7 +1828,7 @@ const GROUPS = {
   6: {
     title: "PDP: size selection, service checkbox total, instalments(), static price vs products.json",
     task: "T15",
-    run: null,
+    run: groupPdpInteractive,
   },
   7: {
     title:

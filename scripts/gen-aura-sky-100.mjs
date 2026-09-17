@@ -1,13 +1,17 @@
 #!/usr/bin/env node
-// scripts/gen-aura-sky-100.mjs — task 14 (issue #32), decision #574.
+// scripts/gen-aura-sky-100.mjs — task 14 (issue #32) + task 15 (issue #33),
+// decision #574.
 //
 // One-off, RE-RUNNABLE, AUTHORING-TIME script. Never invoked at runtime --
 // the demo still ships with no build step. Reads the demo's own fixtures
-// under DEMO/data/*.json plus DEMO/assets/pdp.js, renders the STATIC half
-// of the PDP (banner, gallery, title, price, Fit Guarantee, spec table),
-// and splices the result between the `<!-- main:pdp -->` / `<!-- /main:pdp
-// -->` marker pair inside `<main id="main" class="page__main">` in
-// aura-sky-100.html. Touches aura-sky-100.html and nothing else.
+// under DEMO/data/*.json plus DEMO/assets/pdp.js, renders the FULL PDP --
+// T14's static half (banner, gallery, title, price, Fit Guarantee, spec
+// table) and T15's interactive half (size selector, service checkboxes +
+// running total, fulfilment/buy button/demo sheet, both rails, Q&A, the two
+// CTAs, and the page's first `<script type="module">` tag) -- and splices
+// the result between the `<!-- main:pdp -->` / `<!-- /main:pdp -->` marker
+// pair inside `<main id="main" class="page__main">` in aura-sky-100.html.
+// Touches aura-sky-100.html and nothing else.
 //
 // scripts/gen-roller-derby.mjs is this file's template. Copied VERBATIM
 // (only the error-message prefix changes, "gen-pdp:"): readJson(), esc(),
@@ -17,32 +21,24 @@
 // costs -- gen-home.mjs's own comment says so and gen-roller-derby.mjs
 // already deferred it once; this is the fourth caller.
 //
-// MONEY MATHS IS DIFFERENT FROM THE HELPERS ABOVE (ruling #573): this task
-// is the one that finally lands the canonical instalments(), moneyWhole()
-// and moneyCents() in DEMO/assets/pdp.js, and this generator IMPORTS them
-// rather than defining its own fourth copy. gen-home.mjs keeps its own
-// pre-existing instalments()/moneyWhole()/moneyCents() copy -- this build's
-// brief (not a ruling) says "Do NOT edit gen-home.mjs ... at all", because
-// gen-home.mjs's own `ponytail:` comment ("T15 owns the canonical
-// instalments()") is a faithful transcription of a real, earlier ruling;
-// editing that comment now would put a FALSE statement in a shipped file
-// (#540), which is worse than an out-of-date one. The correction -- that
-// ownership moved from T15 to T14 -- lives here and in this build's brief,
-// not by rewriting history in someone else's file. Ruling #573 is singular:
-// **T15 deletes gen-home.mjs's copy** when it wires spine group 6; that is
-// not this task's call to make on gen-home.mjs's behalf. gen-roller-derby.mjs
-// is a different case, unaffected by that deletion: it has no instalments()
-// copy at all, and its own moneyWhole()/moneyCents() feed its unrelated
-// money() helper (ruling #563's fix for SKU 9571, R700.01) -- no ruling
-// touches gen-roller-derby.mjs's helpers.
+// MONEY MATHS IS DIFFERENT FROM THE HELPERS ABOVE (ruling #573): T14 landed
+// the canonical instalments(), moneyWhole() and moneyCents() in
+// DEMO/assets/pdp.js, and this generator IMPORTS them rather than defining
+// its own fourth copy. gen-home.mjs's own instalments() copy has now been
+// DELETED by T15 (this task) and replaced with an import from pdp.js, per
+// ruling #573's singular instruction ("T15 deletes gen-home.mjs's copy" --
+// see gen-home.mjs's own header for the discharged obligation and #587's
+// matching comment fix). gen-home.mjs's own moneyWhole()/moneyCents() copies
+// remain local -- #573 never ruled on those two, so deleting them as well
+// would be unrequested scope; the asymmetry is recorded in PRODUCT.md for
+// the owner rather than resolved here. gen-roller-derby.mjs is a different
+// case, unaffected by any of this: it has no instalments() copy at all, and
+// its own moneyWhole()/moneyCents() feed its unrelated money() helper
+// (ruling #563's fix for SKU 9571, R700.01) -- no ruling touches
+// gen-roller-derby.mjs's helpers.
 //
-// WHAT T15 (issue #33) INHERITS: T15 owns this generator as well as the
-// page. Its interactive half -- the size selector, the service checkboxes,
-// the buy sheet, both rails, the Q&A and the two CTAs -- lands as new
-// fragments in run() below, and its `<script type="module">` tag lands as
-// the last entry in the assembly array, exactly as gen-roller-derby.mjs
-// does it. Do NOT hand-edit aura-sky-100.html inside the marker pair: the
-// next regeneration wipes it (two such incidents are on record).
+// Do NOT hand-edit aura-sky-100.html inside the marker pair: the next
+// regeneration wipes it (two such incidents are on record).
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -51,6 +47,10 @@ import {
   moneyWhole,
   moneyCents,
 } from "../public/decks/mels-skate-shop/demo/assets/pdp.js";
+import {
+  stockState,
+  buildWhatsAppLink,
+} from "../public/decks/mels-skate-shop/demo/assets/site.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DEMO = join(__dirname, "..", "public", "decks", "mels-skate-shop", "demo");
@@ -122,11 +122,22 @@ function fact(manifest, id) {
 const IMG_ROOT = "/decks/mels-skate-shop/img";
 const PRODUCT_ID_AURA_SKY_100 = 11919;
 
+// Rail A -- "goes with this boot" (§6.3.11, build brief §7 measured fact E):
+// the 2 real Ice Blades SKUs (both out of stock, price 0 in the fixture) plus
+// the 4 real ice accessories that carry both a manifest.images[] row and an
+// img-alt.json entry -- no new image, no new alt entry (measured fact G).
+const RAIL_A_IDS = [6395, 6403, 4901, 7941, 9665, 12043];
+// Rail B -- "the Sky ladder" (§6.3.11): the three real boots, in ascending
+// order. 11919 is THIS page -- rendered present, never a link to itself.
+const RAIL_B_IDS = [11905, 11919, 11924];
+
 function run() {
   const draft = readJson("draft-copy.json");
   const manifest = readJson("manifest.json");
   const products = readJson("products.json");
   const altMap = readJson("img-alt.json");
+  const fittings = readJson("fittings.json");
+  const contact = readJson("contact.json");
 
   const pdp = draft.pdp;
   const shared = draft.shared;
@@ -147,6 +158,14 @@ function run() {
   const pjnFact = fact(manifest, "pjn-instalments");
   if (pjnFact.source !== "illustrative") {
     throw new Error(`gen-pdp: pjn-instalments fact is not source: "illustrative"`);
+  }
+  // Task 15's four chip ids (build brief §9) -- same #548 idiom: every chip
+  // this generator emits needs a real manifest twin, source "illustrative".
+  for (const id of ["heat-mould-price", "mail-in-heat-mould", "aura-size-stock-states", "demo-buy-button"]) {
+    const f = fact(manifest, id);
+    if (f.source !== "illustrative") {
+      throw new Error(`gen-pdp: ${id} fact is not source: "illustrative"`);
+    }
   }
 
   // -- 0. chip legend, first, above the first chip (the banner) -----------
@@ -271,6 +290,212 @@ ${specRowsHtml}
     <p class="note">${esc(pdp.specTableNote)}</p>
     <p class="source">Values sourced from Aura's own published size-and-width grid on melsskateshop.co.za.</p>`;
 
+  // -- 7. the fit note (§6.3.7) -- Melony's own voice, verbatim, no chip
+  // (manifest id copy-pdp-fit-note covers provenance; it is drafted copy,
+  // not a claim about the world). --------------------------------------------
+  const fitNoteHtml = `<p class="note">${esc(pdp.fitNote)}</p>`;
+
+  // -- 8. the size selector (§6.3.6, rulings #589/#590/#591(1)) --------------
+  // ONE run, 210-285, 16 buttons at 5 mm steps (#590) -- computed, never
+  // typed sixteen times. No men's/women's toggle: T14's spec table directly
+  // below already carries the per-panel split. The legend carries NO chip
+  // (#591(1) -- AC2's clause is struck, FROZEN_NINE has no legend id at all).
+  // The chip goes on the availability line's own wrapper -- an element that
+  // is ALWAYS rendered and ALWAYS visible, with the empty aria-live span
+  // nested inside it (build brief measured fact C / PRODUCT.md's named trap
+  // for this chip): a chip placed on the live region itself would carry a
+  // zero-size box on first paint (empty element, group 11 assertion D) and
+  // fail on a clean load before anyone clicks anything.
+  const SIZE_RUN_MM = Array.from({ length: 16 }, (_, i) => 210 + i * 5);
+  const sizeButtonsHtml = SIZE_RUN_MM.map(
+    (mm) =>
+      `        <button type="button" class="size" data-pdp-size="${mm}" aria-pressed="false">${mm}<small>mm</small></button>`
+  ).join("\n");
+
+  const sizesHtml = `<fieldset class="sizes" data-pdp-sizes>
+      <legend>${esc(pdp.sizes.legend)}</legend>
+${sizeButtonsHtml}
+    </fieldset>
+    <p class="availability"${chip("aura-size-stock-states")}>
+      <span aria-live="polite" data-pdp-availability></span>
+    </p>
+    <p class="field__hint">${esc(pdp.sizes.hint)} <a class="link--quiet" href="/decks/mels-skate-shop/demo/size-finder?preset=ice-aura">${esc(pdp.sizes.notSureLink)}</a></p>
+    <p class="note">${esc(pdp.sizes.brannockNote)}</p>`;
+
+  // -- 9. the services -- two chipped checkboxes with a running total
+  // (§6.3.9, build brief §5/measured fact D). Prices read from fittings.json
+  // services[].priceCents, NEVER parsed out of a manifest prose sentence
+  // (that fixture only carries the numbers inside English text) and NEVER
+  // hand-typed. The `confirm` flag on mail-in-heat-mould is manifest-only
+  // and renders NOTHING here (#578). --------------------------------------
+  const SERVICE_COPY = {
+    "heat-mould-in-store": {
+      label: pdp.services.heatMouldInStoreLabel,
+      note: pdp.services.heatMouldInStoreNote,
+      chipId: "heat-mould-price",
+    },
+    "mail-in-heat-mould": {
+      label: pdp.services.mailInLabel,
+      note: pdp.services.mailInNote,
+      chipId: "mail-in-heat-mould",
+    },
+  };
+  const serviceRowsHtml = fittings.services
+    .map((svc) => {
+      const copy = SERVICE_COPY[svc.key];
+      if (!copy) throw new Error(`gen-pdp: fittings.json services[] has an unexpected key "${svc.key}"`);
+      return `      <label class="check">
+        <input type="checkbox" data-pdp-service="${esc(svc.id)}" data-price-cents="${svc.priceCents}" />
+        <span>
+          <span${chip(copy.chipId)}>${esc(copy.label)} — ${esc(svc.priceLabel)}</span>
+          <span class="field__hint">${esc(copy.note)}</span>
+        </span>
+      </label>`;
+    })
+    .join("\n");
+
+  const servicesHtml = `<fieldset data-pdp-services data-pdp-base-cents="${cents}">
+      <legend class="field__label">${esc(pdp.services.legend)}</legend>
+${serviceRowsHtml}
+    </fieldset>
+    <p class="note">${esc(pdp.services.priceSourceNote)}</p>
+    <p class="price" data-pdp-total><span class="field__label">${esc(pdp.services.totalLabel)}:</span> <span data-pdp-total-amount>${moneyWhole(cents)}</span></p>`;
+
+  // -- 10. fulfilment, buy button, demo sheet (§6.3.10) -- the courier line
+  // is a REFERENCE (contact.json#courier.line), resolved here, never
+  // hand-typed twice. Escape/focus-trap/focus-return come from the native
+  // <dialog> (site.css's own comment on dialog.sheet); the wiring is
+  // assets/pdp.js's initPdp(). No dead end: the sheet always offers the
+  // WhatsApp CTA and a close control (pdp.demoSheet.dismiss). --------------
+  // Adjudication fix: pdp.demoSheet.body promises "your selected size is
+  // already in it", which was false whenever the sheet was reachable with no
+  // size chosen (the composed WhatsApp message then carried no size at all).
+  // The buy button is baked `disabled` and pdp.js's initPdp() only enables it
+  // once a size is selected, so the sheet is never reachable in the state the
+  // copy claims doesn't exist. This is the house .btn[disabled] treatment
+  // (site.css), not a new pattern, and changes no fixture/copy string.
+  const fulfilmentHtml = `<p class="note">${esc(pdp.fulfilment.text)} ${esc(contact.courier.line)}</p>
+    <button type="button" class="btn btn--primary btn--block" data-pdp-buy${chip("demo-buy-button")} disabled>${esc(pdp.buyButtonLabel)}</button>
+
+    <dialog class="sheet" data-pdp-sheet aria-labelledby="pdp-sheet-title">
+      <h2 class="sheet__title" id="pdp-sheet-title">${esc(pdp.demoSheet.title)}</h2>
+      <p class="sheet__body">${esc(pdp.demoSheet.body)}</p>
+      <div class="sheet__foot">
+        <a class="btn btn--primary" data-pdp-sheet-cta href="${esc(buildWhatsAppLink(contact.whatsapp.number, `Hi Melony, I'd like to order the ${product.name}.`))}" target="_blank" rel="noopener">${esc(pdp.demoSheet.cta)}</a>
+        <button type="button" class="btn btn--ghost" data-pdp-sheet-dismiss>${esc(pdp.demoSheet.dismiss)}</button>
+      </div>
+    </dialog>`;
+
+  // -- 11. the rails (§6.3.11) -- Rail A ships images (all 6 candidates
+  // already have a manifest.images[] row and an img-alt.json entry -- no new
+  // image, no new alt entry, measured fact G). Rail B is text-only: no photo
+  // exists for the Sky 50 or the Sky 200, and reusing the Sky 100's own
+  // aura-boot.webp for either would be a false image claim. No ladder price
+  // typed here -- every money string comes from products.json through
+  // moneyWhole(). ------------------------------------------------------------
+  function railAPriceHtml(p) {
+    const priceNum = Number(p.prices.price);
+    if (!Number.isFinite(priceNum) || priceNum === 0) return ""; // no price where the fixture has none (measured fact E, 6395/6403)
+    const range = p.prices.price_range;
+    if (range && Number(range.max_amount) > Number(range.min_amount)) {
+      // 4901 carries a price_range wider than its single `price` (measured
+      // fact E) -- "From <min>" is honest about the top of the range never
+      // being claimed as the whole story; a flat "R330" would under-claim it.
+      return `<p class="price">From ${moneyWhole(Number(range.min_amount))}</p>`;
+    }
+    return `<p class="price">${moneyWhole(priceNum)}</p>`;
+  }
+
+  const railACardsHtml = RAIL_A_IDS.map((id) => {
+    const p = products.products.find((x) => x.id === id);
+    if (!p) throw new Error(`gen-pdp: products.json has no product with id ${id}`);
+    const file = `product-${id}.webp`;
+    if (!imagesByFile.has(file)) {
+      throw new Error(`gen-pdp: manifest.images has no entry for "${file}"`);
+    }
+    const alt = altMap[file];
+    if (!alt) throw new Error(`gen-pdp: img-alt.json is missing an entry for "${file}"`);
+    const state = stockState(p);
+    const badgeClass = state === "Sold out" ? "badge--sold-out" : "badge--in-stock";
+    return `      <li class="card">
+        <div class="card__media">
+          <img src="${IMG_ROOT}/${file}" alt="${esc(alt)}" />
+        </div>
+        <p class="card__title">${esc(p.name)}</p>
+        ${railAPriceHtml(p)}
+        <p class="badge ${badgeClass}">${esc(state)}</p>
+      </li>`;
+  }).join("\n");
+
+  const railAHtml = `<section class="rail">
+      <h2 class="rail__title">${esc(pdp.railA)}</h2>
+      <ul class="grid">
+${railACardsHtml}
+      </ul>
+    </section>`;
+
+  const railBCardsHtml = RAIL_B_IDS.map((id) => {
+    const p = products.products.find((x) => x.id === id);
+    if (!p) throw new Error(`gen-pdp: products.json has no product with id ${id}`);
+    const priceNum = Number(p.prices.price);
+    const isThisPage = id === PRODUCT_ID_AURA_SKY_100;
+    return `      <li class="card card--flat">
+        <p class="card__title">${esc(p.name)}</p>
+        <p class="price">${moneyWhole(priceNum)}</p>
+        ${isThisPage ? '<p class="fine">You are on this page.</p>' : ""}
+      </li>`;
+  }).join("\n");
+
+  const railBHtml = `<section class="rail">
+      <h2 class="rail__title">${esc(pdp.railB)}</h2>
+      <ul class="grid">
+${railBCardsHtml}
+      </ul>
+    </section>`;
+
+  // -- 12. Q&A (§6.3.12) -- three pairs, verbatim, no chip. The third quotes
+  // the Fit Guarantee terms T14 already ships (shared.fitGuarantee.terms). --
+  const qa = pdp.qa;
+  const qaHtml = `<div class="qa">
+      <p class="qa__q">${esc(qa[0].q)}</p>
+      <p class="qa__a">${esc(qa[0].a)}</p>
+    </div>
+    <div class="qa">
+      <p class="qa__q">${esc(qa[1].q)}</p>
+      <p class="qa__a">${esc(qa[1].a)}</p>
+    </div>
+    <div class="qa">
+      <p class="qa__q">${esc(qa[2].q)}</p>
+      <p class="qa__a">${esc(qa[2].a)}</p>
+      <ul>
+        <li>${esc(fg.terms[0])}</li>
+        <li>${esc(fg.terms[1])}</li>
+        <li>${esc(fg.terms[2])}</li>
+      </ul>
+      <p class="qa__a">${esc(qa[2].aAfter)}</p>
+    </div>`;
+
+  // -- 13. the two CTAs (§6.3.13) -- "Ask Melony" is wired live by pdp.js
+  // (carries the selected size once one is picked); baked here with the
+  // product-only message so the link works before any JS runs. "View on the
+  // live site" points at product.permalink, which is byte-identical to
+  // manifest.links[5]'s already-vouched href (build brief measured fact F --
+  // do NOT add a second manifest.links row for it). --------------------------
+  const initialAskWhatsappHref = buildWhatsAppLink(
+    contact.whatsapp.number,
+    `Hi Melony, I have a question about the ${product.name}.`
+  );
+  const ctasHtml = `<div class="btn-row">
+      <a class="btn btn--secondary" data-pdp-ask-whatsapp href="${esc(initialAskWhatsappHref)}">${esc(pdp.ctaWhatsapp)}</a>
+      <a class="btn btn--ghost" href="${esc(product.permalink)}">${esc(pdp.ctaLiveSite)}</a>
+    </div>`;
+
+  // -- 14. the module script -- last, inside the marker block, deferred, and
+  // ROOT-ABSOLUTE (the /decks/mels-skate-shop/demo trailing-slash trap --
+  // gen-home.mjs:150-152's own comment names it). This is the page's FIRST
+  // <script> tag. -------------------------------------------------------------
+  const scriptHtml = `<script type="module" src="/decks/mels-skate-shop/demo/assets/pdp.js"></script>`;
+
   // -- assemble -------------------------------------------------------------
   const mainHtml = [
     legendHtml,
@@ -280,10 +505,19 @@ ${specRowsHtml}
     priceHtml,
     fitGuaranteeHtml,
     specTableHtml,
+    fitNoteHtml,
+    sizesHtml,
+    servicesHtml,
+    fulfilmentHtml,
+    railAHtml,
+    railBHtml,
+    qaHtml,
+    ctasHtml,
+    scriptHtml,
   ].join("\n\n    ");
 
   const wrappedHtml = `<section class="section">
-      <div class="wrap pdp">
+      <div class="wrap pdp" data-pdp data-pdp-product-name="${esc(product.name)}" data-pdp-whatsapp-number="${esc(contact.whatsapp.number)}">
         ${mainHtml}
       </div>
     </section>`;
@@ -295,7 +529,7 @@ ${specRowsHtml}
   html = spliceBetweenMarkers(html, "<!-- main:pdp -->", "<!-- /main:pdp -->", `    ${wrappedHtml}`, "aura-sky-100.html");
   writeFileSync(filePath, html);
 
-  console.log("gen-pdp: rendered Aura Sky 100 PDP (static half) into aura-sky-100.html");
+  console.log("gen-pdp: rendered Aura Sky 100 PDP into aura-sky-100.html");
   console.log(`gen-pdp: price = ${moneyWhole(cents)}, first instalment = ${moneyCents(first)}`);
 }
 
