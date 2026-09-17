@@ -26,8 +26,203 @@
   <!-- /shared:header -->
 
   <main id="main" class="page__main">
-    <h1>Roller Derby hub</h1>
-    <p>Stub — screen built in a later task.</p>
+    <!-- main:derby -->
+    <p class="chip-legend" id="chip-legend">'proposed' marks something we're suggesting. Mel hasn't published it, and this demo won't pretend she has.</p>
+
+    <section class="section">
+      <div class="wrap">
+        <p class="source">Roller derby</p>
+        <h1>Derby, from a shop that was the first one here</h1>
+        <p class="lede">Derby is where this shop started: we were the first roller derby shop to open in South Africa, and Roadhouse Roller Rink still names us its recommended shop. Eight products sit under Roller Derby itself, but the derby kit is spread across the shop — 27 protective sets, 38 wheels and bearings lines, 17 toe stops and jam plugs. The question is almost never which shop. It is which boot fits your foot, which plate fits that boot, and which wheels suit the floor you actually skate on. Work it in that order, and tell us what you skate: we will go through it with you.</p>
+      </div>
+    </section>
+
+    <section class="section" data-derby-filters>
+      <div class="wrap">
+        <fieldset class="sizes">
+      <legend>Where are you in this?</legend>
+      <button class="btn" type="button" data-derby-card="starting" aria-pressed="false">Starting derby — complete sets</button>
+      <button class="btn" type="button" data-derby-card="upgrading" aria-pressed="false">Upgrading — boots &amp; plates</button>
+      <button class="btn" type="button" data-derby-card="wheels" aria-pressed="false">Wheels: rink vs tarmac</button>
+      <button class="btn" type="button" data-derby-card="protective" aria-pressed="false">Protective sets (league-required)</button>
+      <button class="btn" type="button" data-derby-card="toestops" aria-pressed="false">Toe stops &amp; jam plugs</button>
+      <button class="btn" type="button" data-derby-toggle aria-pressed="true">In stock only</button>
+    </fieldset>
+    <p class="fine">On by default. Turn it off to see what we can look at bringing in for you.</p>
+        <p class="price__instalment" data-illustrative="pjn-instalments" aria-describedby="chip-legend">PayJustNow lets you split any product on this page into 3 interest-free instalments, at 0%, once Mel is onboarded.</p>
+        <p class="live live--result" aria-live="polite" data-derby-count></p>
+    <p class="fine">This line is a template. It stays empty until a filter or the toggle actually changes something, so nothing is announced before it is true.</p>
+        <ul class="grid" data-derby-grid>
+      <li class="card" data-derby-set="starting" data-derby-buyable="true">
+        <div class="card__media">
+          <img src="/decks/mels-skate-shop/img/product-2925.webp" alt="Chaya Ruby quad skate, low-cut black boot on a black plate with red wheels and a black toe stop" />
+        </div>
+        <h3 class="card__title">Chaya Ruby Hard Skates</h3>
+        <p class="price" data-price="200000">R2,000</p>
+        <p><span class="badge badge--in-stock">In stock · ships in 1-3 days</span></p>
+      </li>
+      <li class="card" data-derby-set="starting" data-derby-buyable="true">
+        <div class="card__media">
+          <img src="/decks/mels-skate-shop/img/product-3726.webp" alt="Riedell R3 Derby quad skate, black boot with red laces, red wheels and a black toe stop" />
+        </div>
+        <h3 class="card__title">Riedell R3 Derby</h3>
+        <p class="price" data-price="287500">R2,875</p>
+        <p><span class="badge badge--in-stock">In stock · ships in 1-3 days</span></p>
+      </li>
+      <li class="card" data-derby-set="upgrading" data-derby-buyable="true">
+        <div class="card__media">
+          <img src="/decks/mels-skate-shop/img/product-5030.webp" alt="Sure-Grip Phoenix quad skate boot in navy with a white heel panel and white laces, boot only with no plate" />
+        </div>
+        <h3 class="card__title">Sure-Grip Phoenix Quad skate boot size 7 USA men(fit SA size 6)</h3>
+        <p class="price" data-price="250000">R2,500</p>
+        <p><span class="badge badge--in-stock">In stock · ships in 1-3 days</span></p>
+      </li>
+      <li class="card" data-derby-set="starting" data-derby-buyable="true">
+        <div class="card__media">
+          <img src="/decks/mels-skate-shop/img/product-5194.webp" alt="Sure-Grip Rebel derby quad skate, low-cut black boot on a black plate with red Titan wheels" />
+        </div>
+        <h3 class="card__title">Sure-Grip Rebel Derby Roller Skates with Titan 92a wheels</h3>
+        <p class="price" data-price="270000">R2,700</p>
+        <p><span class="badge badge--in-stock">In stock · ships in 1-3 days</span></p>
+      </li>
+      <li class="card" data-derby-set="starting" data-derby-buyable="true">
+        <div class="card__media">
+          <img src="/decks/mels-skate-shop/img/product-7696.webp" alt="Chaya Ruby derby quad skate, black boot on a black plate with red wheels and a black toe stop" />
+        </div>
+        <h3 class="card__title">Chaya Ruby Roller Derby Skate</h3>
+        <p class="price" data-price="260000">R2,600</p>
+        <p><span class="badge badge--in-stock">In stock · ships in 1-3 days</span></p>
+      </li>
+      <li class="card" data-derby-set="upgrading" data-derby-buyable="true">
+        <div class="card__media">
+          <img src="/decks/mels-skate-shop/img/product-7827.webp" alt="Sure-Grip Avanti quad plate on its own in polished aluminium, with coloured cushions and axles fitted and no boot" />
+        </div>
+        <h3 class="card__title">Sure-Grip Avanti Plate size 3</h3>
+        <p class="price" data-price="200000">R2,000</p>
+        <p><span class="badge badge--in-stock">In stock · ships in 1-3 days</span></p>
+      </li>
+      <li class="card" data-derby-set="starting" data-derby-buyable="true">
+        <div class="card__media">
+          <img src="/decks/mels-skate-shop/img/product-10351.webp" alt="Riedell R3 roller skate in black, boot mounted on its plate with wheels and a toe stop fitted" />
+        </div>
+        <h3 class="card__title">Riedell R3 Black Roller Skate Set</h3>
+        <p class="price" data-price="380000">R3,800</p>
+        <p><span class="badge badge--in-stock">In stock · ships in 1-3 days</span></p>
+      </li>
+      <li class="card" data-derby-set="protective" data-derby-buyable="true">
+        <div class="card__media">
+          <img src="/decks/mels-skate-shop/img/product-2923.webp" alt="REKD Heavy Duty triple pad set in black: wrist guards, elbow pads and knee pads" />
+        </div>
+        <h3 class="card__title">REKD Heavy Duty Triple pad set</h3>
+        <p class="price" data-price="69000">R690</p>
+        <p><span class="badge badge--in-stock">In stock · ships in 1-3 days</span></p>
+      </li>
+      <li class="card" data-derby-set="protective" data-derby-buyable="false" hidden>
+        <div class="card__media">
+          <img src="/decks/mels-skate-shop/img/product-7111.webp" alt="187 Lizzie Armanto six-pack of pads in cream, black and orange: knee pads, elbow pads and wrist guards" />
+        </div>
+        <h3 class="card__title">187 Lizzie Armanto Pad Six Pack</h3>
+        <p class="price" data-price="140000">R1,400</p>
+        <p><span class="badge badge--sold-out">Sold out</span></p>
+        <p class="card__foot fine">Sold out is not a dead end. Tell us when you need it and we will tell you honestly whether we can get it there in time.</p>
+        <p><a class="btn btn--secondary" href="https://wa.me/27823706771?text=Tell%20us%20your%20deadline%20--%20187%20Lizzie%20Armanto%20Pad%20Six%20Pack">Tell us your deadline</a></p>
+      </li>
+      <li class="card" data-derby-set="protective" data-derby-buyable="true">
+        <div class="card__media">
+          <img src="/decks/mels-skate-shop/img/product-11847.webp" alt="Wintersweet protection set in navy and orange, six pieces: knee pads, elbow pads and wrist guards" />
+        </div>
+        <h3 class="card__title">Wintersweet Protection Set</h3>
+        <p class="price" data-price="37000">R370</p>
+        <p><span class="badge badge--in-stock">In stock · ships in 1-3 days</span></p>
+      </li>
+      <li class="card" data-derby-set="wheels" data-derby-buyable="true">
+        <div class="card__media">
+          <img src="/decks/mels-skate-shop/img/product-4368.webp" alt="Radar Presto quad wheel, yellow urethane on a pale hub, 59mm x 38mm printed on the side" />
+        </div>
+        <h3 class="card__title">Radar Presto 59mm x 38mm Yellow 91a- 4 pack</h3>
+        <p class="price" data-price="97300">R973</p>
+        <p><span class="badge badge--in-stock">In stock · ships in 1-3 days</span></p>
+      </li>
+      <li class="card" data-derby-set="wheels" data-derby-buyable="false" hidden>
+        <div class="card__media">
+          <img src="/decks/mels-skate-shop/img/product-8159.webp" alt="Radar Energy quad wheel in translucent blue with ENERGY moulded around the side" />
+        </div>
+        <h3 class="card__title">Radar Energy 57mm, 78a Clear blue</h3>
+        <p class="price" data-price="60000">R600</p>
+        <p><span class="badge badge--sold-out">Sold out</span></p>
+        <p class="card__foot fine">Sold out is not a dead end. Tell us when you need it and we will tell you honestly whether we can get it there in time.</p>
+        <p><a class="btn btn--secondary" href="https://wa.me/27823706771?text=Tell%20us%20your%20deadline%20--%20Radar%20Energy%2057mm%2C%2078a%20Clear%20blue">Tell us your deadline</a></p>
+      </li>
+      <li class="card" data-derby-set="wheels" data-derby-buyable="false" hidden>
+        <div class="card__media">
+          <img src="/decks/mels-skate-shop/img/product-9565.webp" alt="Riedell Sonar Riva quad wheel in black with a blue printed band and an open core" />
+        </div>
+        <h3 class="card__title">Riedell Sonar Riva Wheels Black</h3>
+        <p class="price" data-price="70000">R700</p>
+        <p><span class="badge badge--sold-out">Sold out</span></p>
+        <p class="card__foot fine">Sold out is not a dead end. Tell us when you need it and we will tell you honestly whether we can get it there in time.</p>
+        <p><a class="btn btn--secondary" href="https://wa.me/27823706771?text=Tell%20us%20your%20deadline%20--%20Riedell%20Sonar%20Riva%20Wheels%20Black">Tell us your deadline</a></p>
+      </li>
+      <li class="card" data-derby-set="toestops" data-derby-buyable="true">
+        <div class="card__media">
+          <img src="/decks/mels-skate-shop/img/product-9571.webp" alt="Riedell Superball long toe stop in natural gum rubber, shown face-on and from the side so the stem is visible" />
+        </div>
+        <h3 class="card__title">Riedell Superball Toestop Long</h3>
+        <p class="price" data-price="70001">R700.01</p>
+        <p><span class="badge badge--in-stock">In stock · ships in 1-3 days</span></p>
+      </li>
+      <li class="card" data-derby-set="toestops" data-derby-buyable="false" hidden>
+        <div class="card__media">
+          <img src="/decks/mels-skate-shop/img/product-9656.webp" alt="A pair of Rio Roller toe stops in black" />
+        </div>
+        <h3 class="card__title">Rio Roller Black Stoppers</h3>
+        <p class="price" data-price="25000">R250</p>
+        <p><span class="badge badge--sold-out">Sold out</span></p>
+        <p class="card__foot fine">Sold out is not a dead end. Tell us when you need it and we will tell you honestly whether we can get it there in time.</p>
+        <p><a class="btn btn--secondary" href="https://wa.me/27823706771?text=Tell%20us%20your%20deadline%20--%20Rio%20Roller%20Black%20Stoppers">Tell us your deadline</a></p>
+      </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section section--sunken">
+      <div class="wrap">
+        <h2>FAQ</h2>
+      <div class="qa">
+        <p class="qa__q">What size am I?</p>
+        <p class="qa__a">Measure, do not guess. Heel to wall, standing, both feet, and use the larger one — the Size Finder walks you through it and gives you the size in the brand's own scale. Two honest warnings. Brands differ by 1-2 full sizes for the same foot, so a number off a chart is a starting point, not a fitting. And our size chart carries no table at all for Riedell or Sure-Grip, which are brands a derby skater may well end up in. For those, send us the measurement on WhatsApp and we size you by hand.</p>
+      </div>
+      <div class="qa">
+        <p class="qa__q">Which plate size for my boot?</p>
+        <p class="qa__a">Plates are sized by wheelbase — axle to axle — against the boot, not by your shoe size. We publish the Pilot F-16 chart on our size chart page: plate sizes 5.0 to 8.5, mapped onto Q-4/Q-6, F-1 and Jackson boot sizes, with plate lengths from 218 mm to 309 mm. Check the size with us before you order. For Roll-Line there is no plate-to-boot table published anywhere we could find, so that one is a WhatsApp conversation: send us the boot and its size and we work it out with you.</p>
+      </div>
+      <div class="qa">
+        <p class="qa__q">What wheel hardness do I want for Roadhouse versus tarmac?</p>
+        <p class="qa__a">The principle first, because the principle is the part that is always true. A softer compound grips and absorbs, which is what a rough outdoor surface takes out of you; a harder compound slides and rolls faster, which is what a smooth indoor floor rewards. What we will not do is put a number on this page. The right hardness for the floor at Roadhouse, and for the stretch of tarmac outside your house, depends on that surface, on your weight and on how you skate — and it is Melony who confirms it, not a chart. Tell us where you skate and what you weigh, on WhatsApp, and we will pick the set with you.</p>
+      </div>
+      <div class="qa">
+        <p class="qa__q">What does a league kit list need?</p>
+        <p class="qa__a">The standard derby set is six things: skates, helmet, knee pads, elbow pads, wrist guards and a mouthguard. We carry 27 protective sets, and we would rather build the kit with you than hand you a list — we will tell you straight what we hold and what we bring in. Four South African leagues are running that we know of: Golden City Rollers, Durban Roller Derby, Cape Town Rollergirls and P-Town Roller Derby. What each one requires we are not going to guess at. Per-league kit lists are coming in the build; until then, tell us which league you are joining and we will work through it with you.</p>
+      </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <p class="note"><span class="badge badge--evidence">Recommended shop</span> — <a href="https://roadhouserollerrink.co.za/">Roadhouse Roller Rink · Eastgate, Bedfordview</a></p>
+        <p class="note">Kit lists for Golden City Rollers, Durban Roller Derby, Cape Town Rollergirls, P-Town — coming in the build <a href="https://wa.me/27823706771">Ask us on WhatsApp</a></p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <p class="note"><a href="/decks/mels-skate-shop/demo/size-finder?preset=derby">Derby size guide</a> — Opens the Size Finder already set to derby.</p>
+        <p class="note">There is one product page in this build, on the ice side of the shop. <a href="/decks/mels-skate-shop/demo/aura-sky-100">See the Aura Sky 100 product page</a></p>
+      </div>
+    </section>
+
+    <script type="module" src="/decks/mels-skate-shop/demo/assets/site.js"></script>
+    <!-- /main:derby -->
   </main>
 
   <!-- shared:contact -->

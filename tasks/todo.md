@@ -31,8 +31,8 @@
 
 ## Phase 5: Screens
 
-- [ ] Task 12: Home (§6.1, items 1-7) — M · sonnet · deps: 11
-- [ ] Task 13: Roller Derby hub (§6.2) + in-stock toggle and filters (group 7) — M · sonnet · deps: 12
+- [x] Task 12: Home (§6.1, items 1-7) — M · sonnet · deps: 11
+- [x] Task 13: Roller Derby hub (§6.2) + in-stock toggle and filters (group 7) — M · sonnet · deps: 12
 - [ ] Task 14: Aura PDP part A — banner, gallery, price, instalments, Fit Guarantee, spec table — M · sonnet · deps: 13 *(fixed: was 12, breaking the strict-serial chain)*
 - [ ] Task 15: Aura PDP part B — sizes, services, buy sheet, rails, Q&A + group 6 — M · sonnet · deps: 14
 - [ ] CHECKPOINT: three screens up — groups 1-4, 6-11 pass (group 6 lands with task 15); instalments sums exactly; nothing hard-coded in HTML

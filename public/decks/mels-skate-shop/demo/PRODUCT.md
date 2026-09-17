@@ -427,13 +427,46 @@ rather than left in a code comment. Both were found by T12's provenance review, 
   with `#`, so a cross-page `...#fit-guarantee` takes the internal branch and the fragment is never
   checked. The PDP will 200 without it and the link will silently go nowhere. `scripts/gen-home.mjs`
   (the `ROUTE_AURA_PDP_FIT_GUARANTEE` constant) points here.
-- **T13 or T17 owes group 11's stdout a correction.** `scripts/verify-mels-demo.mjs`:984 hard-codes
-  `D: every real observed chip visible (vacuous until T12)`, and the group-header comment says the
-  same. That is stale as of T12: the group now observes two real chips (`fit-guarantee`,
-  `pjn-instalments`) and assertion D genuinely verifies both have non-zero boxes, so the line
-  contradicts itself in the evidence pasted into PRs. T12 deliberately did not fix it — that file
-  belongs to T11 and is on T12's prohibition list. Make D report the observed count and delete the
-  two "vacuous until T12" lines.
+- **DISCHARGED by T13.** `scripts/verify-mels-demo.mjs`'s group 11 stdout hard-coded
+  `D: every real observed chip visible (vacuous until T12)` at three sites (not two — this passage
+  itself undercounted; one of the three does not contain the word "vacuous" and a `vacuous`-only
+  grep would have fixed two and silently left the third). T13 corrected all three by hand and made
+  assertion D's detail report the observed chip-element count instead of a static phrase.
+
+## What T14+ inherits from the Roller Derby hub (T13)
+
+- **The derby hub is the second link this build owes.** T14 must add `id="fit-guarantee"` on the
+  Aura PDP for Home's link (above) to land on anything; T13 also points a plain `.note` link at
+  `/decks/mels-skate-shop/demo/aura-sky-100` (no fragment) so the hub is not a dead end either
+  (#547/#567). Neither PDP anchor exists yet — the PDP is still a stub until T14 — so both links
+  currently 200 into an empty page, which is expected and not a defect at this point in the build.
+- **`site.js` now has DOM wiring.** `initDerbyFilters()` is guarded behind
+  `typeof document !== "undefined"` and queries `[data-derby-filters]`; a page with no derby grid
+  (T16's Size Finder, T17's Book a fitting) safely finds no root and does nothing. T17's floating
+  WhatsApp button work lands in the same guarded region of this file, not a new module.
+- **`site.css` gained no new rules.** The filter bar reuses `.sizes`'s existing fieldset reset
+  (border:0, flex-wrap) rather than a new class, and no card-image width CSS was added — see the
+  measurement below.
+- **Card image widths were measured at 390 px and left alone.** Seven of the fifteen grid images
+  are under 800 px against eight at 800–1200 px; `img { max-width: 100%; height: auto }` (no
+  `width` declaration) already bounds every one of them to its own manifest width inside the
+  one-column grid, so the raggedness is real but did not cross into a group-9 failure. If a later
+  task wants a uniform media box, the one gate-legal shape is a fixed-height `.card__media` that
+  centres the image without ever setting its `width` (see `verify-mels-demo.mjs`'s group 9
+  comment) — a `width: 100%` rule or an `object-fit` media box both fail it.
+- **A chip must never sit inside a subtree a filter can hide.** Group 11 assertion D fails any
+  `[data-illustrative]` element where `el.hasAttribute("hidden") || el.getClientRects().length ===
+  0` — that is the entire reason T13 collapsed eleven per-card instalment chips into one
+  section-level chip above the grid (#557) instead of one per card. `aura-size-stock-states`
+  (manifest.facts, `source: "illustrative"`) is a live trap for T15: if its PDP chip is placed
+  inside a size- or service-gated panel that can be hidden by a selection, assertion D fails the
+  moment that panel is hidden with the chip still mounted.
+- **Three spec overrides are live and `docs/specs/mels-skate-shop-pitch.md` does not reflect
+  them.** A later builder reading the spec, not this file, will "repair" them back: 6.2.1's
+  decision-card 5 label is "Toe stops & jam plugs", not the spec's original wording (#554); 6.2.3's
+  per-card instalment line is gone in favour of the one section-level chip above (#557, same
+  constraint as the previous bullet); 6.2.5's buying-guide link does not exist and
+  `manifest.links[11].href` is `null` (#559).
 
 ## What is still open for the owner
 
@@ -451,14 +484,17 @@ rather than left in a code comment. Both were found by T12's provenance review, 
   page's one `.chip-legend` — but neither is a substitute for opening the demo on a real iPhone
   with VoiceOver on and confirming the word "proposed" is reachable. **That spot-check is an owner
   action, not something this build can close.**
-- **The canonical header at 390 px.** Measured, not estimated: the §6.0b five-link nav needs about
-  519 px of run (five labels at 14 px plus their padding and gaps) against a 358 px content box,
-  so it cannot be one row on a phone. It wraps to two clean rows — every link keeps its 44 px tap
-  height and `document.documentElement.scrollWidth === window.innerWidth === 390`, so nothing
-  overflows — but the header then costs **168 px** of an 844 px screen before any content. The
-  alternative, a single-row horizontal scroll strip, was rejected because it pushes the WhatsApp
-  CTA off-screen, which is worse for this pitch than a tall header. If the owner wants the first
-  screenful back, the lever is dropping a nav item in Task 8, not restyling in a screen task.
+- **The canonical header at 390 px — the 519 px / 168 px figures below are WITHDRAWN (#547/#565).**
+  A previous pass of this file described the §6.0b nav needing "about 519 px of run (five labels at
+  14 px plus their padding and gaps)" and the header costing "168 px of an 844 px screen". Ruling
+  #547 refuted both numbers in writing: they describe a nav that never shipped. The tree that
+  actually landed carries a brand anchor plus exactly **four** `.site-header__link` anchors, not
+  five, so the 519 px run was never the real one. No replacement figure is asserted here — #547's
+  own finding is that the description was wrong, not what the correct number is. What IS still
+  true and gate-checked on every page: every link keeps its 44 px tap height and
+  `document.documentElement.scrollWidth === window.innerWidth === 390`, so nothing overflows,
+  whatever the header's actual measured height turns out to be. If the owner wants a header-height
+  number, that is a fresh measurement against the four-link tree, not a correction to this one.
 - **Font attribution depth.** `assets/fonts/OFL.txt` carries the full OFL 1.1 text plus each
   file's own copyright notice, version, weight axis and sha256, read out of the binaries. Upstream
   release notes and designer credits were not available offline and were deliberately not guessed.

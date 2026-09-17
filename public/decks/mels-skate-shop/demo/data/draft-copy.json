@@ -86,6 +86,7 @@
         "a": "The standard derby set is six things: skates, helmet, knee pads, elbow pads, wrist guards and a mouthguard. We carry 27 protective sets, and we would rather build the kit with you than hand you a list — we will tell you straight what we hold and what we bring in. Four South African leagues are running that we know of: Golden City Rollers, Durban Roller Derby, Cape Town Rollergirls and P-Town Roller Derby. What each one requires we are not going to guess at. Per-league kit lists are coming in the build; until then, tell us which league you are joining and we will work through it with you."
       }
     ],
+    "instalmentsNote": "PayJustNow lets you split any product on this page into 3 interest-free instalments, at 0%, once Mel is onboarded.",
     "filters": {
       "legend": "Where are you in this?",
       "cards": [
@@ -93,7 +94,7 @@
         "Upgrading — boots & plates",
         "Wheels: rink vs tarmac",
         "Protective sets (league-required)",
-        "Kids & smaller sizes"
+        "Toe stops & jam plugs"
       ],
       "inStockToggle": "In stock only",
       "inStockToggleNote": "On by default. Turn it off to see what we can look at bringing in for you.",
@@ -117,7 +118,9 @@
     },
     "links": {
       "sizeGuide": "Derby size guide",
-      "sizeGuideNote": "Opens the Size Finder already set to derby."
+      "sizeGuideNote": "Opens the Size Finder already set to derby.",
+      "pdpNote": "There is one product page in this build, on the ice side of the shop.",
+      "pdpLinkLabel": "See the Aura Sky 100 product page"
     }
   },
 

@@ -802,8 +802,12 @@ async function groupLinkCrawl(page, browser) {
 //      content's initial value is "normal" and computes to "none" only ON a
 //      pseudo-element, so it was 100% vacuous with no symptom in the output).
 //   D: every REAL observed chip is visible (non-hidden, non-zero box).
-//      Vacuous today -- zero real chips exist until T12 -- and that is
-//      expected; C is what bites at T11.
+//      Genuinely live as of T12 (Home's 5 chip elements) and widened by T13
+//      (the derby hub's 1 section-level chip) -- see the repair note in
+//      PRODUCT.md, "What the next tasks inherit from Home". Its detail
+//      string reports the observed element count rather than a static
+//      phrase, so a future task cannot leave a stale count behind the way
+//      this one was found.
 //
 // NO RATCHET, NO LOOSENING FLAG (#535): a ratchet only asserts "the number
 // did not go down since someone last edited this line" and costs six
@@ -854,6 +858,316 @@ function setDiff(a, b) {
   return [...a].filter((x) => !b.has(x));
 }
 
+// --- group 7 -----------------------------------------------------------
+// Derby hub (task 13, issue #31): the "In stock only" toggle + the five
+// mutually-exclusive decision cards narrow the grid; the "Showing N of M"
+// live region updates. THE ONLY GATE IN THIS SPINE THAT EVER INTERACTS WITH
+// A PAGE -- measured across the whole file before this group existed: zero
+// occurrences of .click(/.check(/.fill(/.type(/.press(/.tap(/.dispatchEvent(/
+// .selectOption(. A version of this group that only read the generator's
+// baked `hidden` attributes and never pressed a control would let a
+// completely broken click handler ship at exit 0. Precisely: assertions C,
+// D, E and I are click-driven throughout -- their expected values (the id
+// sets, the pressed count, the "Showing N of M" strings) are recomputed by
+// site.js's handlers, not by the generator. Assertions B, F, G and H (and
+// A's toggle-on half) are read once on page load, before any click --
+// exercised through a real browser render rather than a static file parse,
+// but for those five, nothing in site.js has mutated the DOM yet, so their
+// pre-click values equal the generator's own baked markup (confirmed by
+// scripts/gen-roller-derby.mjs's own comment on assertion A). K is checked
+// after every click below, never on load. A group that dropped every click
+// and read only the loaded page would still catch a malformed generator,
+// but would ship a broken click handler at exit 0 -- which is the risk this
+// group exists to close, and why C/D/E/I/K exist below.
+//
+// Expected id sets per decision card are the build brief §3.2 partition,
+// measured twice independently against products.json + manifest.images in
+// the main session: 15 SKUs, 5/2/3/3/2, pairwise disjoint, zero orphans.
+const DERBY_URL = `${DECK}/demo/roller-derby`;
+const DERBY_GRID_SELECTOR = "[data-derby-grid] > li";
+const DERBY_CARD_ID_SETS = {
+  starting: [2925, 3726, 5194, 7696, 10351],
+  upgrading: [5030, 7827],
+  wheels: [4368, 8159, 9565],
+  protective: [2923, 7111, 11847],
+  toestops: [9571, 9656],
+};
+
+function sortedIds(arr) {
+  return [...arr].sort((a, b) => a - b);
+}
+
+async function visibleGridIds(page) {
+  return page.$$eval(`${DERBY_GRID_SELECTOR}:not([hidden])`, (els) =>
+    els
+      .map((el) => {
+        const img = el.querySelector("img");
+        const m = img && (img.getAttribute("src") || "").match(/product-(\d+)\.webp/);
+        return m ? Number(m[1]) : null;
+      })
+      .filter((id) => id !== null)
+  );
+}
+
+// ASSERTION K's positive measurement: count how many of the six derby
+// controls (5 cards + toggle) are themselves buried -- either inside a
+// [hidden] ancestor, or laid out with zero client rects (display:none
+// without an explicit `hidden` attribute would still zero this out). This
+// replaces an earlier version of K that called `toggleButton.focus()`
+// immediately before reading `document.activeElement`: that forced refocus
+// onto a control that is never conditionally hidden, so the check could not
+// fail regardless of what regressed. Measured directly (adversarial review,
+// T13 fixer pass): even reading `document.activeElement` right after the
+// click that buries a focused control does not catch it either, because
+// hiding the focused element makes the browser blur it to <body> on its
+// own -- so this check must inspect the CONTROL ELEMENTS themselves, not
+// whichever element currently holds focus. Demonstrated failing: moving
+// `[data-derby-card="wheels"]` inside its own `[data-derby-set="wheels"]`
+// <li>, clicking it, then clicking a different card (which hides that <li>)
+// takes this from 0 to 1; the unmodified page holds it at 0 through every
+// state below.
+async function buriedControlCount(page) {
+  return page.$$eval("[data-derby-card], [data-derby-toggle]", (els) =>
+    els.filter((el) => el.closest("[hidden]") !== null || el.getClientRects().length === 0).length
+  );
+}
+
+async function groupDerbyFilters(page) {
+  const failures = [];
+  const details = [];
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(DERBY_URL, { waitUntil: "load" });
+
+  const liveRegion = page.locator("[data-derby-count]");
+  const toggleButton = page.locator("[data-derby-toggle]");
+
+  // ASSERTION B (part 1) + ASSERTION F (first paint) + ASSERTION G + a
+  // sanity count, all read from the loaded page BEFORE any click.
+  const loadCount = await page.locator(DERBY_GRID_SELECTOR).count();
+  if (loadCount !== 15) failures.push(`B: grid has ${loadCount} <li> on load, expected 15`);
+
+  const firstPaintText = ((await liveRegion.textContent()) ?? "").trim();
+  if (firstPaintText !== "") {
+    failures.push(`F: live region textContent on first paint was "${firstPaintText}", expected empty`);
+  }
+
+  const liveAttr = await liveRegion.getAttribute("aria-live");
+  if (liveAttr !== "polite") {
+    failures.push(`G: result region carries aria-live="${liveAttr}", expected the literal "polite"`);
+  }
+
+  // ASSERTION H -- every decision control (5 cards + the toggle) carries
+  // aria-pressed. Checked structurally at load; the click handlers below
+  // only ever set it to "true"/"false", never remove it, so this is an
+  // invariant, not a one-time snapshot.
+  const controlCount = await page.locator("[data-derby-card], [data-derby-toggle]").count();
+  if (controlCount !== 6) {
+    failures.push(`H: expected 6 derby controls (5 cards + toggle), found ${controlCount}`);
+  }
+  const controlsWithoutAriaPressed = await page.$$eval("[data-derby-card], [data-derby-toggle]", (els) =>
+    els.filter((el) => el.getAttribute("aria-pressed") !== "true" && el.getAttribute("aria-pressed") !== "false")
+      .map((el) => (el.textContent || "").trim())
+  );
+  for (const label of controlsWithoutAriaPressed) {
+    failures.push(`H: control "${label}" carries no aria-pressed`);
+  }
+
+  // ASSERTION A (part 1) -- toggle ON (default): every non-buyable card hidden.
+  const nonBuyableVisibleOnLoad = await page
+    .locator('[data-derby-set][data-derby-buyable="false"]:not([hidden])')
+    .count();
+  if (nonBuyableVisibleOnLoad !== 0) {
+    failures.push(`A: with the toggle on (default), ${nonBuyableVisibleOnLoad} non-buyable card(s) are visible`);
+  }
+  const buyableVisibleOnLoad = await page
+    .locator('[data-derby-set][data-derby-buyable="true"]:not([hidden])')
+    .count();
+  if (buyableVisibleOnLoad !== 11) {
+    failures.push(`sanity: ${buyableVisibleOnLoad} buyable card(s) visible on load, expected 11`);
+  }
+
+  // --- click 1: toggle OFF. Exercises the real handler, not baked markup. --
+  await toggleButton.click();
+
+  const gridAfterToggleOff = await page.locator(DERBY_GRID_SELECTOR).count();
+  if (gridAfterToggleOff !== 15) {
+    failures.push(`B: grid has ${gridAfterToggleOff} <li> with the toggle off, expected 15 (node count must stay constant)`);
+  }
+  const nonBuyableVisibleOff = await page
+    .locator('[data-derby-set][data-derby-buyable="false"]:not([hidden])')
+    .count();
+  if (nonBuyableVisibleOff !== 4) {
+    // ASSERTION A (part 2) -- toggle OFF: none is hidden.
+    failures.push(`A: with the toggle off, only ${nonBuyableVisibleOff} of 4 non-buyable card(s) are visible, expected all 4`);
+  }
+
+  const textAfterToggleOff = ((await liveRegion.textContent()) ?? "").trim();
+  if (textAfterToggleOff === "") {
+    failures.push(`F: live region is still empty after the first toggle press`);
+  }
+  if (textAfterToggleOff !== "Showing 15 of 15") {
+    failures.push(`I: no card + toggle off reads "${textAfterToggleOff}", expected "Showing 15 of 15"`);
+  }
+
+  // ASSERTION K (1 of 8 checkpoints) -- after the toggle-off click, none of
+  // the six controls is buried inside a hidden subtree.
+  const buriedAfterToggleOff = await buriedControlCount(page);
+  if (buriedAfterToggleOff !== 0) {
+    failures.push(`K: ${buriedAfterToggleOff} control(s) buried after the toggle-off click`);
+  }
+
+  // ASSERTION C -- with the toggle OFF (so the count is unaffected by
+  // buyability), each of the five decision cards narrows the grid to its
+  // exact, distinct, non-empty id set from the build brief's §3.2 table.
+  // "Distinct" is proven by exact-match against five pairwise-disjoint
+  // fixture sets, not re-derived here.
+  const cardKeysInOrder = Object.keys(DERBY_CARD_ID_SETS);
+  for (const key of cardKeysInOrder) {
+    await page.locator(`[data-derby-card="${key}"]`).click();
+    const visible = sortedIds(await visibleGridIds(page));
+    const expected = sortedIds(DERBY_CARD_ID_SETS[key]);
+    if (visible.length === 0) {
+      failures.push(`C: card "${key}" narrows the grid to an EMPTY set`);
+    } else if (JSON.stringify(visible) !== JSON.stringify(expected)) {
+      failures.push(`C: card "${key}" shows ids [${visible.join(",")}], expected [${expected.join(",")}]`);
+    }
+    const gridDuringCard = await page.locator(DERBY_GRID_SELECTOR).count();
+    if (gridDuringCard !== 15) {
+      failures.push(`B: grid has ${gridDuringCard} <li> with card "${key}" active, expected 15`);
+    }
+    // ASSERTION K (2-6 of 8 checkpoints) -- one per card button, individually
+    // -- none of the six controls is buried after THIS card's own click.
+    const buriedDuringCard = await buriedControlCount(page);
+    if (buriedDuringCard !== 0) {
+      failures.push(`K: ${buriedDuringCard} control(s) buried with card "${key}" active`);
+    }
+  }
+  // Clear the last-pressed card (press-again) before re-enabling the toggle,
+  // so the toggle-on assertions below start from the clean "no card" state.
+  await page.locator(`[data-derby-card="${cardKeysInOrder[cardKeysInOrder.length - 1]}"]`).click();
+
+  // --- click: toggle back ON. -----------------------------------------------
+  await toggleButton.click();
+  const gridAfterToggleOn = await page.locator(DERBY_GRID_SELECTOR).count();
+  if (gridAfterToggleOn !== 15) {
+    failures.push(`B: grid has ${gridAfterToggleOn} <li> after re-enabling the toggle, expected 15`);
+  }
+  const textNoCardToggleOn = ((await liveRegion.textContent()) ?? "").trim();
+  if (textNoCardToggleOn !== "Showing 11 of 15") {
+    // ASSERTION I (part 1) -- the literal string spec:119 prints.
+    failures.push(`I: no card + toggle on reads "${textNoCardToggleOn}", expected "Showing 11 of 15"`);
+  }
+
+  // ASSERTION K (7 of 8 checkpoints) -- after re-enabling the toggle.
+  const buriedAfterToggleOn = await buriedControlCount(page);
+  if (buriedAfterToggleOn !== 0) {
+    failures.push(`K: ${buriedAfterToggleOn} control(s) buried after re-enabling the toggle`);
+  }
+
+  // --- click: the Wheels card, toggle still ON. -----------------------------
+  await page.locator('[data-derby-card="wheels"]').click();
+
+  // ASSERTION E -- single-select: exactly one of the five CARD controls (the
+  // toggle is a separate binary control and is excluded from this count by
+  // design) carries aria-pressed="true".
+  const pressedCardCount = await page.locator('[data-derby-card][aria-pressed="true"]').count();
+  if (pressedCardCount !== 1) {
+    failures.push(`E: ${pressedCardCount} card control(s) carry aria-pressed="true" after pressing Wheels, expected exactly 1`);
+  }
+  const wheelsPressedIsWheels = await page.locator('[data-derby-card="wheels"]').getAttribute("aria-pressed");
+  if (wheelsPressedIsWheels !== "true") {
+    failures.push(`E: the pressed Wheels card itself carries aria-pressed="${wheelsPressedIsWheels}", expected "true"`);
+  }
+
+  const textWheelsToggleOn = ((await liveRegion.textContent()) ?? "").trim();
+  if (textWheelsToggleOn !== "Showing 1 of 3") {
+    // ASSERTION I (part 2) -- spec:184's general "Showing N of M" form.
+    failures.push(`I: Wheels + toggle on reads "${textWheelsToggleOn}", expected "Showing 1 of 3"`);
+  }
+  const wheelsVisibleIds = sortedIds(await visibleGridIds(page));
+  if (JSON.stringify(wheelsVisibleIds) !== JSON.stringify([4368])) {
+    failures.push(`A/I: Wheels + toggle on shows ids [${wheelsVisibleIds.join(",")}], expected [4368]`);
+  }
+
+  // ASSERTION K (8 of 8 checkpoints) -- after pressing Wheels with the
+  // toggle on (the state that hides the most cards at once: 14 of 15).
+  const buriedAfterWheels = await buriedControlCount(page);
+  if (buriedAfterWheels !== 0) {
+    failures.push(`K: ${buriedAfterWheels} control(s) buried with Wheels active and the toggle on`);
+  }
+
+  // --- click: press Wheels again. -------------------------------------------
+  await page.locator('[data-derby-card="wheels"]').click();
+
+  // ASSERTION D -- pressing the active card again clears it: back to 11 of 15.
+  const textAfterClear = ((await liveRegion.textContent()) ?? "").trim();
+  if (textAfterClear !== "Showing 11 of 15") {
+    failures.push(`D: pressing the active card again reads "${textAfterClear}", expected "Showing 11 of 15" (cleared)`);
+  }
+  const pressedAfterClear = await page.locator('[data-derby-card][aria-pressed="true"]').count();
+  if (pressedAfterClear !== 0) {
+    failures.push(`D: ${pressedAfterClear} card control(s) still carry aria-pressed="true" after clearing`);
+  }
+  const gridAfterClear = await page.locator(DERBY_GRID_SELECTOR).count();
+  if (gridAfterClear !== 15) {
+    failures.push(`B: grid has ${gridAfterClear} <li> after clearing the card, expected 15`);
+  }
+
+  // ASSERTION K -- checked at 8 checkpoints above (toggle-off, each of the
+  // five card clicks individually, toggle-back-on, Wheels-with-toggle-on):
+  // none of the six controls (5 cards + toggle) is ever buried inside a
+  // [hidden] ancestor or laid out with zero client rects. This is the
+  // runtime confirmation of the structural invariant the toggle and all
+  // five card buttons live OUTSIDE the grid (build brief §6.1) -- a later
+  // layout change that moved one of them inside a hideable card would flip
+  // buriedControlCount() from 0 to a nonzero count at the checkpoint right
+  // after that card's sibling gets hidden. Demonstrated failing (T13 fixer
+  // pass, adversarial review): moving `[data-derby-card="wheels"]` inside
+  // its own `[data-derby-set="wheels"]` <li>, then clicking Wheels followed
+  // by a different card, took the count from 0 to 1 at exactly that
+  // checkpoint. An earlier version of this assertion forced focus onto the
+  // toggle right before reading `document.activeElement`, and a version
+  // before that read `document.activeElement` after the click with no
+  // forced refocus -- both were measured to still report 0 (pass) on that
+  // same reproduction, because a browser auto-blurs a focused element to
+  // <body> the instant it becomes display:none, so `document.activeElement`
+  // never carries the regression once the click that would hide it has
+  // actually run. buriedControlCount() inspects the control elements
+  // directly rather than following focus, which is why it is the one form
+  // of this check that fails on the reproduction above.
+
+  // ASSERTION J -- the chip contract on THIS page (#550, widened here):
+  // exactly one .chip-legend with an id, every [data-illustrative] element
+  // carries aria-describedby pointing at it.
+  const legendIds = await page.$$eval(".chip-legend", (els) => els.map((el) => el.id));
+  if (legendIds.length !== 1) {
+    failures.push(`J: expected exactly one .chip-legend, found ${legendIds.length}`);
+  } else if (!legendIds[0]) {
+    failures.push(`J: the .chip-legend element carries no id`);
+  } else {
+    const [legendId] = legendIds;
+    const badChips = await page.$$eval(
+      "[data-illustrative]",
+      (els) => els.map((el) => ({ id: el.getAttribute("data-illustrative"), describedby: el.getAttribute("aria-describedby") }))
+    );
+    for (const c of badChips) {
+      if (c.describedby !== legendId) {
+        failures.push(`J: chip "${c.id}" has aria-describedby="${c.describedby}", expected "${legendId}"`);
+      }
+    }
+  }
+
+  details.push(
+    `A/B/F/G/H verified on load and after toggle | C: all 5 card id-sets matched | D: press-again clears | E: single-select held | I: "11 of 15"/"1 of 3"/"15 of 15" all matched | J: chip contract on this page | K: 0 buried controls at all 8 checkpoints`
+  );
+
+  if (failures.length > 0) {
+    return { pass: false, detail: failures.join("; ") };
+  }
+  return { pass: true, detail: details.join(" | ") };
+}
+
 async function groupChipsManifest(page, browser) {
   let manifest;
   try {
@@ -888,6 +1202,7 @@ async function groupChipsManifest(page, browser) {
   const chipsComplete = process.env.CHIPS_COMPLETE === "1";
   const observed = new Set();
   const probeDeltas = [];
+  let visibleChipElementCount = 0; // total data-illustrative ELEMENTS checked by assertion D, not the unique id count `observed` holds
 
   await forEachSixPages(browser, { width: 390, height: 844 }, async (p, { label, url }) => {
     if (label === "deck") return; // group 11 scope is the five demo pages only
@@ -942,8 +1257,8 @@ async function groupChipsManifest(page, browser) {
       );
     }
 
-    // ASSERTION D -- every REAL observed chip element is visible. Vacuous
-    // today (zero real chips); that is expected until T12.
+    // ASSERTION D -- every REAL observed chip element is visible.
+    visibleChipElementCount += pageObserved.length;
     const invisible = await p.evaluate(() =>
       Array.from(document.querySelectorAll("[data-illustrative]"))
         .filter((el) => el.hasAttribute("hidden") || el.getClientRects().length === 0)
@@ -981,7 +1296,7 @@ async function groupChipsManifest(page, browser) {
     `A: manifest illustrative set == FROZEN_NINE (${FROZEN_NINE.length} ids) | ` +
     `B: ${bDetail} | ` +
     `C: probe delta ${cDetail} px vs floor ${CHIP_PROBE_MIN_WIDTH_PX} | ` +
-    `D: every real observed chip visible (vacuous until T12)`;
+    `D: ${visibleChipElementCount} real chip element(s) observed across ${DEMO_PAGES.length} pages, all visible`;
   return { pass: true, detail };
 }
 
@@ -1022,9 +1337,10 @@ const GROUPS = {
     run: null,
   },
   7: {
-    title: "Derby hub: 'In stock only' + filters narrow the grid; result-count region updates",
+    title:
+      "Derby hub: 'In stock only' + the five decision cards narrow the grid (clicked, not just read); the result-count region updates and stays empty until the first interaction",
     task: "T13",
-    run: null,
+    run: groupDerbyFilters,
   },
   8: {
     title: "Mobile 390x844: no horizontal scroll; primary CTA tap targets >= 44px",
