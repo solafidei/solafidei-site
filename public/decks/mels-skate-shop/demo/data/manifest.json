@@ -16,6 +16,15 @@
       "source": "audit.json"
     },
     {
+      "id": "shop-relocated-eastgate",
+      "text": "We have relocated to Eastgate Shopping Centre.",
+      "source": "melsskateshop.co.za",
+      "note": "Owner-observed relocation banner read during the owner-authorised single manual browser load of 2026-09-16 (#541/#542). Not fetch-script output: fetch-mels-fixtures.mjs has not run since the relocation and must not be re-run.",
+      "flags": [
+        "confirm"
+      ]
+    },
+    {
       "id": "roll-line-dealer",
       "text": "Roll-Line's own dealer database lists Mel's Skate Shop, and Mel's is its only South African dealer.",
       "source": "roll-line.it"
@@ -358,7 +367,7 @@
     },
     {
       "id": "pjn-instalments",
-      "text": "or 3 interest-free instalments of R4,016.67 — PayJustNow, once onboarded.",
+      "text": "PayJustNow pay-in-3 instalments, at 0%, would be offered on any product here once Mel is onboarded — worked example: the Aura Sky 100 at R12,050 comes to 3 interest-free instalments of R4,016.67.",
       "source": "illustrative"
     },
     {
@@ -401,7 +410,7 @@
     },
     {
       "id": "copy-home-hero",
-      "text": "Home hero positioning line and its Roll-Line note, in Melony's voice. Four clauses, each already a sourced fact: trading since 2012, first roller derby shop in South Africa, official Roll-Line dealer, fitted in person. Place is given as Gauteng only - decision #504 struck the suburb because neither published address survived scrutiny. Lives in draft-copy.json at home.hero.",
+      "text": "Home hero positioning line and its Roll-Line note, in Melony's voice. Four clauses, each already a sourced fact: trading since 2012, first roller derby shop in South Africa, official Roll-Line dealer, fitted in person. Place now names Eastgate Shopping Centre, per decision #548 and backed by the shop-relocated-eastgate fact - decision #504's strike on any street address still holds, unchanged. Lives in draft-copy.json at home.hero.",
       "source": "draft-copy"
     },
     {

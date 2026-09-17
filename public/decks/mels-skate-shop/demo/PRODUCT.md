@@ -80,10 +80,13 @@ that visible in the first screenful, because her current site does not.
 - Tap targets are at least 44 px (`--tap`). Every focusable thing has a visible focus ring;
   `outline: none` without a replacement is a defect.
 - `prefers-reduced-motion: reduce` is honoured globally.
-- **Undecided, and later tasks must not decide it for the owner:** the shop's street address.
-  Roll-Line's dealer listing and Facebook say one thing, the Google Business Profile says another
-  roughly 20 km away (decision #501). This file therefore says only that the shop is in Gauteng
-  and fits people in person. The address line in the contact block stays flagged `confirm`.
+- **Still undecided, and later tasks must not decide it for the owner:** the shop's street
+  address. Roll-Line's dealer listing and Facebook said one thing, the Google Business Profile
+  said another roughly 20 km away (decision #501), and no street ships anywhere in the demo
+  (#504/#516). **Settled since (#544/#548):** the area is Eastgate Shopping Centre, sourced from
+  Mel's own site's relocation banner (owner-observed single browser load, 2026-09-16) — this file
+  and the demo now name that destination, never a street and never a suburb pairing beyond it.
+  The address line in the contact block stays flagged `confirm`.
 
 ## Brand Commitments
 
@@ -413,11 +416,33 @@ Recorded so the next agent does not undo a deliberate choice by reflex.
 - **No `https://`, `fonts.googleapis`, or `cdn.` anywhere in `site.css`.** Asserted by the task's
   own verification grep. Adding a webfont link or a remote `@import` breaks §9 outright.
 
+## What the next tasks inherit from Home
+
+Home is the first real screen, so two obligations it cannot discharge itself are recorded here
+rather than left in a code comment. Both were found by T12's provenance review, not by a gate.
+
+- **T14 owes `id="fit-guarantee"` on the Aura PDP.** Home's promise row carries the one link that
+  keeps no page a dead end (#493/#547): `.../demo/aura-sky-100#fit-guarantee`. **No gate catches it
+  if the anchor never lands** — verify group 3's fragment branch only fires on hrefs that start
+  with `#`, so a cross-page `...#fit-guarantee` takes the internal branch and the fragment is never
+  checked. The PDP will 200 without it and the link will silently go nowhere. `scripts/gen-home.mjs`
+  (the `ROUTE_AURA_PDP_FIT_GUARANTEE` constant) points here.
+- **T13 or T17 owes group 11's stdout a correction.** `scripts/verify-mels-demo.mjs`:984 hard-codes
+  `D: every real observed chip visible (vacuous until T12)`, and the group-header comment says the
+  same. That is stale as of T12: the group now observes two real chips (`fit-guarantee`,
+  `pjn-instalments`) and assertion D genuinely verifies both have non-zero boxes, so the line
+  contradicts itself in the evidence pasted into PRs. T12 deliberately did not fix it — that file
+  belongs to T11 and is on T12's prohibition list. Make D report the observed count and delete the
+  two "vacuous until T12" lines.
+
 ## What is still open for the owner
 
-- **The address.** Two sources disagree by about 20 km (decision #501). Nothing in this design
-  commits to a street, a suburb or a map pin; the contact block's address line stays flagged
-  `confirm` and the copy says Gauteng.
+- **The address — CLOSED, no longer open.** Two sources disagreed by about 20 km (decision #501);
+  the street address itself stays struck for good (#504/#516) and this design commits to no
+  street, no suburb pairing and no map pin. What was open — the shop's area — is settled:
+  decision #544/#548 name Eastgate Shopping Centre, sourced from Mel's own relocation banner
+  (owner-observed, 2026-09-16), and Home's hero and trust row now say so. The contact block's
+  address line stays flagged `confirm` because no street ships.
 - **iOS VoiceOver and the chip.** The chip's accessibility was measured in Chromium only
   (`Accessibility.getFullAXTree`, 2026-09-15) because that is the one engine available offline.
   `::after` content is not dependably announced by VoiceOver on iOS, which is the likeliest device
