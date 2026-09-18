@@ -401,7 +401,11 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 
 **Verification:**
 - [ ] `. ~/.nvm/nvm.sh && nvm use 24 && cd ~/solafidei-site && node --input-type=module -e "import {instalments} from './public/decks/mels-skate-shop/demo/assets/pdp.js'; const r=instalments(1205000); if(r.reduce((a,b)=>a+b,0)!==1205000) throw new Error('sum'); console.log(r)"`
-- [ ] `cd ~/solafidei-site && grep -nE 'R ?12[,. ]?050|11938' public/decks/mels-skate-shop/demo/aura-sky-100.html; echo "expect no matches"`
+- [ ] `cd ~/solafidei-site && grep -c 'data-price="1205000"' public/decks/mels-skate-shop/demo/aura-sky-100.html; echo "expect >= 1 — the price is data-driven, not typed"`
+- [ ] `cd ~/solafidei-site && grep -nE 'R ?[0-9]{1,3}[,. ]?[0-9]{3}' scripts/gen-aura-sky-100.mjs; echo "expect no matches — every money string comes from products.json through the pdp.js formatters"`
+- [ ] `cd ~/solafidei-site && node scripts/gen-aura-sky-100.mjs && git diff --stat -- public/decks/mels-skate-shop/demo/aura-sky-100.html; echo "expect an empty regeneration diff (#545)"`
+- [ ] `cd ~/solafidei-site && grep -n '11938' public/decks/mels-skate-shop/demo/aura-sky-100.html; echo "expect no matches — the excluded duplicate SKU"`
+<!-- The generator-incompatible price grep that stood here was REPLACED by these checks: ruled #581, struck in place by #599. The 11938 half of the original grep survives unchanged as the last bullet. -->
 - [ ] `. ~/.nvm/nvm.sh && nvm use 24 && cd ~/solafidei-site && (npm run dev &) && sleep 10 && node scripts/verify-mels-demo.mjs && npm run lint`
 
 **Dependencies:** 13 · **Model:** sonnet · **Estimated scope:** M
@@ -420,7 +424,10 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 
 **Verification:**
 - [ ] `. ~/.nvm/nvm.sh && nvm use 24 && cd ~/solafidei-site && (npm run dev &) && sleep 10 && node scripts/verify-mels-demo.mjs --only=6 && node scripts/verify-mels-demo.mjs`
-- [ ] `cd ~/solafidei-site && grep -nE 'R ?7[,. ]?850|R ?15[,. ]?550' public/decks/mels-skate-shop/demo/aura-sky-100.html; echo "expect no matches"`
+- [ ] `cd ~/solafidei-site && grep -oE 'store:1(1905|1919|1924)' public/decks/mels-skate-shop/demo/data/manifest.json | sort -u; echo "expect all three ladder ids present as store: sources"`
+- [ ] `cd ~/solafidei-site && grep -nE 'R ?[0-9]{1,3}[,. ]?[0-9]{3}' scripts/gen-aura-sky-100.mjs; echo "expect no matches — no ladder price typed into the generator source"`
+- [ ] `cd ~/solafidei-site && node scripts/gen-aura-sky-100.mjs && git diff --stat -- public/decks/mels-skate-shop/demo/aura-sky-100.html; echo "expect an empty regeneration diff (#545)"`
+<!-- The generator-incompatible price grep that stood here was REPLACED by these three checks: ruled #591(2), struck in place by #599. #574 makes the PDP generated and a generator bakes the money strings into the bytes, so the grep reported a match and read as a failure. House reading of "hard-coded" is "typed by a human", not "absent from the output" (#581). -->
 - [ ] `. ~/.nvm/nvm.sh && nvm use 24 && cd ~/solafidei-site && npm run lint && npm run build`
 
 **Dependencies:** 14 · **Model:** sonnet · **Estimated scope:** M
@@ -445,13 +452,15 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 - [ ] The whole flow is completable by keyboard alone with visible focus; the result region is empty on first paint; `?preset=derby` and `?preset=ice-aura` pre-set the branch.
 
 **Verification:**
-- [ ] `cd ~/solafidei-site && node --input-type=module -e "import {findSize, whichSky} from './public/decks/mels-skate-shop/demo/assets/finder.js'; console.log(whichSky(250,55,'singles'), findSize('riedell',{cm:25.5}), findSize('roll-line',{cm:25.5}), findSize('riedell',{cm:99}))"`
+- [ ] `cd ~/solafidei-site && node --input-type=module -e "import {findSize, whichSky} from './public/decks/mels-skate-shop/demo/assets/finder.js'; console.log(JSON.stringify({sky: whichSky(250,55,'singles'), inRange: findSize('chaya-sapphire',{mm:255}), outOfRange: findSize('chaya-sapphire',{mm:990}), noTable: findSize('roll-line',{mm:255}), unknown: findSize('not-a-brand',{mm:255})}, null, 1))"`
+<!-- The bullet that stood here was REPLACED, struck in place by #599's precedent. Two independent defects, both measured 2026-09-18: (1) it passed `{cm: 25.5}`, but every one of the six transcribed tables is in mm, `draft-copy.json` labels the field "Foot length (mm)", and `whichSky(mm,kg,level)` is mm — ruled mm end-to-end by #601. (2) It used `riedell` as BOTH the in-range and the out-of-range case, but `sizes.json` gives riedell `noTable: true` (#506 — Mel's size-chart page publishes no Riedell table), so both calls return the identical no-table handoff and NEITHER case tests what it claims to. The replacement exercises four distinct outcomes against a brand that has a real table. -->
 - [ ] `. ~/.nvm/nvm.sh && nvm use 24 && cd ~/solafidei-site && (npm run dev &) && sleep 10 && node scripts/verify-mels-demo.mjs --only=5 && node scripts/verify-mels-demo.mjs`
 - [ ] `. ~/.nvm/nvm.sh && nvm use 24 && cd ~/solafidei-site && npm run lint && npm run build`
 
 **Dependencies:** 15 · **Model:** sonnet · **Estimated scope:** M
 **Files likely touched:** `demo/size-finder.html`, `demo/assets/finder.js`, `demo/assets/site.css`, `scripts/verify-mels-demo.mjs`
 **Spec refs:** §6.4, §2.2, §2.4, §7.5, §8
+<!-- T16 rulings that supersede this task's Description, all 2026-09-18: #601 the finder's unit is MILLIMETRES, not the cm this Description says. #603(3) the "conversion row across centimetres, UK, EU and US" is UNBUILDABLE — no brand carries all four scales (rio UK/EU, sfr UK/EU, both Chayas US/UK, atom US/EU/inches, aura mm alone); render only the scales that brand's table carries, per draft-copy's finder.result.conversionLabel, and never compute between scales. #603(1)+(2) the brand picker is the six table brands — aura, rio, sfr, chaya-emerald, chaya-sapphire, atom — plus riedell and sure-grip, which stay in deliberately and hand off (#506); "Chaya" is NOT one entry, Emerald and Sapphire disagree on the US-to-UK offset. #600 the Aura branch DISCLOSES the Brannock Suggested-Size gap rather than converting across it. #602 whichSky's overlapping bands resolve lower-band-wins. -->
 
 ### Task 17: Book a fitting (§6.5)
 
