@@ -55,6 +55,16 @@ export function buildWhatsAppLink(number, text) {
   return text ? `${base}?text=${encodeURIComponent(text)}` : base;
 }
 
+// Promoted here from finder.js (task 16) during task 17 -- it was file-local
+// there and booking.js needs the identical guard (ruling #613/#607:
+// emptiness is String(v).trim() !== '', checked BEFORE any coercion,
+// whitespace counts as blank). finder.js now imports this rather than
+// carrying a second copy -- draft-copy.json's `_meta.refConvention` forbids
+// two hand-typed copies of the same rule that can drift.
+export function hasValue(el) {
+  return !!el && String(el.value).trim() !== '';
+}
+
 // --- DOM wiring (task 13, decision #556) ------------------------------------
 // The derby hub's "In stock only" toggle + five mutually-exclusive decision
 // cards. This is the only impure export in the file, and it stays inert on
@@ -71,12 +81,13 @@ export function initDerbyFilters(root) {
   const toggleButton = root.querySelector('[data-derby-toggle]');
   const liveRegion = root.querySelector('[data-derby-count]');
   // #569. Optional on purpose: a later page that reuses this wiring without an
-  // empty-state note must not throw. As it turned out, T16's Size Finder does
-  // NOT reuse this wiring at all -- it never carries [data-derby-filters], so
-  // initDerbyFilters() is never called on it in the first place (see the
-  // guard at the bottom of this file); it ships its own initFinder() in
-  // finder.js instead. This stays optional for whatever T17's Book a fitting
-  // turns out to need, which is still open.
+  // empty-state note must not throw. As it turned out, neither T16's Size
+  // Finder nor T17's Book a fitting reuses this wiring at all -- neither
+  // page carries [data-derby-filters], so initDerbyFilters() is never
+  // called on either (see the guard at the bottom of this file); they ship
+  // their own initFinder()/initBooking() in finder.js/booking.js instead.
+  // No page left after T17 needs this to stay optional, but it does no
+  // harm to leave it that way.
   const emptyState = root.querySelector('[data-derby-empty]');
   const cards = Array.from(root.querySelectorAll('[data-derby-set]'));
   if (!toggleButton || cards.length === 0) return;
@@ -157,8 +168,11 @@ export function initDerbyFilters(root) {
 // finder.js imports buildWhatsAppLink from this file, so the browser loads
 // site.js as a module dependency on a page that carries no
 // [data-derby-filters] at all, and the selector below correctly finds
-// nothing. T17's Book a fitting is expected to load it the same way for the
-// floating WhatsApp button.
+// nothing. T17's Book a fitting loads this file the same way, for
+// buildWhatsAppLink and the promoted hasValue() above -- NOT for the
+// floating WhatsApp button, which is a static <a href> on all five pages
+// needing no JS at all (this was the second stale prediction about a later
+// task in this file; PRODUCT.md records the first).
 if (typeof document !== 'undefined') {
   const root = document.querySelector('[data-derby-filters]');
   if (root) initDerbyFilters(root);

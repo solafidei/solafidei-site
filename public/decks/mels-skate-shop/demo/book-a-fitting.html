@@ -26,8 +26,166 @@
   <!-- /shared:header -->
 
   <main id="main" class="page__main">
-    <h1>Book a fitting</h1>
-    <p>Stub — screen built in a later task.</p>
+    <!-- main:booking -->
+    <p class="chip-legend" id="chip-legend">'proposed' marks something we're suggesting. Mel hasn't published it, and this demo won't pretend she has.</p>
+
+    <section class="section">
+      <div class="wrap">
+        <p class="source">Book a fitting</p>
+        <h1>Come and have skates put on your feet</h1>
+        <p class="lede">Four kinds of appointment, all by appointment, all with a person who skates. Durations and prices carry the proposed stamp because Mel publishes no fitting menu today.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <h2>Pick the appointment</h2>
+        <ul class="grid">
+      <li class="card">
+        <h3 class="card__title">Quad fitting</h3>
+        <p class="card__meta"><span data-illustrative="fitting-durations" aria-describedby="chip-legend">30 min</span> · <span data-illustrative="fitting-prices" aria-describedby="chip-legend">R350</span></p>
+        <p class="card__body">Both feet measured standing, boot tried on the plate you would actually skate, laces and toe stop set before you leave.</p>
+        <p class="field__label">Bring</p>
+        <ul class="u-stack">
+          <li>The socks you skate in</li>
+          <li>Your current skates if you have a pair</li>
+        </ul>
+      </li>
+      <li class="card">
+        <h3 class="card__title">Ice boot fitting + heat-mould</h3>
+        <p class="card__meta"><span data-illustrative="fitting-durations" aria-describedby="chip-legend">60 min</span> · <span data-illustrative="fitting-prices" aria-describedby="chip-legend">R850</span></p>
+        <p class="card__body">Measured on the Brannock, sized to Aura's own suggested size, then baked and moulded to your foot while you wear it.</p>
+        <p class="field__hint" data-illustrative="fitting-prices" aria-describedby="chip-legend">The R850 here is the same heat-mould that appears on the boot page. One bake, charged once, whichever way you book it.</p>
+        <p class="field__label">Bring</p>
+        <ul class="u-stack">
+          <li>The socks you skate in</li>
+          <li>Your blades if you already own them</li>
+        </ul>
+      </li>
+      <li class="card">
+        <h3 class="card__title">Kids fitting</h3>
+        <p class="card__meta"><span data-illustrative="fitting-durations" aria-describedby="chip-legend">20 min</span> · <span data-illustrative="fitting-prices" aria-describedby="chip-legend">R250</span></p>
+        <p class="card__body">Growing feet, so we size for now and tell you honestly how long it will last. Adjustable options shown alongside.</p>
+        <p class="field__label">Bring</p>
+        <ul class="u-stack">
+          <li>The socks they skate in</li>
+        </ul>
+      </li>
+      <li class="card">
+        <h3 class="card__title">Video consult</h3>
+        <p class="card__meta"><span data-illustrative="fitting-durations" aria-describedby="chip-legend">20 min</span> · <span data-illustrative="fitting-prices" aria-describedby="chip-legend">R200</span></p>
+        <p class="card__body">For skaters outside Gauteng. You trace and measure both feet on camera with us, we size the brand you want and send the result in writing.</p>
+        <p class="field__label">Bring</p>
+        <ul class="u-stack">
+          <li>A sheet of paper, a pen and a tape measure</li>
+          <li>A wall and a hard floor</li>
+        </ul>
+      </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section section--sunken">
+      <div class="wrap">
+        <h2>Before you come</h2>
+        <p class="lede">None of this is compulsory. All of it makes the appointment shorter and the fit better.</p>
+        <ol class="u-stack">
+          <li>Measure both feet at home if you can — heel to wall, standing, in millimetres. Bring the numbers.</li>
+          <li>Wear or bring the socks you skate in. Sock thickness changes the size.</li>
+          <li>Bring your current skates if you own a pair, even wrong ones. What is wrong with them is the most useful thing you can tell us.</li>
+          <li>For an ice fitting, bring your blades if you already own them.</li>
+          <li>For a video consult, have paper, a pen, a tape measure, a wall and a hard floor ready before we call.</li>
+        </ol>
+        <p class="field__hint">Each appointment type lists what to bring; this is the short version of all four.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <h2>Every fitting is the same three steps</h2>
+        <p>Measure both feet standing. Try the boot on the plate or blade you would actually skate. Adjust before you leave — lacing, toe stop, heel lift.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <h2>If you need to move it</h2>
+        <p data-illustrative="cancellation-policy" aria-describedby="chip-legend">Move or cancel a fitting up to 24 hours before, by WhatsApp, at no charge; after that the fitting fee is due.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <h2>By appointment</h2>
+        <p>Wed 12:00-18:00 through Sun 09:30-16:00</p>
+        <p class="field__hint">We fit by appointment only, so book before you travel. One skater at a time is the point, not a queue.</p>
+      </div>
+    </section>
+
+    <div data-booking data-booking-whatsapp-number="27823706771">
+
+    <section class="section section--sunken">
+      <div class="wrap">
+        <h2>Request an appointment</h2>
+        <fieldset class="u-stack">
+          <legend class="u-visually-hidden">Request an appointment</legend>
+
+          <div class="field">
+            <label class="field__label" for="booking-type">Which fitting</label>
+            <select class="select" id="booking-type" data-booking-type>
+            <!-- Structural placeholder label, authored by this generator,
+                 not fixture copy -- draft-copy.json#booking.form has no key
+                 for it (T17 adjudication note, minor, filed in PRODUCT.md).
+                 Precedent: size-finder.html's hand-authored "Scale"/"Size"
+                 structural labels. -->
+            <option value="">Choose a fitting</option>
+            <option value="Quad fitting">Quad fitting</option>
+            <option value="Ice boot fitting + heat-mould">Ice boot fitting + heat-mould</option>
+            <option value="Kids fitting">Kids fitting</option>
+            <option value="Video consult">Video consult</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="booking-day">Preferred day</label>
+            <select class="select" id="booking-day" data-booking-day>
+            <!-- Structural placeholder label, same note as above. -->
+            <option value="">Choose a day</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="booking-time">Preferred time</label>
+            <input class="input" type="time" id="booking-time" data-booking-time min="09:30" max="18:00" aria-describedby="booking-time-hint" />
+            <span class="field__hint" id="booking-time-hint">Wed 12:00-18:00 through Sun 09:30-16:00</span>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="booking-name">Your name</label>
+            <input class="input" type="text" id="booking-name" data-booking-name />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="booking-notes">Anything we should know</label>
+            <textarea class="textarea" id="booking-notes" data-booking-notes aria-describedby="booking-notes-hint"></textarea>
+            <span class="field__hint" id="booking-notes-hint">The brand you are after, your measurement, the league you skate for — whatever saves us a question.</span>
+          </div>
+
+          <p><a class="btn btn--primary" data-booking-submit href="https://wa.me/27823706771?text=Hi%20Melony%2C%20I'd%20like%20to%20book%20a%20fitting." target="_blank" rel="noopener">Request via WhatsApp</a></p>
+          <p class="field__hint">This form composes a WhatsApp message. In the build it is a live on-domain calendar.</p>
+        </fieldset>
+      </div>
+    </section>
+
+    </div>
+
+    <script type="module" src="/decks/mels-skate-shop/demo/assets/booking.js"></script>
+    <!-- /main:booking -->
   </main>
 
   <!-- shared:contact -->

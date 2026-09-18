@@ -478,8 +478,13 @@ rather than left in a code comment. Both were found by T12's provenance review, 
   real content, not an empty page.
 - **`site.js` now has DOM wiring.** `initDerbyFilters()` is guarded behind
   `typeof document !== "undefined"` and queries `[data-derby-filters]`; a page with no derby grid
-  (T16's Size Finder, T17's Book a fitting) safely finds no root and does nothing. T17's floating
-  WhatsApp button work lands in the same guarded region of this file, not a new module.
+  (T16's Size Finder, T17's Book a fitting) safely finds no root and does nothing.
+  **CORRECTED by T17 (#613):** this note used to predict that "T17's floating WhatsApp button work
+  lands in the same guarded region of this file, not a new module" — wrong on both counts. The
+  floating WhatsApp button is a static `<a href>` on all five pages and needs no JS at all, and
+  T17's actual work (`composeBookingMessage()`/`initBooking()`) landed in a NEW module,
+  `assets/booking.js`, not here. See "What T18+ inherits from Book a fitting (T17)" below for what
+  actually shipped.
 - **`site.css` gained no new rules.** The filter bar reuses `.sizes`'s existing fieldset reset
   (border:0, flex-wrap) rather than a new class, and no card-image width CSS was added — see the
   measurement below.
@@ -811,6 +816,224 @@ Five review lenses reported on the commit above; here is what each finding turne
   argument is that it is the only one of the six branches where the mapping can under-read the
   measured foot at all. This is a domain fit-safety judgment call, not a measurable fact, so it is
   left for an owner ruling rather than resolved unilaterally.
+
+## T17 — Book a fitting: findings
+
+**Rulings applied:** #607 (CTA always a valid `wa.me` link, emptiness = `String(v).trim() !== ""`
+before any coercion, duration/price never enter the message), #608 (five controls, notes ships),
+#609/#616 (the R850 collision sentence, verbatim), #610 (day constrained to Wed-Sun, time hint
+carries the fixture's window string), #611 (AC2 folds into group 2), #612 (CP5 reworded to stop
+counting), #613 (`assets/booking.js` is a new module), #614 (`CHIPS_COMPLETE=1` on every T17 spine
+run), #615 (per-type `bring` renders on every card, alongside the unified intake block), #617 (the
+message template, authored, four optional sentences).
+
+- **`hasValue()` was promoted out of `finder.js` into `site.js`**, exported, and `finder.js` now
+  imports it rather than keeping a second copy — the identical rule `booking.js` needed, and
+  `_meta.refConvention` forbids two hand-typed copies of the same guard.
+- **`composeBookingMessage(fields)` is pure** (no DOM, no globals) and is driven against all
+  seventeen of the build brief's degenerate-input acceptance criteria in plain Node (14 hand-typed
+  literal-expectation cases plus 4 structural checks -- cases 13, 15, 16 and 17 -- so 18 assertions
+  against a floor of 17), then proved against the REAL rendered CTA href in the browser for 4
+  of those cases (first paint, day-only, name-only, type-only) — the pure function alone proves
+  nothing about what the page actually does; the browser assertions are what close that gap
+  (build brief §8, trap 11).
+- **The generator bakes the CTA's initial href from the same pure functions the page runs at
+  runtime** (`composeBookingMessage`/`buildWhatsAppLink`, imported into
+  `scripts/gen-book-a-fitting.mjs` at generation time), rather than a second hand-typed copy of
+  either — so the href is already a valid, non-empty `wa.me` link at first paint, before
+  `booking.js` has even finished loading, satisfying case 17 robustly rather than by a JS-timing
+  race.
+- **AC2 lands in group 2, not a new group 12** (#611). The static scan (part a) strips comments
+  before matching — `finder.js:14`/`:18`'s truthful comments containing the substring `fetch(` are
+  correctly NOT flagged (the #599 class: a grep that matches comment text is a defective grep) —
+  and scans all five built pages plus every file under `assets/`. The click-and-watch half (part b)
+  opens its own fresh context, navigates, arms its request listener AFTER `goto`, then clicks the
+  real submit CTA and asserts zero new requests on the original page (the CTA's `target="_blank"`
+  click opens a popup on a SEPARATE page object, which is closed immediately and never counted).
+  **Self-evasion attempt (§9a):** a click handler doing `window['fetch']('/x', { method: 'POST' })`
+  contains no literal `fetch(` or `method="post"` substring and evades the static scan cleanly (0
+  hits) — but the click-and-watch half still catches it (1 new request observed), which is exactly
+  why AC2 needs both halves, not the static scan alone.
+- **Discrepancy filed (#531):** the brief states the day-select hint shows "that day's window,
+  sourced from the fixture." Measured: `contact.json#hours.detail` is ONE combined string spanning
+  the whole Wed-Sun range ("Wed 12:00-18:00 through Sun 09:30-16:00") — there is no per-day
+  granular fixture to resolve five distinct windows from. The hint therefore shows that same
+  fixture string verbatim regardless of which day is selected; inventing five separate per-day
+  windows the fixture does not carry would itself be a `_meta.refConvention`/#540 violation.
+- **Discrepancy filed (#531):** brief §12 prohibits "introduc[ing] any new outbound URL," citing the
+  link budget as spent at exactly 12 hrefs / 5 external distinct. Measured after this task:
+  book-a-fitting now renders 13 hrefs / 11 distinct / 6 external distinct — group 3's
+  `HREF_COUNT_FLOOR` is a MINIMUM, not a ceiling, and still passes. Read literally, the prohibition
+  would make the ticket's own primary deliverable (a `wa.me` CTA, #607) impossible; the only
+  consistent reading is "no new external DESTINATION HOST," and the one href added targets `wa.me`,
+  already used elsewhere on this page and site.
+- **CSS: zero new rules were needed.** `.field`/`.select`/`.textarea`/`.card`/`.u-stack` and the
+  generic `[data-illustrative]::after` chip rule (§16) all applied with no changes. No section 19
+  was added. `site.css`'s duplicate section-13 heading (`Live regions` at :785, `Size Finder (task
+  16)` at :1071) is left exactly as T16 shipped it (build brief §2.4) — comment-only debt, smallest
+  diff, not this task's scope.
+- **The three new chips** (`fitting-durations`, `fitting-prices`, `cancellation-policy`) take group
+  11's observed set from 6 to 9, matching FROZEN_NINE exactly under `CHIPS_COMPLETE=1` (`B: 9 chip
+  id(s) observed across 5 pages`).
+
+### T17 review — adjudicated findings (six lenses, this fix pass)
+
+Six lenses reviewed the T17 commit; two filed `rework` with genuine blockers. Confirmed and fixed:
+
+- **BLOCKER — `composeBookingMessage()`/`BOOKING_DAYS` were never imported or driven by the spine.**
+  The commit's own report claimed "19 assertions against a floor of 17" and "4 browser assertions,"
+  but `scripts/verify-mels-demo.mjs` never imported `booking.js` at all — that coverage existed only
+  in an ephemeral, uncommitted script. Fixed: group 2 now statically imports `composeBookingMessage`
+  and `BOOKING_DAYS`, drives 14 hand-typed LITERAL cases (never composed with the function's own
+  template logic — the sharpest named trap) plus static-HTML checks on the baked page and 4 browser
+  assertions comparing the real rendered CTA href to the pure function's output. Proven by
+  negative control: swapping the function body for a constant string now correctly fails 17 of the
+  new assertions; restored by file copy.
+- **BLOCKER — AC2(a)'s comment stripper truncated at the first `//` on a line with no
+  string-literal awareness**, so `const u = \`https://wa.me/x\`; fetch(...)` stripped to
+  `` const u = `https: `` and evaded the scan with 0 hits — a defect distinct from, and not caught
+  by, the `window['fetch']` evasion the original commit tested. Fixed: `ac2StripComments` now walks
+  the source tracking quote/template state so a `//` inside a string is never treated as a comment
+  start. Proven live: the same evasion now correctly surfaces a `fetch(` hit; the genuine `finder.js`
+  comments at :14/:18 are still correctly stripped (unaffected).
+- **MAJOR — the R850 collision paragraph (#609/#616) carried no `data-illustrative` chip**, unlike
+  every other illustrative number on the page (§6.0). Fixed at the generator: the paragraph now
+  carries `data-illustrative="fitting-prices"` (the string is unchanged, byte-identical to #616).
+- **MAJOR — ruling #614 ("every T17 spine invocation ... runs `CHIPS_COMPLETE=1`") was applied only
+  to CP5's own bullet and to `--only=2` (where group 11 is not selected and the flag is a no-op),
+  never to Task 17's own full-spine verification bullet.** Fixed: `plan.md`'s full-spine bullet now
+  carries the flag.
+- **MAJOR — the #612 numeral sweep missed `todo.md:41`**, the CP5 checkpoint's own line ("eleven
+  groups pass"), while correctly fixing `todo.md:61` (a different, later bullet). Fixed: reworded to
+  "every group passes," matching `plan.md`'s CP5 wording.
+- **MINOR, fixed:** the day/time hint's source was `contact.json#hours.detail`; ruling #610's own
+  text pins `fittings.json` (both fixtures carry the byte-identical string today, so this was
+  invisible in the rendered output, but the two could silently drift). Now sourced from
+  `fittings.json#availability.detail`.
+- **MINOR, fixed:** the two placeholder `<option>` labels ("Choose a fitting"/"Choose a day") carry
+  no fixture source anywhere in `draft-copy.json` — the only invented copy in the package. Left as
+  is (deleting them would break the form's usability and no ruling covers it) but now carry an
+  inline comment naming them as structural, generator-authored labels, same precedent as
+  `size-finder.html`'s hand-authored "Scale"/"Size" labels.
+- **MINOR, fixed:** AC2(b)'s settle window widened 500ms → 1500ms so a beacon deliberately delayed
+  past the old window would still be observed.
+- **Refuted / correctly out of scope for the fix pass:** the issue-#36 body text still counting
+  "eleven PASS lines"/"six negative controls" is real (confirmed) but that pass's own harness rules
+  prohibited editing GitHub issues from it — the reworded body the original commit drafted was the
+  correct artifact to hand the owner. **Applied in the completeness-critic rework below (#619).** `todo.md:29-30`, `plan.md:346` (historical
+  checkpoints, accurate at their own point in the epic) and `docs/specs/mels-skate-shop-pitch.md:268`
+  (edits to the spec are explicitly prohibited) were re-checked and correctly left alone.
+
+### T17 rework — the opus completeness critic, after the fixer
+
+A seventh pass read the fixed commit against the build brief rather than against the diff, and
+returned `rework`. **The page itself was not the problem**: the critic clicked the primary CTA on a
+completely empty form, read the real destination
+(`https://api.whatsapp.com/send/?phone=27823706771&text=Hi+Melony%2C+I%27d+like+to+book+a+fitting.`),
+found no price or duration in any composed message and no T16-class "my foot measures 0 mm"
+sentence, and its verdict on the rendered screen was *"the page is honest and I would show it to
+Melony."* **Every item below is about a gate that keeps that true, or a document that describes it.**
+
+- **BLOCKER — the AC2(a) static scan failed OPEN on regex literals.** The quote-aware walk the
+  previous pass added handled `${...}` interpolation and said so in a comment, **but said nothing
+  about regexes and did not handle them**, so the comment told the next reader the scanner saw more
+  than it did. A regex containing a quote — `const re = /won't/;` — flipped the walker into string
+  state at the apostrophe; state stayed open until the next quote character in the file, leaving the
+  remainder of that unrelated string literal *outside* quote state, where its `https://` read as a
+  line comment and the rest of the line was discarded unscanned. **Measured before the fix:** that
+  source stripped to exactly `const re = /won't/;\nconst u = 'https:` — the `fetch(` gone — and
+  scanned to **0** hits. **After:** it survives intact and scans to **1** hit. The walk now
+  recognises regex literals by the standard previous-significant-token heuristic and emits them
+  whole, so an AC2 pattern written inside a regex is still scanned.
+- **BLOCKER — the scan's own header comment was false.** It claimed the scan ran "against a
+  deliberately evaded copy"; nothing of the kind existed in the tree. Rather than delete the claim,
+  `AC2_EVASION_FIXTURES` now makes it true: both evasions that have actually been demonstrated
+  against this scanner are re-measured on every run, each a regression test for the fix that closed
+  it.
+- **BLOCKER — the day-option gate was a two-string blacklist, not set-equality.** It caught exactly
+  the Monday/Tuesday sabotage the adversary happened to run and **passed silently if four of the
+  five bookable days were deleted**, while the DOM's option set was compared to `BOOKING_DAYS`
+  nowhere. Fixed: the day select's baked `<option>` values are parsed out of the HTML and asserted
+  as **ordered equality** against `[""] + BOOKING_DAYS`, count printed.
+- **MAJOR — a filed finding was neither applied nor refuted; it vanished.** `filesScanned` was
+  printed but never asserted, so the scan could cover **zero** JS files and still print PASS. Fixed:
+  `AC2_FILES_FLOOR` = 9 (5 built pages + 4 `assets/*.js`), mirroring `CTA_COUNT_FLOOR` and
+  `HREF_COUNT_FLOOR`.
+- **MAJOR — AC2(b) covered one page and one click.** AC2's claim is that nothing is posted
+  *anywhere*; a beacon firing on load, on scroll, or on any of the other five pages was outside what
+  a post-click window can see. Fixed (the AC2 lens's second recommendation, dropped without comment
+  by the fixer): a request listener is armed **before `goto` on all six pages** and asserts zero
+  `fetch`/`xhr`/`websocket`/`eventsource` for the whole page lifecycle, with a floor on the number of
+  requests observed so a dead listener cannot pass vacuously.
+- **MAJOR — a false comment shipped in a file this commit created, the sixth consecutive task.**
+  `booking.js`'s tail said `gen-book-a-fitting.mjs` does not import it; that generator imports
+  `composeBookingMessage` and `BOOKING_DAYS` at its line 30, and **its own comment there calls that
+  import "part of the purity proof."** Two files in one commit contradicted each other about the
+  same fact, and this one was **false when it was typed, not stale**. It passed the builder's own
+  named sweep gate and three lenses that spot-checked the file. Fixed in `booking.js`.
+- **MAJOR — this document shipped two different counts of the same thing, forty lines apart.** One
+  said "19 assertions against a floor of 17", the other "18 hand-typed literal cases"; a third count
+  lived in group 2's own title ("17+ literal cases"). **Measured ground truth:
+  `BOOKING_LITERAL_CASES` holds 14 entries and `bookingPurityChecks` adds 4 structural checks (cases
+  13, 15, 16, 17), so `asserted` is 18 against a floor of 17.** All three sites now say that.
+- **MINOR — group 11's assertion D proved nothing about the two chips hosted on paragraphs**,
+  including the one the previous pass added: it measures the *host's* box, and a paragraph has a box
+  with or without its pill. Fixed as **assertion D2**: for every non-inline chip host, clone it,
+  strip `data-illustrative` from the clone, size both copies by their own content off-screen, and
+  require the chipped copy to be wider by the same floor probe C uses.
+
+One more finding came from running the main-session re-verify control (#553) for the first time —
+it was authored **before** the build landed, so its expected strings are independent literals rather
+than anything derived from the implementation. It failed four probes on **case 7**: it fed the
+placeholder's *label* to `composeBookingMessage` as a type *value* and expected the function to
+recognise it. **Measured: that state is unreachable through the page** — the type select's
+placeholder is `<option value="">Choose a fitting</option>`, so the select yields `""` and the
+bare-intent sentence. The premise was wrong in the same shape #610's was, and is corrected the same
+way rather than by teaching the pure function a blacklist of invented placeholder copy (three of the
+four probes name strings that appear nowhere in this product, and such a blacklist would silently
+drop a legitimate fitting type that happened to be named one of them — M3's own lesson). **The real
+risk is the one the generator owns**: baking a placeholder whose value is its own label. Both
+selects now assert structurally that the placeholder's value is empty, proven by negative control —
+baking `value="Choose a fitting"` fails group 2 on four separate assertions.
+
+Two owner rulings landed in the same pass. **#618** corrected #610's second clause: #610 chose "the
+time field hints that day's window, both sourced from `fittings.json`, which already pins the
+window", and **that premise was false** — no fixture gives any day its own window, only one combined
+string. What shipped was a completely unconstrained `<input type="time">`, `min` and `max` both null,
+so Wednesday + 08:00 composed into Melony's inbox four hours before the hint above it says she opens.
+**No lens drove the time input in a browser at all.** The control now carries
+`min="09:30" max="18:00"`, the union of the two published windows, derived in the generator from that
+same combined string so the control cannot drift from the hint beside it, and asserted in the spine
+as hand-typed literals. **#610's day axis is unchanged.** **#619** applied the reworded body to issue
+#36 and added the matching "book a fitting through the request form" clause to CP5's owner
+walkthrough — the fixer's escalation had told the owner that plan edit was already made, and it was
+not.
+
+**Standing lesson this pass bought: nobody reviews the adjudicating fixer.** It refuted three
+findings, and one refutation buried a recurrence of #604; its escalation to the owner contained a
+false claim about the tree. An opus completeness critic reading the brief rather than the diff, run
+*after* the fixer, is the only thing that caught either.
+
+## What T18+ inherits from Book a fitting (T17)
+
+- **`assets/booking.js` is a fifth pure-plus-DOM module**, same shape as `site.js`, `pdp.js` and
+  `finder.js`: `composeBookingMessage(fields)` and the exported `BOOKING_DAYS` constant are pure,
+  `initBooking(root)` is guarded behind `typeof document !== "undefined"` at the file's tail. A
+  later page that wants a WhatsApp-composing form imports `composeBookingMessage`/`buildWhatsAppLink`
+  directly rather than writing a third message-builder.
+- **`hasValue()` now lives in `site.js`, exported.** Any future control-gating logic imports it from
+  there; do not reintroduce a file-local copy in a new page's module.
+- **The six-screen demo is functionally complete.** Task 18 (Lighthouse + impeccable, measurement
+  only) is next; it makes no code changes. Nothing under `DEMO/data/` changed this task — the
+  fixtures remain exactly as task 7 authored them.
+- **The link budget moved from 12 to 13 hrefs on book-a-fitting** (11 distinct, 6 external
+  distinct) — a later task adding a link to this page should re-measure rather than assume the
+  brief's old "spent at 12" figure still holds; `HREF_COUNT_FLOOR` in the spine is a floor, so this
+  is headroom, not a ceiling breach.
+- **Group 2's `title` and `task` now read `"T10+T17"`** — a future task extending group 2 again
+  (there is no ruling against that; #611 only forbids a *new* group 12) should append to that same
+  attribution string rather than overwrite it, so the printed table keeps naming every task that
+  contributed coverage.
 
 ## What is still open for the owner
 

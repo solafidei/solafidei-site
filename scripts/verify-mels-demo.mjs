@@ -28,6 +28,15 @@ import { instalments, moneyCents } from "../public/decks/mels-skate-shop/demo/as
 // have thrown, killing every group in this file (build brief §2.3's
 // sharpest trap), so this line is itself part of trap 11's purity proof.
 import { findSize, whichSky } from "../public/decks/mels-skate-shop/demo/assets/finder.js";
+// Group 2 (task 17, rulings #607/#608/#610/#617) does the identical thing
+// against booking.js's pure composeBookingMessage()/BOOKING_DAYS -- T17
+// adjudication fix (blocker): before this fix, NOTHING in this file ever
+// imported or called composeBookingMessage, so a perfect pure function the
+// page never calls (or a broken one) passed every gate. If booking.js ever
+// touched `document` at module scope this import would already have
+// thrown, killing every group (build brief §2.3's trap), so this line is
+// itself part of trap 11's purity proof, same as the two imports above.
+import { composeBookingMessage, BOOKING_DAYS } from "../public/decks/mels-skate-shop/demo/assets/booking.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -207,11 +216,680 @@ async function groupSharedBlocksByteIdentical() {
 //                      fire on a 4xx/5xx, so it cannot replace the
 //                      response>=400 check — a "zero failed requests" gate
 //                      built only on this channel misses every 404.
+// --- AC2 (task 17, ruling #611) --------------------------------------------
+// Acceptance criterion 2 ("no form action / fetch / XHR / POST, and no new
+// network request on click") folds into GROUP 2, not a new group 12 (#611 --
+// a new group cascades into ~15 "all eleven groups" bullets across plan.md,
+// the spec, todo.md and issue #36). Two halves, both required.
+//
+// (a) STATIC SCAN, over the built HTML of all five demo pages and every
+// file in DEMO/assets/. The probe this brief warns against scoped its own
+// proposed grep to assets/booking.js alone -- a file plan.md never names --
+// which would scan a file that might not even exist while the real risk
+// sits anywhere in assets/ or in the shipped HTML. This scan covers both.
+//
+// Matches CODE, never comment text (#599 class): finder.js:14 and :18 carry
+// truthful comments that happen to contain the literal substring "fetch(",
+// describing why the file does NOT call it. A grep that fails on that text
+// is a defective grep, not a defective comment (#599) -- so every file is
+// stripped of its comments (HTML `<!-- -->`, JS `/* */` and `//`) before
+// any pattern below is tested, and the stripped text is what is scanned.
+const AC2_PATTERNS = [
+  { name: "<form", re: /<form\b/i },
+  { name: "action=", re: /\baction\s*=/i },
+  { name: 'method="post"', re: /\bmethod\s*=\s*["']post["']/i },
+  { name: "fetch(", re: /\bfetch\s*\(/ },
+  { name: "XMLHttpRequest", re: /\bXMLHttpRequest\b/ },
+  { name: "navigator.sendBeacon", re: /\bnavigator\.sendBeacon\b/ },
+  { name: "new WebSocket", re: /\bnew\s+WebSocket\b/ },
+  { name: "EventSource", re: /\bEventSource\b/ },
+];
+
+// T17 adjudication fix (blocker, AC2 evasion): this used to be
+//   `source.replace(/\/\*[\s\S]*?\*\//g, "")` (JS block comments) followed
+//   by `source.replace(/\/\/.*$/gm, "")` (JS line comments) -- two plain
+// regexes with ZERO string-literal awareness. Every wa.me URL literal in
+// this codebase is written `https://wa.me/...`, so the line-comment regex
+// truncated at the FIRST "//" on the line -- including the one inside that
+// URL string -- silently discarding everything after it, real code
+// included. PROVEN live: `const u = \`https://wa.me/x\`; fetch("/collect",
+// { method: "post" });` stripped to `const u = \`https:` and AC2_PATTERNS
+// matched 0 hits, a clean evasion of the static scan (distinct from, and
+// not caught by, the `window['fetch']` evasion this task's own commit
+// already tried and documented -- that one only survives because
+// click-and-watch (part b) catches it; this one is invisible to BOTH
+// halves whenever the beacon fires outside book-a-fitting's specific
+// submit click).
+//
+// Fixed with a character-by-character walk that tracks single/double/
+// template-quote state (with backslash-escape handling) so `//` or `/*`
+// occurring INSIDE a string or template literal is never mistaken for the
+// start of a comment -- comments are only recognised OUTSIDE any open
+// quote. This does not attempt to parse `${...}` template interpolation as
+// its own code region (no file under DEMO/assets/ nests a comment or a
+// second string inside an interpolation today), which is a known, narrow
+// limitation, not a claim of a full JS parser.
+//
+// T17 rework (M2): the walk now also recognises REGEX LITERALS, because
+// without that it failed OPEN in exactly the shape the fix above closed.
+// A regex containing a quote character -- `const re = /won't/;` -- flipped
+// the walker into string state at the apostrophe; state then stayed open
+// until the NEXT quote character in the file, which is typically the
+// opening quote of an unrelated string literal, leaving the REST of that
+// literal outside quote state. A `https://...` there then read as a line
+// comment and everything after it on that line -- real code, a `fetch(`
+// included -- was discarded unscanned. PROVEN before the fix: a file
+// containing `const re = /won't/;` followed by
+// `const u = 'https://wa.me/x'; fetch("/collect", { method: "post" });`
+// stripped to exactly `const re = /won't/;\nconst u = 'https:` -- the
+// `fetch(` discarded -- and scanned to 0 AC2 hits; after the fix the same
+// source survives intact and scans to 1 hit (`fetch(`). Both numbers are
+// measured, and AC2_EVASION_FIXTURES below re-measures them on every run.
+// The previous comment claimed the walk handled interpolation and said
+// nothing about regexes, so it told the next reader the scanner saw more
+// than it did.
+//
+// A `/` starts a regex when the previous significant token cannot end an
+// expression -- an operator, an opening bracket, or one of the keywords
+// below. After an identifier, a number, a closing `)`/`]` or a string, `/`
+// is division. This is the standard lexer heuristic, not a parser; the one
+// known gap it shares with every such heuristic is the ASI case
+// `return\n/re/`, which no file here writes.
+const AC2_REGEX_PRECEDERS = new Set([
+  "=", "(", ",", ":", "[", "!", "&", "|", "?", "{", "}", ";", "+", "-", "*", "%", "<", ">", "~", "^", "",
+]);
+const AC2_REGEX_KEYWORDS = new Set([
+  "return", "typeof", "case", "in", "of", "do", "else", "void", "delete", "instanceof", "new", "yield", "await",
+]);
+
+function ac2StripJsComments(source) {
+  let out = "";
+  let i = 0;
+  const n = source.length;
+  let quote = null; // "'", '"', "`", or null when not inside a string
+  // The last significant token emitted outside strings/comments: either a
+  // single punctuation character or a whole identifier/keyword run.
+  // Whitespace never changes it, which is what makes `return /re/` work.
+  let prevTok = "";
+  while (i < n) {
+    const ch = source[i];
+    if (quote) {
+      out += ch;
+      if (ch === "\\" && i + 1 < n) {
+        out += source[i + 1];
+        i += 2;
+        continue;
+      }
+      if (ch === quote) quote = null;
+      i += 1;
+      continue;
+    }
+    if (ch === "'" || ch === '"' || ch === "`") {
+      quote = ch;
+      out += ch;
+      prevTok = ch;
+      i += 1;
+      continue;
+    }
+    if (ch === "/" && source[i + 1] === "*") {
+      const end = source.indexOf("*/", i + 2);
+      i = end === -1 ? n : end + 2;
+      continue;
+    }
+    if (ch === "/" && source[i + 1] === "/") {
+      const end = source.indexOf("\n", i + 2);
+      i = end === -1 ? n : end;
+      continue;
+    }
+    if (ch === "/" && (AC2_REGEX_PRECEDERS.has(prevTok) || AC2_REGEX_KEYWORDS.has(prevTok))) {
+      // Emit the literal whole (so an AC2 pattern written INSIDE a regex is
+      // still scanned, never hidden by this branch) and skip the walker
+      // past it so its contents can never open a phantom string or comment.
+      let j = i + 1;
+      let inClass = false;
+      while (j < n) {
+        const c = source[j];
+        if (c === "\\") {
+          j += 2;
+          continue;
+        }
+        if (c === "\n") break; // unterminated: bail rather than eat the file
+        if (c === "[") inClass = true;
+        else if (c === "]") inClass = false;
+        else if (c === "/" && !inClass) {
+          j += 1;
+          break;
+        }
+        j += 1;
+      }
+      out += source.slice(i, j);
+      prevTok = "/regex/";
+      i = j;
+      continue;
+    }
+    out += ch;
+    if (!/\s/.test(ch)) {
+      prevTok = /[A-Za-z0-9_$]/.test(ch) && /[A-Za-z0-9_$]$/.test(prevTok) ? prevTok + ch : ch;
+    }
+    i += 1;
+  }
+  return out;
+}
+
+function ac2StripComments(source, kind) {
+  if (kind === "html") {
+    // HTML has only one comment syntax (<!-- -->) and no string-literal
+    // ambiguity for "//" -- a URL's "//" inside markup text or an
+    // attribute value is never itself comment syntax, so a plain regex is
+    // correct here (unlike the JS case above).
+    return source.replace(/<!--[\s\S]*?-->/g, "");
+  }
+  return ac2StripJsComments(source);
+}
+
+function ac2ScanSource(label, source, kind) {
+  const code = ac2StripComments(source, kind);
+  return AC2_PATTERNS.filter((p) => p.re.test(code)).map(
+    (p) => `AC2(a): ${label} matched "${p.name}"`
+  );
+}
+
+// Every .js file under DEMO/assets/ plus every built page. T17 rework (M8):
+// a filed finding -- that `filesScanned` was printed but never asserted
+// against anything -- was neither applied nor refuted last pass, it simply
+// vanished. Without a floor the scan can cover ZERO files (a renamed
+// directory, a changed extension, a readdirSync that returns nothing) and
+// still print PASS with "0 file(s) scanned, 0 hits". The floor mirrors
+// CTA_COUNT_FLOOR and HREF_COUNT_FLOOR: 5 built pages + 4 assets/*.js
+// modules (site.js, pdp.js, finder.js, booking.js) == 9 today.
+const AC2_FILES_FLOOR = 9;
+
+// T17 rework (M2): the scan's own evadability, MEASURED on every run rather
+// than asserted in prose. The header comment here used to say this function
+// ran "against a deliberately evaded copy" -- it did not; nothing of the
+// kind existed in the tree. These two fixtures are the two evasions that
+// have actually been demonstrated against this scanner, each one a
+// regression test for the fix that closed it. If a future edit to
+// ac2StripJsComments reopens either, the scan reports it instead of
+// silently passing a codebase it can no longer see into.
+const AC2_EVASION_FIXTURES = [
+  {
+    name: "wa.me URL mistaken for a line comment (quote-awareness)",
+    // Pre-quote-awareness this stripped to `const u = ` and scanned clean.
+    source: 'const u = `https://wa.me/x`; fetch("/collect", { method: "post" });\n',
+    expect: ["fetch("],
+  },
+  {
+    name: "regex literal containing a quote flips the walker into string state",
+    // Pre-regex-awareness this stripped to `const re = /won't/;\nconst u = 'https:`
+    // and scanned clean -- the fetch( discarded with the rest of the line.
+    source: "const re = /won't/;\nconst u = 'https://wa.me/x'; fetch(\"/collect\", { method: \"post\" });\n",
+    expect: ["fetch("],
+  },
+];
+
+function ac2SelfEvasionFailures() {
+  const failures = [];
+  for (const f of AC2_EVASION_FIXTURES) {
+    const hits = ac2ScanSource("evasion-fixture", f.source, "js").map((h) =>
+      (/matched "([^"]+)"/.exec(h) || [, h])[1]
+    );
+    for (const want of f.expect) {
+      if (!hits.includes(want)) {
+        failures.push(
+          `AC2(a) SELF-EVASION: fixture "${f.name}" should still be caught by "${want}", ` +
+            `but the scan found [${hits.join(", ")}] -- the comment stripper has regressed and ` +
+            `real code is being discarded unscanned`
+        );
+      }
+    }
+  }
+  return failures;
+}
+
+// Run against the CURRENT tree, and against the deliberately evaded copies
+// above, so this scan's own evadability is on record rather than assumed
+// (build brief §9a: "try to evade your own scan and report what you found").
+function ac2StaticScan() {
+  const failures = [];
+  let filesScanned = 0;
+
+  for (const page of DEMO_PAGES) {
+    const source = readFileSync(join(DEMO_DIR, `${page}.html`), "utf8");
+    filesScanned += 1;
+    failures.push(...ac2ScanSource(`${page}.html`, source, "html"));
+  }
+
+  const assetsDir = join(DEMO_DIR, "assets");
+  for (const name of readdirSync(assetsDir)) {
+    if (!name.endsWith(".js")) continue;
+    const source = readFileSync(join(assetsDir, name), "utf8");
+    filesScanned += 1;
+    failures.push(...ac2ScanSource(`assets/${name}`, source, "js"));
+  }
+
+  if (filesScanned < AC2_FILES_FLOOR) {
+    failures.push(
+      `AC2(a): only ${filesScanned} file(s) scanned, expected >= ${AC2_FILES_FLOOR} -- ` +
+        `the scan is covering less of the tree than it claims to`
+    );
+  }
+
+  failures.push(...ac2SelfEvasionFailures());
+
+  return { failures, filesScanned };
+}
+
+// (b) CLICK-AND-WATCH, on book-a-fitting only. Group 2's existing `page.on`
+// listeners (below, in the per-page loop) are armed BEFORE goto and never
+// re-armed around a click, so a "zero new requests on click" assertion
+// inherited from them would observe nothing and pass always -- this is its
+// own fresh context, its own page, and the request listener is armed AFTER
+// navigation completes, specifically so the click is the first thing it can
+// possibly observe. The submit CTA is `target="_blank"` (a real link, not a
+// form post): clicking it opens a POPUP that navigates to wa.me on a
+// SEPARATE Page object, so that expected external navigation is never
+// counted as "a new request" here by construction -- this listens only on
+// the original page, closes the popup immediately so it cannot leak or hang
+// the harness, and asserts the original page itself made zero new requests.
+const AC2_SUBMIT_SELECTOR = "[data-booking-submit]";
+
+// T17 rework (M2): the AC2 lens's SECOND recommendation, dropped without
+// comment last pass. Click-and-watch below covers ONE page and ONE click.
+// AC2's claim is that NOTHING is posted ANYWHERE -- a beacon that fires on
+// load, on scroll, on blur, or on any of the other five pages is outside
+// what a single post-click window can see. These resource types are the
+// ones only a script can produce; a page built the way this demo is built
+// (documents, stylesheets, scripts, fonts, images) emits none of them, so
+// the assertion is "zero of these, on every page, for the whole page
+// lifecycle" and it is armed BEFORE goto in group 2's own per-page loop.
+const AC2_SCRIPTED_RESOURCE_TYPES = new Set(["fetch", "xhr", "websocket", "eventsource", "manifest"]);
+// Every page necessarily fetches at least its own document, so a listener
+// that observes nothing at all is broken rather than clean.
+const AC2_LIFECYCLE_REQUESTS_FLOOR = 6;
+
+async function ac2ClickAndWatch(browser) {
+  const context = await browser.newContext();
+  const p = await context.newPage();
+  try {
+    await p.goto(`${DECK}/demo/book-a-fitting`, { waitUntil: "networkidle" });
+
+    const newRequests = [];
+    p.on("request", (req) => newRequests.push(req.url()));
+
+    const cta = p.locator(AC2_SUBMIT_SELECTOR);
+    if ((await cta.count()) === 0) {
+      return { pass: false, detail: `AC2(b): ${AC2_SUBMIT_SELECTOR} not found on book-a-fitting` };
+    }
+
+    const [popup] = await Promise.all([
+      p.waitForEvent("popup", { timeout: 5000 }).catch(() => null),
+      cta.click(),
+    ]);
+    if (popup) await popup.close().catch(() => {});
+
+    // Give any stray same-page request a moment to actually fire before
+    // asserting there were none. T17 adjudication fix (minor): widened from
+    // 500ms -- a deliberately delayed beacon (setTimeout(fetch, 600)) would
+    // fire after a 500ms window and this context's teardown, and never be
+    // observed. 1500ms is still well inside the harness's own timeouts and
+    // catches any handler that fires within one and a half seconds of the
+    // click, without making the negative control meaningfully slower.
+    await p.waitForTimeout(1500);
+
+    if (newRequests.length > 0) {
+      return {
+        pass: false,
+        detail: `AC2(b): ${newRequests.length} new request(s) fired on the page itself after clicking the submit CTA: ${newRequests.join(", ")}`,
+      };
+    }
+    return {
+      pass: true,
+      detail: "AC2(b): request listener armed post-navigation, 0 new requests after clicking the submit CTA",
+    };
+  } finally {
+    await context.close();
+  }
+}
+
+// --- BOOKING PURITY (task 17, rulings #607/#608/#610/#617) ----------------
+// Folds into group 2, not a new group 12 (#611). T17 adjudication fix
+// (blocker): none of this existed in the committed tree before this fix --
+// composeBookingMessage was never imported or driven by the spine, so a
+// perfect pure function the page never calls, or a broken one, passed every
+// group. THE SHARPEST TRAP: every expected string below is a LITERAL typed
+// by hand here, never composed with composeBookingMessage's own template
+// logic -- if that template changes, this must FAIL, not follow it.
+const BOOKING_CASES_FLOOR = 17;
+const BOOKING_LITERAL_CASES = [
+  { n: "1 nothing filled", fields: {}, expect: "Hi Melony, I'd like to book a fitting." },
+  {
+    n: "2 every field whitespace-only",
+    fields: { type: "   ", day: " ", time: "\t", name: " ", notes: "   " },
+    expect: "Hi Melony, I'd like to book a fitting.",
+  },
+  { n: "3 only the name", fields: { name: "Sol" }, expect: "Hi Melony, I'd like to book a fitting. My name is Sol." },
+  {
+    n: "4 only the day",
+    fields: { day: "Wednesday" },
+    expect: "Hi Melony, I'd like to book a fitting. Wednesday would suit me.",
+  },
+  {
+    n: "5 a day with no time",
+    fields: { day: "Friday" },
+    expect: "Hi Melony, I'd like to book a fitting. Friday would suit me.",
+  },
+  {
+    n: "6 a time with no day",
+    fields: { time: "14:00" },
+    expect: "Hi Melony, I'd like to book a fitting. Around 14:00 would suit me.",
+  },
+  { n: "7 type left on the placeholder", fields: { type: "" }, expect: "Hi Melony, I'd like to book a fitting." },
+  {
+    n: "8 type chosen, nothing else",
+    fields: { type: "Ice boot fitting + heat-mould" },
+    expect: "Hi Melony, I'd like to book the Ice boot fitting + heat-mould.",
+  },
+  {
+    n: "9 name with & # + = ? %",
+    fields: { name: "Ben & Jo #1 A+B=?%" },
+    expect: "Hi Melony, I'd like to book a fitting. My name is Ben & Jo #1 A+B=?%.",
+  },
+  {
+    n: "10 unicode/emoji/RTL name",
+    fields: { name: "🛼 עברית Zoë" },
+    expect: "Hi Melony, I'd like to book a fitting. My name is 🛼 עברית Zoë.",
+  },
+  {
+    n: "11 very long name (220 chars)",
+    fields: { name: "A".repeat(220) },
+    expect: `Hi Melony, I'd like to book a fitting. My name is ${"A".repeat(220)}.`,
+  },
+  {
+    n: "12 name is a URL/phone number",
+    fields: { name: "https://evil.example.com/+27821234567" },
+    expect: "Hi Melony, I'd like to book a fitting. My name is https://evil.example.com/+27821234567.",
+  },
+  {
+    n: "14 notes only",
+    fields: { notes: "The brand I want is Riedell" },
+    expect: "Hi Melony, I'd like to book a fitting. The brand I want is Riedell",
+  },
+  {
+    n: "bonus: every field filled at once",
+    fields: { type: "Quad fitting", day: "Saturday", time: "10:30", name: "Zoë", notes: "First timer." },
+    expect: "Hi Melony, I'd like to book the Quad fitting. Saturday around 10:30 would suit me. My name is Zoë. First timer.",
+  },
+];
+
+function bookingPurityChecks() {
+  const failures = [];
+  let asserted = 0;
+
+  for (const c of BOOKING_LITERAL_CASES) {
+    const got = composeBookingMessage(c.fields);
+    if (got !== c.expect) {
+      failures.push(
+        `composeBookingMessage case "${c.n}": got ${JSON.stringify(got)}, expected the LITERAL ${JSON.stringify(c.expect)}`
+      );
+    }
+    asserted++;
+  }
+
+  // Case 13: day/time are CONSTRAINED (#610), discharged structurally by
+  // BOOKING_DAYS rather than by a note -- assert the exact set, and that
+  // neither Monday nor Tuesday (the shop's shut days) can ever appear.
+  const expectedDays = ["Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  if (JSON.stringify(BOOKING_DAYS) !== JSON.stringify(expectedDays)) {
+    failures.push(`13 day control: BOOKING_DAYS is ${JSON.stringify(BOOKING_DAYS)}, expected exactly ${JSON.stringify(expectedDays)}`);
+  }
+  if (BOOKING_DAYS.includes("Monday") || BOOKING_DAYS.includes("Tuesday")) {
+    failures.push("13 day control: BOOKING_DAYS must never include Monday or Tuesday");
+  }
+  asserted++;
+
+  // Case 15: submitted twice -- recomposed from the current fields, never
+  // appended to ("My name is Sol. My name is Sol.").
+  const twiceFields = { name: "Sol" };
+  const first = composeBookingMessage(twiceFields);
+  const second = composeBookingMessage(twiceFields);
+  if (first !== second) {
+    failures.push(`15 submitted twice: composeBookingMessage(sameFields) returned different strings: ${JSON.stringify(first)} vs ${JSON.stringify(second)}`);
+  }
+  const nameClauseCount = (second.match(/My name is Sol\./g) || []).length;
+  if (nameClauseCount !== 1) {
+    failures.push(`15 submitted twice: "My name is Sol." appears ${nameClauseCount} time(s) in the composed message, expected exactly 1`);
+  }
+  asserted++;
+
+  // Case 16: a field cleared after a successful compose -- the clause
+  // drops, no stale value survives (finder.js's resetDownstream() is the
+  // precedent this mirrors).
+  const filled = composeBookingMessage({ name: "Sol" });
+  const cleared = composeBookingMessage({ name: "" });
+  if (filled === cleared) {
+    failures.push('16 cleared field: compose({name:"Sol"}) and compose({name:""}) must differ, but did not');
+  }
+  if (cleared !== "Hi Melony, I'd like to book a fitting.") {
+    failures.push(`16 cleared field: compose({name:""}) is ${JSON.stringify(cleared)}, expected the exact case-1 literal`);
+  }
+  asserted++;
+
+  // Case 17: before any interaction (first paint) -- the pure function's
+  // own empty-fields output must equal the case-1 literal exactly. This is
+  // ALSO proved against the REAL DOM below, in bookingBrowserAssertions
+  // (trap 11) -- this half proves the pure function itself, that half
+  // proves the page actually uses it.
+  const firstPaint = composeBookingMessage({});
+  if (firstPaint !== "Hi Melony, I'd like to book a fitting.") {
+    failures.push(`17 first paint: composeBookingMessage({}) is ${JSON.stringify(firstPaint)}, expected the case-1 literal`);
+  }
+  asserted++;
+
+  return { failures, asserted };
+}
+
+// STATIC-HTML checks on book-a-fitting.html's raw bytes, independent of the
+// browser -- same idiom group 5 uses for size-finder.html's static
+// fallback. Backstops three adversary-lens sabotages that a purely dynamic
+// check would miss or that are cheaper to prove on disk.
+function bookingStaticChecks() {
+  const failures = [];
+  let html;
+  try {
+    html = readFileSync(join(DEMO_DIR, "book-a-fitting.html"), "utf8");
+  } catch (err) {
+    return { failures: [`STATIC: could not read book-a-fitting.html: ${err.message || err}`] };
+  }
+
+  // Ruling #609/#616: the R850 collision sentence ships VERBATIM, exactly
+  // once, ON THE ICE FITTING CARD -- "present somewhere on the page" is not
+  // enough (trap 13: a contradicting sentence could sit right beside it).
+  const R850_SENTENCE =
+    "The R850 here is the same heat-mould that appears on the boot page. One bake, charged once, whichever way you book it.";
+  const sentenceCount = html.split(R850_SENTENCE).length - 1;
+  if (sentenceCount !== 1) {
+    failures.push(`STATIC: the #616 R850 sentence appears ${sentenceCount} time(s) verbatim in book-a-fitting.html, expected exactly 1`);
+  } else {
+    const iceCardMatch = /<h3 class="card__title">Ice boot fitting \+ heat-mould<\/h3>[\s\S]*?<\/li>/.exec(html);
+    if (!iceCardMatch || !iceCardMatch[0].includes(R850_SENTENCE)) {
+      failures.push("STATIC: the #616 R850 sentence is present but not inside the Ice boot fitting card");
+    }
+  }
+
+  // Ruling #610, asserted as SET EQUALITY against BOOKING_DAYS. T17 rework
+  // (M3): this used to be `html.includes('value="Monday"') ||
+  // html.includes('value="Tuesday"')` -- a two-string BLACKLIST that caught
+  // exactly the Monday/Tuesday sabotage the adversary happened to run and
+  // PASSED SILENTLY if four of the five bookable days were deleted, while
+  // PRODUCT.md claimed the option set was "asserted against BOOKING_DAYS".
+  // It never was: the DOM's option set was compared to BOOKING_DAYS
+  // nowhere. It is now, as ORDERED equality (stronger than set equality,
+  // and what the generator deterministically emits), against the exact
+  // array [""] + BOOKING_DAYS -- the leading "" being the structural
+  // placeholder option. Monday and Tuesday are excluded by construction
+  // rather than by name, and an undershoot is a named failure.
+  let dayOptionCount = 0;
+  const daySelectMatch = /<select[^>]*\bdata-booking-day\b[^>]*>([\s\S]*?)<\/select>/.exec(html);
+  if (!daySelectMatch) {
+    failures.push("STATIC: no <select ... data-booking-day> found in book-a-fitting.html");
+  } else {
+    const optionValues = [...daySelectMatch[1].matchAll(/<option[^>]*\bvalue="([^"]*)"/g)].map((m) => m[1]);
+    const expectedOptions = ["", ...BOOKING_DAYS];
+    if (JSON.stringify(optionValues) !== JSON.stringify(expectedOptions)) {
+      failures.push(
+        `STATIC: the day select's baked <option> values are ${JSON.stringify(optionValues)}, ` +
+          `expected exactly ${JSON.stringify(expectedOptions)} ([""] + BOOKING_DAYS)`
+      );
+    }
+    dayOptionCount = optionValues.length;
+  }
+
+  // Case 7, discharged STRUCTURALLY rather than by a blacklist in the pure
+  // function. The independent main-session control (#553) drove
+  // composeBookingMessage({ type: "Choose a fitting" }) and expected the
+  // placeholder's LABEL not to reach the message. Measured: through the
+  // page that state is unreachable -- the placeholder option carries
+  // value="", so the select yields "" and case 7 above already covers it.
+  // Teaching the pure function to recognise placeholder-looking STRINGS
+  // would be a blacklist of invented copy (M3's own lesson), and would drop
+  // a legitimate fitting type that happened to be named one of them. The
+  // real risk is the one the generator owns: baking a placeholder whose
+  // value is its own label. That is what is asserted here, on BOTH selects
+  // -- the day select's leading "" is asserted by the ordered-equality
+  // check above, and this covers the type select.
+  const typeSelectMatch = /<select[^>]*\bdata-booking-type\b[^>]*>([\s\S]*?)<\/select>/.exec(html);
+  if (!typeSelectMatch) {
+    failures.push("STATIC: no <select ... data-booking-type> found in book-a-fitting.html");
+  } else {
+    const firstOption = /<option[^>]*\bvalue="([^"]*)"[^>]*>([\s\S]*?)<\/option>/.exec(typeSelectMatch[1]);
+    if (!firstOption || firstOption[1] !== "") {
+      failures.push(
+        `STATIC: the type select's first <option> has value ${JSON.stringify(firstOption && firstOption[1])}, ` +
+          `expected "" -- a placeholder whose value is its own label would compose ` +
+          `"I'd like to book the ${firstOption ? firstOption[2].trim() : "<label>"}." into Melony's inbox`
+      );
+    }
+  }
+
+  // Trap 9 / case 17: the submit CTA's href ON DISK, before any JS runs,
+  // must never be absent and never href="" (which resolves to the page
+  // itself and passes group 3 silently as an internal 200).
+  const hrefMatch = /data-booking-submit href="([^"]*)"/.exec(html);
+  if (!hrefMatch || !hrefMatch[1] || !hrefMatch[1].startsWith("https://wa.me/")) {
+    failures.push(`STATIC: [data-booking-submit]'s baked href is ${JSON.stringify(hrefMatch && hrefMatch[1])}, expected a non-empty https://wa.me/ URL`);
+  }
+
+  // Ruling #618: the time control carries min/max -- the union of the two
+  // published windows. HAND-TYPED LITERALS here, never read back out of
+  // fittings.json, so that a fixture edit which moves the union has to be
+  // ruled on rather than followed silently (the same trap the booking
+  // literal cases above are built around).
+  const timeMinMatch = /data-booking-time[^>]*\bmin="([^"]*)"/.exec(html);
+  const timeMaxMatch = /data-booking-time[^>]*\bmax="([^"]*)"/.exec(html);
+  if (!timeMinMatch || timeMinMatch[1] !== "09:30" || !timeMaxMatch || timeMaxMatch[1] !== "18:00") {
+    failures.push(
+      `STATIC: [data-booking-time]'s baked min/max are ` +
+        `${JSON.stringify(timeMinMatch && timeMinMatch[1])}/${JSON.stringify(timeMaxMatch && timeMaxMatch[1])}, ` +
+        `expected "09:30"/"18:00" (ruling #618, the union of the published windows)`
+    );
+  }
+
+  return { failures, dayOptionCount };
+}
+
+// BROWSER-DRIVEN: the REAL rendered CTA href vs the pure function (trap
+// 11). A perfect pure function the page never calls would still pass every
+// check above -- drive the REAL page's controls and assert the REAL
+// [data-booking-submit] href's DECODED text= param (never the whole href --
+// the base already contains an "8" from the phone number, T16's own
+// #602-class lesson) equals composeBookingMessage()'s output for the SAME
+// fields, in the browser, for 4 cases.
+async function bookingBrowserAssertions(browser) {
+  const failures = [];
+  const details = [];
+  const context = await browser.newContext();
+  const p = await context.newPage();
+  try {
+    await p.goto(`${DECK}/demo/book-a-fitting`, { waitUntil: "load" });
+
+    async function assertHrefMatches(label, fields) {
+      const expected = composeBookingMessage(fields);
+      const href = await p.locator(AC2_SUBMIT_SELECTOR).getAttribute("href");
+      if (!href || !href.startsWith("https://wa.me/")) {
+        failures.push(`booking browser "${label}": href is ${JSON.stringify(href)}, expected it to start with "https://wa.me/"`);
+        return;
+      }
+      const textParam = new URL(href).searchParams.get("text") || "";
+      if (textParam !== expected) {
+        failures.push(
+          `booking browser "${label}": rendered href text= is ${JSON.stringify(textParam)}, expected the pure function's output ${JSON.stringify(expected)}`
+        );
+        return;
+      }
+      details.push(`"${label}": rendered href === pure fn output`);
+    }
+
+    // Case 17: first paint, zero interaction.
+    await assertHrefMatches("17 first paint", {});
+
+    // Case 4: select a day only.
+    await p.selectOption("[data-booking-day]", "Wednesday");
+    await assertHrefMatches("4 day only", { day: "Wednesday" });
+    await p.selectOption("[data-booking-day]", "");
+
+    // Case 3: type a name only.
+    await p.fill("[data-booking-name]", "Sol");
+    await assertHrefMatches("3 name only", { name: "Sol" });
+    await p.fill("[data-booking-name]", "");
+
+    // Case 8: choose the fitting type only.
+    await p.selectOption("[data-booking-type]", "Ice boot fitting + heat-mould");
+    await assertHrefMatches("8 type only", { type: "Ice boot fitting + heat-mould" });
+    await p.selectOption("[data-booking-type]", "");
+  } catch (err) {
+    failures.push(`booking browser: threw before finishing: ${err.message || err}`);
+  } finally {
+    await context.close();
+  }
+  return { failures, details };
+}
+
 async function groupZeroConsoleErrors(page, browser) {
   const failures = [];
 
+  const ac2Static = ac2StaticScan();
+  failures.push(...ac2Static.failures);
+
+  const ac2Click = await ac2ClickAndWatch(browser);
+  if (!ac2Click.pass) failures.push(ac2Click.detail);
+
+  const bookingStatic = bookingStaticChecks();
+  failures.push(...bookingStatic.failures);
+
+  const bookingPurity = bookingPurityChecks();
+  failures.push(...bookingPurity.failures);
+  if (bookingPurity.asserted < BOOKING_CASES_FLOOR) {
+    failures.push(`composeBookingMessage cases asserted (${bookingPurity.asserted}) is below the floor of ${BOOKING_CASES_FLOOR}`);
+  }
+
+  const bookingBrowser = await bookingBrowserAssertions(browser);
+  failures.push(...bookingBrowser.failures);
+
+  let ac2LifecycleRequests = 0;
+
   await forEachSixPages(browser, null, async (p, { label, url }) => {
     const pageFailures = [];
+
+    // Armed before goto, never removed: the whole page lifecycle, not a
+    // window around one click (M2, second half).
+    p.on("request", (req) => {
+      ac2LifecycleRequests += 1;
+      const type = req.resourceType();
+      if (AC2_SCRIPTED_RESOURCE_TYPES.has(type)) {
+        pageFailures.push(`AC2(b) lifecycle: a "${type}" request fired: ${req.url()}`);
+      }
+    });
 
     p.on("console", (msg) => {
       const type = msg.type();
@@ -245,12 +923,29 @@ async function groupZeroConsoleErrors(page, browser) {
     }
   });
 
+  if (ac2LifecycleRequests < AC2_LIFECYCLE_REQUESTS_FLOOR) {
+    failures.push(
+      `AC2(b) lifecycle: only ${ac2LifecycleRequests} request(s) observed across all ${SIX_PAGES.length} pages, ` +
+        `expected >= ${AC2_LIFECYCLE_REQUESTS_FLOOR} -- the listener is not observing anything, so "zero scripted ` +
+        `requests" would pass vacuously`
+    );
+  }
+
   if (failures.length > 0) {
     return { pass: false, detail: failures.join("; ") };
   }
   return {
     pass: true,
-    detail: `zero console errors/warnings, zero uncaught exceptions, zero failed/>=400 requests across ${SIX_PAGES.length} pages`,
+    detail:
+      `zero console errors/warnings, zero uncaught exceptions, zero failed/>=400 requests across ${SIX_PAGES.length} pages | ` +
+      `${ac2Static.filesScanned} file(s) AC2(a)-scanned (floor ${AC2_FILES_FLOOR}), 0 hit(s), ` +
+      `${AC2_EVASION_FIXTURES.length} self-evasion fixture(s) still caught | ${ac2Click.detail} | ` +
+      `AC2(b) lifecycle: ${ac2LifecycleRequests} request(s) observed across ${SIX_PAGES.length} pages, ` +
+      `0 fetch/xhr/websocket/eventsource | ` +
+      `composeBookingMessage cases asserted: ${bookingPurity.asserted} (floor ${BOOKING_CASES_FLOOR}) | ` +
+      `booking static checks: R850 sentence + ${bookingStatic.dayOptionCount} day option(s) == [""]+BOOKING_DAYS + ` +
+      `baked href + #618 time min/max, 0 hit(s) | ` +
+      `booking browser: ${bookingBrowser.details.join(", ")}`,
   };
 }
 
@@ -905,6 +1600,12 @@ async function groupLinkCrawl(page, browser) {
 // unprovable on it. forEachSixPages is reused (not duplicated) with an
 // explicit `if (label === "deck") return` skip inside the callback.
 const CHIP_PROBE_MIN_WIDTH_PX = 40; // half PRODUCT.md's measured 80.016 CSS px pill (lines 283-287), same runtime-injection technique
+// Assertion D2's height floor (M10): a chip hosted on an element whose own
+// children are blocks lands on a line of its own and adds no width. Measured
+// across the five pages: the two such hosts (an <li> on Home, a <section> on
+// the PDP) grow by 29-30px, while every host that grows sideways instead
+// moves 0.8-3.9px vertically. 20 sits clear of both bands.
+const CHIP_HOST_MIN_HEIGHT_PX = 20;
 // FROZEN_NINE: the nine illustrative ids. Per decision #505 the ninth id is
 // aura-size-stock-states (renamed from the now-dead aura-size-run, retired
 // from spec/plan by commit 6acdd39 under #533). NOT parsed from spec §6.0 --
@@ -1434,6 +2135,7 @@ async function groupChipsManifest(page, browser) {
   const observed = new Set();
   const probeDeltas = [];
   let visibleChipElementCount = 0; // total data-illustrative ELEMENTS checked by assertion D, not the unique id count `observed` holds
+  let blockHostCount = 0; // non-inline chip hosts measured by assertion D2 (M10)
 
   await forEachSixPages(browser, { width: 390, height: 844 }, async (p, { label, url }) => {
     if (label === "deck") return; // group 11 scope is the five demo pages only
@@ -1498,6 +2200,84 @@ async function groupChipsManifest(page, browser) {
     for (const id of invisible) {
       failures.push(`D: chip "${id}" on ${label} is not visible (hidden or zero-size box)`);
     }
+
+    // ASSERTION D2 -- T17 rework (M10). Assertion D measures the HOST
+    // element's box. For a chip hosted on a <span> that is fine: the span
+    // wraps only the illustrative value, so a vanished ::after collapses
+    // it. For a chip hosted on a PARAGRAPH -- book-a-fitting has two, the
+    // #616 R850 sentence and the cancellation policy, one of them added by
+    // the previous fix pass -- the paragraph has a non-zero box with or
+    // without its pill, so D proves nothing at all about those two.
+    //
+    // So measure the pill's own footprint: clone the host, strip
+    // data-illustrative from the clone so the ::after rule stops matching
+    // it, and compare the two copies' geometry. TWO axes are needed, and
+    // both are MEASURED rather than assumed:
+    //   - WIDTH, sized by content (width:max-content, max-width:none --
+    //     without that override every paragraph clamps to its readable
+    //     measure, 608px, and both copies measure identically at 608).
+    //     Actuals across the five pages: 88-96px.
+    //   - HEIGHT, at the host's own natural width, because a chip on a
+    //     host whose children are blocks (an <li>, a <section>) lands on a
+    //     line of its OWN below them and adds no width at all. Actuals for
+    //     those two hosts: 29-30px, against 0.8-3.9px for the hosts that
+    //     grow sideways.
+    // Either axis clearing its floor proves the pill occupies real space;
+    // a chip that stops rendering moves neither, and fails. Both clones are
+    // removed synchronously inside the same evaluate, so nothing is left in
+    // the DOM for any later crawl to count.
+    const blockHostDeltas = await p.evaluate(() => {
+      const widthOf = (node) => {
+        const wrap = document.createElement("div");
+        wrap.style.cssText = "position:fixed;left:-10000px;top:0;width:max-content;max-width:none;";
+        node.style.maxWidth = "none";
+        node.style.width = "max-content";
+        wrap.appendChild(node);
+        document.body.appendChild(wrap);
+        const w = node.getBoundingClientRect().width;
+        wrap.remove();
+        return w;
+      };
+      const heightOf = (node, px) => {
+        const wrap = document.createElement("div");
+        wrap.style.cssText = `position:fixed;left:-10000px;top:0;width:${px}px;`;
+        node.style.maxWidth = "none";
+        node.style.width = "100%";
+        wrap.appendChild(node);
+        document.body.appendChild(wrap);
+        const h = node.getBoundingClientRect().height;
+        wrap.remove();
+        return h;
+      };
+      const out = [];
+      for (const el of document.querySelectorAll("[data-illustrative]")) {
+        if (getComputedStyle(el).display === "inline") continue; // D already bites on these
+        const natural = Math.round(el.getBoundingClientRect().width) || 400;
+        const copy = (strip) => {
+          const n = el.cloneNode(true);
+          if (strip) n.removeAttribute("data-illustrative");
+          return n;
+        };
+        out.push({
+          id: el.getAttribute("data-illustrative"),
+          tag: el.tagName.toLowerCase(),
+          dW: widthOf(copy(false)) - widthOf(copy(true)),
+          dH: heightOf(copy(false), natural) - heightOf(copy(true), natural),
+        });
+      }
+      return out;
+    });
+    blockHostCount += blockHostDeltas.length;
+    for (const d of blockHostDeltas) {
+      if (d.dW < CHIP_PROBE_MIN_WIDTH_PX && d.dH < CHIP_HOST_MIN_HEIGHT_PX) {
+        failures.push(
+          `D2: chip "${d.id}" on ${label} is hosted on a non-inline <${d.tag}>, and removing ` +
+            `data-illustrative changed its geometry by only ${d.dW.toFixed(1)}px wide / ` +
+            `${d.dH.toFixed(1)}px tall (floors ${CHIP_PROBE_MIN_WIDTH_PX}px / ${CHIP_HOST_MIN_HEIGHT_PX}px) -- ` +
+            `the host has a box but the pill does not render`
+        );
+      }
+    }
   });
 
   // The one permitted flag, load-bearing at T11 (plan verification command
@@ -1527,7 +2307,9 @@ async function groupChipsManifest(page, browser) {
     `A: manifest illustrative set == FROZEN_NINE (${FROZEN_NINE.length} ids) | ` +
     `B: ${bDetail} | ` +
     `C: probe delta ${cDetail} px vs floor ${CHIP_PROBE_MIN_WIDTH_PX} | ` +
-    `D: ${visibleChipElementCount} real chip element(s) observed across ${DEMO_PAGES.length} pages, all visible`;
+    `D: ${visibleChipElementCount} real chip element(s) observed across ${DEMO_PAGES.length} pages, all visible | ` +
+    `D2: ${blockHostCount} non-inline chip host(s) each grown by their own pill ` +
+    `(>= ${CHIP_PROBE_MIN_WIDTH_PX}px wide or >= ${CHIP_HOST_MIN_HEIGHT_PX}px tall)`;
   return { pass: true, detail };
 }
 
@@ -2371,7 +3153,7 @@ async function sizeFinderBody(page, browser, failures, details) {
 // --- registry ------------------------------------------------------------
 // number -> { title, task, run(page) | null for "not yet implemented" }
 // Ownership map (spec §7 group -> owning task):
-// 1->T1, 2->T10, 3->T11, 4->T8, 5->T16, 6->T15, 7->T13, 8->T10, 9->T10, 10->T10, 11->T11
+// 1->T1, 2->T10+T17, 3->T11, 4->T8, 5->T16, 6->T15, 7->T13, 8->T10, 9->T10, 10->T10, 11->T11
 const GROUPS = {
   1: {
     title: "Deck + all six demo clean URLs return 200 (rewrites work); .html twins also 200",
@@ -2379,8 +3161,9 @@ const GROUPS = {
     run: groupCleanUrlsAndTwins,
   },
   2: {
-    title: "Zero console errors/warnings, zero uncaught exceptions, zero failed/>=400 requests on every page",
-    task: "T10",
+    title:
+      "Zero console errors/warnings, zero uncaught exceptions, zero failed/>=400 requests on every page; AC2: no form/action/method=post/fetch/XHR/sendBeacon/WebSocket/EventSource in any built page or assets/ file (static scan), and zero new requests fire on the page after clicking book-a-fitting's submit CTA (click-and-watch, listener armed post-navigation); composeBookingMessage() driven in plain Node against 14 hand-typed literal-expectation cases plus 4 structural checks (18 assertions, floor 17), backed by static-HTML checks on book-a-fitting.html and 4 browser assertions proving the real rendered CTA href matches the pure function's output",
+    task: "T10+T17",
     run: groupZeroConsoleErrors,
   },
   3: {
@@ -2427,7 +3210,7 @@ const GROUPS = {
   },
   11: {
     title:
-      "Chips <-> manifest, four assertions: A) manifest illustrative set == FROZEN_NINE (fixture pin, no DOM) B) every observed data-illustrative id is a manifest member, DOM -> manifest only (CHIPS_COMPLETE=1 tightens to full set-equality) C) a runtime render probe proves a chip would be visible at 390px D) every real observed chip is non-hidden with a non-zero box",
+      "Chips <-> manifest, four assertions: A) manifest illustrative set == FROZEN_NINE (fixture pin, no DOM) B) every observed data-illustrative id is a manifest member, DOM -> manifest only (CHIPS_COMPLETE=1 tightens to full set-equality) C) a runtime render probe proves a chip would be visible at 390px D) every real observed chip is non-hidden with a non-zero box D2) every NON-INLINE chip host is measurably grown by its own pill, in width or in height",
     task: "T11",
     run: groupChipsManifest,
   },

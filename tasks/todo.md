@@ -38,7 +38,7 @@
 - [x] CHECKPOINT: three screens up — groups 1-4, 6-11 pass (group 6 lands with task 15); instalments sums exactly; nothing hard-coded in HTML
 - [ ] Task 16: Size Finder (§6.4) + pure findSize()/whichSky() (group 5) — M · sonnet · deps: 15
 - [ ] Task 17: Book a fitting (§6.5) — now chips BOTH duration and price per fitting type, per §6.0's own text — S · sonnet · deps: 16
-- [ ] CHECKPOINT: all six screens green — eleven groups pass; owner phone walkthrough of the full path (owner gate)
+- [ ] CHECKPOINT: all six screens green — every group passes; owner phone walkthrough of the full path (owner gate)
 
 ## Phase 6: Gates
 
@@ -58,5 +58,5 @@
 ## Phase 8: Ship
 
 - [ ] Task 25: Manifest audit and §10 success-criteria sign-off (read-only compilation, no new assertions) — S · sonnet · deps: 24
-- [ ] Task 26: Open the PR with screenshots, Lighthouse numbers and the evidence trail (six negative controls, not five) — S · sonnet · deps: 25
+- [ ] Task 26: Open the PR with screenshots, Lighthouse numbers and the evidence trail (every negative control on record, not a fixed count) — S · sonnet · deps: 25
 - [ ] CHECKPOINT: PR open — merge gate; merging deploys to solafidei.com and is the owner's call alone (owner gate)

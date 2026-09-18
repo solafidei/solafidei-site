@@ -473,8 +473,9 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 - [ ] The on-domain-calendar note is present exactly once, adjacent to the form; zero console errors.
 
 **Verification:**
-- [ ] `. ~/.nvm/nvm.sh && nvm use 24 && cd ~/solafidei-site && (npm run dev &) && sleep 10 && node scripts/verify-mels-demo.mjs; echo "exit=$?"`
-- [ ] `cd ~/solafidei-site && grep -rniE 'action=|fetch\(|XMLHttpRequest|walk-?ins' public/decks/mels-skate-shop/demo/book-a-fitting.html public/decks/mels-skate-shop/demo/assets/*.js; echo "expect no matches"`
+- [ ] `. ~/.nvm/nvm.sh && nvm use 24 && cd ~/solafidei-site && (npm run dev &) && sleep 10 && CHIPS_COMPLETE=1 node scripts/verify-mels-demo.mjs; echo "exit=$?"` <!-- T17 adjudication fix: ruling #614 binds "every T17 spine invocation" to CHIPS_COMPLETE=1; this was the one full-spine bullet in this task's own checklist that was missing it. -->
+<!-- The bullet that stood here was REPLACED, struck in place by #599's precedent (fact N1, measured 2026-09-18). It already failed on the tree BEFORE this task touched anything: `finder.js:14` and `:18` match `fetch\(` inside truthful comments explaining why finder.js does NOT call fetch() (the #599 class -- a grep that matches truthful comment text is a defective grep, not a defective comment). Group 2's AC2(a) static scan (this task, ruling #611) is the replacement: it strips comments before matching, over the built HTML of all five pages and every assets/*.js file, and additionally checks `<form`, `method="post"`, `navigator.sendBeacon`, `new WebSocket` and `EventSource`, which this bullet never covered. Do NOT delete finder.js's comments to make this grep pass -- the grep was the defect. -->
+- [ ] `cd ~/solafidei-site && CHIPS_COMPLETE=1 node scripts/verify-mels-demo.mjs --only=2; echo "expect exit=0 (subsumes the old grep -- see the struck bullet above)"`
 - [ ] `cd ~/solafidei-site && grep -c 'data-illustrative="fitting-durations"' public/decks/mels-skate-shop/demo/book-a-fitting.html; echo "expect 4 (one per fitting type)"`
 - [ ] `. ~/.nvm/nvm.sh && nvm use 24 && cd ~/solafidei-site && npm run lint && npm run build`
 
@@ -484,9 +485,9 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 
 ### Checkpoint: all six screens green (owner gate)
 
-- [ ] MECHANICAL: `node scripts/verify-mels-demo.mjs` exits 0 with eleven PASS lines; all six negative controls on record.
+- [ ] MECHANICAL: `CHIPS_COMPLETE=1 node scripts/verify-mels-demo.mjs` exits 0 with every group PASS; every negative control fails as designed, on record.
 - [ ] MECHANICAL: zero console errors/warnings, no horizontal scroll at 390 × 844, every primary CTA ≥ 44 px, every page ≤ 1.5 MB, no form posts anywhere.
-- [ ] OWNER: walk all six screens on a real phone — Home → Derby hub → Aura PDP, get a size from the finder and tap into the prefilled WhatsApp message, see the named fitting types with durations and prices, reach phone/WhatsApp/email/map/hours from every page.
+- [ ] OWNER: walk all six screens on a real phone — Home → Derby hub → Aura PDP, get a size from the finder and tap into the prefilled WhatsApp message, see the named fitting types with durations and prices, book a fitting through the request form and read the composed message before sending it, reach phone/WhatsApp/email/map/hours from every page.
 - [ ] OWNER: confirm the "proposed" chips are legible and read as honest, and that the Fit Guarantee terms under the chip say what the owner intends to offer.
 - [ ] OWNER: say yes, or name the changes, before any polish work starts.
 
@@ -513,13 +514,13 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 
 ### Task 19: Capped remediation against the named lever list
 
-**Description:** Phase B, gated on task 18's recorded numbers so remediation cannot balloon into an open-ended rewrite. Drive error-level findings and any sub-90/95/95 score to zero using *only* this named lever list: explicit `width`/`height` on every `<img>`, `loading="lazy"` below the fold, deferred `<script type="module">` loading, `font-display: swap`, tighter WebP re-encoding within the existing ≤ 150 KB cap (never a new image pipeline). **Scope cap:** if closing a finding needs anything outside that lever list — a markup restructure, a new asset, a JS behavior change, a font swap — stop, do not silently absorb it, and raise it as a named owner-facing item instead (record it in the evidence note for CP6, do not fix it unilaterally). Header/contact `<img>` fixes (the logo's `width`/`height`) go through `demo/.source/*.html` + `node scripts/gen-shared-blocks.mjs`, never the five pages directly, so group 4 stays byte-identical (task 8's rule). Every remediation keeps all eleven groups green and adds no dependency, build step, CDN, third-party script or inline style. Re-measure Lighthouse/impeccable after fixes to confirm the targets are met, or record what is still short and why.
+**Description:** Phase B, gated on task 18's recorded numbers so remediation cannot balloon into an open-ended rewrite. Drive error-level findings and any sub-90/95/95 score to zero using *only* this named lever list: explicit `width`/`height` on every `<img>`, `loading="lazy"` below the fold, deferred `<script type="module">` loading, `font-display: swap`, tighter WebP re-encoding within the existing ≤ 150 KB cap (never a new image pipeline). **Scope cap:** if closing a finding needs anything outside that lever list — a markup restructure, a new asset, a JS behavior change, a font swap — stop, do not silently absorb it, and raise it as a named owner-facing item instead (record it in the evidence note for CP6, do not fix it unilaterally). Header/contact `<img>` fixes (the logo's `width`/`height`) go through `demo/.source/*.html` + `node scripts/gen-shared-blocks.mjs`, never the five pages directly, so group 4 stays byte-identical (task 8's rule). Every remediation keeps every verify group green and adds no dependency, build step, CDN, third-party script or inline style. Re-measure Lighthouse/impeccable after fixes to confirm the targets are met, or record what is still short and why.
 
 **Acceptance criteria:**
 - [ ] Every `<img>` carries explicit `width`/`height` and below-the-fold images carry `loading="lazy"`; every fix applied came from the named lever list — any finding that didn't is listed as a raised item, not silently fixed.
 - [ ] Re-measured Lighthouse mobile JSON for Home and PDP shows performance ≥ 90, accessibility ≥ 95, best-practices ≥ 95, or the labelled-substitute/raised-item path is documented.
 - [ ] `impeccable detect` returns zero error-level findings, or the raised-item path is documented.
-- [ ] All eleven groups still pass; `npm run lint` and `npm run build` green; `git diff main -- package.json package-lock.json` empty and no inline style or external script was added.
+- [ ] Every verify group still passes; `npm run lint` and `npm run build` green; `git diff main -- package.json package-lock.json` empty and no inline style or external script was added.
 
 **Verification:**
 - [ ] `. ~/.nvm/nvm.sh && nvm use 24 && cd ~/solafidei-site && npm run build && (npm run start &) && sleep 10 && node scripts/verify-mels-demo.mjs; echo "exit=$?"`
@@ -533,13 +534,13 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 
 ### Task 20: Six screenshots + full §4 command sweep on a production build
 
-**Description:** Produce the PR evidence and prove the §4 command list end to end. Write `scripts/shoot-mels-demo.mjs` (throwaway Playwright, same convention) capturing six 390 × 844 full-page screenshots — the deck page and the five demo screens, with the PDP shot taken after a size is selected so the availability line shows and the Size Finder shot showing a real computed result — waiting for `networkidle` and `document.fonts.ready` so type is not caught mid-swap, named `01-home.png` … `06-deck.png` into `public/decks/mels-skate-shop/.shots/` (a **repo-relative, gitignored** scratch directory — not `/tmp` — so the artifact survives the handoff from this subagent task to task 22's main-session canvas step regardless of sandboxing; a prior draft of this plan used `/tmp/mels-shots`, which a fresh subagent session may not share with the main session). Then run the full sweep against the production build: `npm run lint`, `npm run build`, `npm run start`, all seven URLs 200, all eleven groups green against `start` (not just `dev`), and the two existing decks still 200. Collect the Lighthouse numbers, the impeccable result, the screenshot paths and the negative-control outputs into an evidence note for the PR body.
+**Description:** Produce the PR evidence and prove the §4 command list end to end. Write `scripts/shoot-mels-demo.mjs` (throwaway Playwright, same convention) capturing six 390 × 844 full-page screenshots — the deck page and the five demo screens, with the PDP shot taken after a size is selected so the availability line shows and the Size Finder shot showing a real computed result — waiting for `networkidle` and `document.fonts.ready` so type is not caught mid-swap, named `01-home.png` … `06-deck.png` into `public/decks/mels-skate-shop/.shots/` (a **repo-relative, gitignored** scratch directory — not `/tmp` — so the artifact survives the handoff from this subagent task to task 22's main-session canvas step regardless of sandboxing; a prior draft of this plan used `/tmp/mels-shots`, which a fresh subagent session may not share with the main session). Then run the full sweep against the production build: `npm run lint`, `npm run build`, `npm run start`, all seven URLs 200, every verify group green against `start` (not just `dev`), and the two existing decks still 200. Collect the Lighthouse numbers, the impeccable result, the screenshot paths and the negative-control outputs into an evidence note for the PR body.
 
 **Acceptance criteria:**
 - [ ] Six 390 × 844 PNGs exist under `public/decks/mels-skate-shop/.shots/`, covering the deck placeholder and all five demo screens, each non-empty, with the PDP shot showing a selected size and the finder shot showing a result.
-- [ ] All eleven verify groups pass against `npm run start`; all seven URLs return 200 from the production server and lux-fragrance / optimus-plumbing still return 200.
+- [ ] Every verify group passes against `npm run start`; all seven URLs return 200 from the production server and lux-fragrance / optimus-plumbing still return 200.
 - [ ] `npm run lint` and `npm run build` are green; the script adds no npm dependency; `.gitignore` covers `.shots/` so `git status` stays clean.
-- [ ] The evidence note collects the Lighthouse numbers, the impeccable result, the screenshot paths and the six negative-control outputs, ready to paste into the PR.
+- [ ] The evidence note collects the Lighthouse numbers, the impeccable result, the screenshot paths and the negative-control outputs, ready to paste into the PR.
 
 **Verification:**
 - [ ] `. ~/.nvm/nvm.sh && nvm use 24 && cd ~/solafidei-site && npm run build && (npm run start &) && sleep 10 && node scripts/verify-mels-demo.mjs && node scripts/shoot-mels-demo.mjs --out public/decks/mels-skate-shop/.shots && ls -la public/decks/mels-skate-shop/.shots`
@@ -555,7 +556,7 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 
 - [ ] MECHANICAL: Lighthouse mobile on Home and PDP ≥ 90 / ≥ 95 / ≥ 95, JSON saved, numbers transcribed verbatim (or the documented substitute, labelled, with no invented score).
 - [ ] MECHANICAL: `impeccable detect` zero error-level findings, or the unavailability recorded.
-- [ ] MECHANICAL: six 390 × 844 screenshots captured; all eleven groups pass against `npm run start`, not just `npm run dev`.
+- [ ] MECHANICAL: six 390 × 844 screenshots captured; every verify group passes against `npm run start`, not just `npm run dev`.
 - [ ] OWNER: review the Lighthouse numbers, the impeccable output and the six screenshots and approve them as the PR evidence, or name what to re-shoot / chase.
 
 ### Phase 7 — Deck
@@ -627,7 +628,7 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 - [ ] Both deck URLs return 200 under `npm run start`; the deck has `noindex`, one `<h1>` and zero console errors; lux-fragrance and optimus-plumbing still 200.
 - [ ] Group 3 now covers the exported deck's hrefs and passes: no dead link, no off-allow-list host, no external asset or font URL; a direct grep for hotlinked `melsskateshop.co.za` image/asset URLs in the exported HTML also comes up empty, mirroring task 3's demo-side check.
 - [ ] The claim scan over the exported deck finds zero omit-list items and zero rand figures in the slide-10 content.
-- [ ] All eleven groups pass against the production build with the real deck in place; `lint` and `build` green; every `manifest.links[]` entry is 200/`manual-ok`/`exempt` (none `pending-manual`), and no new external host appears in the deck beyond what `manifest.links[]` already covers — no re-fetch was run to produce this result.
+- [ ] Every verify group passes against the production build with the real deck in place; `lint` and `build` green; every `manifest.links[]` entry is 200/`manual-ok`/`exempt` (none `pending-manual`), and no new external host appears in the deck beyond what `manifest.links[]` already covers — no re-fetch was run to produce this result.
 
 **Verification:**
 - [ ] `. ~/.nvm/nvm.sh && nvm use 24 && cd ~/solafidei-site && npm run build && (npm run start &) && sleep 10 && node scripts/verify-mels-demo.mjs; echo "exit=$?"`
@@ -646,7 +647,7 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 - [ ] OWNER: confirm slide 10 reads "from R ______ / month" with no rand figure, the day-30 get-out is worded as ruled, and tools sit inside the retainer with no pass-through line.
 - [ ] OWNER: confirm embedding Mel's product photography/logo (via task-20 demo screenshots) on deck slides 4 and 8 is acceptable use beyond the demo pages (§9 ask-first) — this is a distinct sign-off from the general phone walkthrough above.
 - [ ] MECHANICAL: both deck URLs 200 under `npm run start`; `noindex` present; one `<h1>`; zero console errors; the existing decks still serve.
-- [ ] MECHANICAL: group 3 re-run over the exported deck — no dead link, no off-allow-list host, no external asset or font URL smuggled in; claim scan clean; all eleven groups green with the real deck in place; no second fetch pass was run.
+- [ ] MECHANICAL: group 3 re-run over the exported deck — no dead link, no off-allow-list host, no external asset or font URL smuggled in; claim scan clean; every verify group green with the real deck in place; no second fetch pass was run.
 
 ### Phase 8 — Ship
 
@@ -671,13 +672,13 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 
 ### Task 26: Open the PR with screenshots, Lighthouse numbers and the evidence trail
 
-**Description:** Commit any outstanding work on `feat/mels-skate-shop-pitch` (fixtures included, so the build is reproducible without re-fetching), push the branch, and open a PR into `main` — never push to `main`, never merge without the owner, since `main` deploys to solafidei.com and makes the deck and Mel's imagery public. The PR body carries: the two live URLs; the six screenshots in order; the Lighthouse mobile triples for Home and PDP verbatim; the per-page transferred-byte figures against the 1.5 MB budget; the `impeccable detect` result; the eleven-group verify output; the six negative-control outputs; the §10 checklist from task 25 with its evidence; the illustrative id list and the `confirm`-flagged list; the image credit line ("Product imagery © Mel's Skate Shop, reproduced for this proposal"); and an explicit note that merging publishes the deck and Mel's imagery, so the merge is the owner's call. Commit trailers follow the harness attribution rule in force at commit time.
+**Description:** Commit any outstanding work on `feat/mels-skate-shop-pitch` (fixtures included, so the build is reproducible without re-fetching), push the branch, and open a PR into `main` — never push to `main`, never merge without the owner, since `main` deploys to solafidei.com and makes the deck and Mel's imagery public. The PR body carries: the two live URLs; the six screenshots in order; the Lighthouse mobile triples for Home and PDP verbatim; the per-page transferred-byte figures against the 1.5 MB budget; the `impeccable detect` result; the full verify output with every group PASS; every negative-control output on record; the §10 checklist from task 25 with its evidence; the illustrative id list and the `confirm`-flagged list; the image credit line ("Product imagery © Mel's Skate Shop, reproduced for this proposal"); and an explicit note that merging publishes the deck and Mel's imagery, so the merge is the owner's call. Commit trailers follow the harness attribution rule in force at commit time.
 
 **Acceptance criteria:**
 - [ ] A PR from `feat/mels-skate-shop-pitch` into `main` is open; `git log origin/main..HEAD` shows no direct push to `main` and the branch carries the committed fixtures.
-- [ ] The PR body contains the six screenshots, both Lighthouse triples, the impeccable result, the full verify output, the six negative controls, the §10 checklist, the illustrative/confirm lists and the image credit line, and flags the merge as the owner's decision.
+- [ ] The PR body contains the six screenshots, both Lighthouse triples, the impeccable result, the full verify output, every negative control on record, the §10 checklist, the illustrative/confirm lists and the image credit line, and flags the merge as the owner's decision.
 - [ ] `git diff main --name-only` touches only `next.config.ts` (two rewrite lines), `public/decks/mels-skate-shop/**`, `scripts/**` and `docs/**` — nothing in `src/`, `package.json`, `package-lock.json`, `globals.css`, `layout.tsx` or the existing decks.
-- [ ] `npm run lint` and `npm run build` are green on the branch head and `node scripts/verify-mels-demo.mjs` exits 0 with eleven PASS lines.
+- [ ] `npm run lint` and `npm run build` are green on the branch head and `CHIPS_COMPLETE=1 node scripts/verify-mels-demo.mjs` exits 0 with every group PASS.
 
 **Verification:**
 - [ ] `. ~/.nvm/nvm.sh && nvm use 24 && cd ~/solafidei-site && npm run lint && npm run build && (npm run start &) && sleep 10 && node scripts/verify-mels-demo.mjs | tee /tmp/verify-final.txt`
@@ -691,7 +692,7 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 ### Checkpoint: PR open — merge gate (owner gate)
 
 - [ ] MECHANICAL: PR open from `feat/mels-skate-shop-pitch`; no commit pushed directly to `main`; fixtures committed; diff touches nothing under `src/`, no `package.json`, no `globals.css`, no `layout.tsx`, and only two rewrite lines in `next.config.ts`.
-- [ ] MECHANICAL: PR body carries the six screenshots, both Lighthouse triples, the impeccable result, the eleven-group verify output, the six negative controls, the manifest audit and the image credit line.
+- [ ] MECHANICAL: PR body carries the six screenshots, both Lighthouse triples, the impeccable result, the full verify output with every group PASS, every negative control on record, the manifest audit and the image credit line.
 - [ ] OWNER: decide the merge — merging publishes the deck and Mel's imagery on solafidei.com; nothing merges without this.
 - [ ] OWNER: confirm Mel has not been contacted on any channel at any point in the build.
 
@@ -726,7 +727,7 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 ## Definition of done
 
 - [ ] `/decks/mels-skate-shop` and `/decks/mels-skate-shop/demo` (+ the five clean sub-URLs) serve from `npm run start`; the existing LUX and Optimus decks still serve.
-- [ ] `node scripts/verify-mels-demo.mjs` passes all eleven assertion groups against the production build, with all six negative controls on record.
+- [ ] `CHIPS_COMPLETE=1 node scripts/verify-mels-demo.mjs` passes every assertion group against the production build, with every negative control failing as designed and on record.
 - [ ] Lighthouse mobile on Home and PDP ≥ 90 performance / ≥ 95 accessibility / ≥ 95 best-practices (or labelled substitutes, never an invented score); `impeccable detect` zero error-level findings.
 - [ ] `manifest.json` has zero unsourced facts (manual review, task 25); every outbound link has a recorded 200 or the owner's `manual-ok`; the deck quotes nothing from the report's unverified list.
 - [ ] Zero dead links (crawl assertion) and zero console errors or warnings on all six pages.
