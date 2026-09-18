@@ -499,6 +499,7 @@
       "file": "logo.webp",
       "from": "melsskateshop.co.za",
       "width": 586,
+      "height": 360,
       "flags": [
         "below_hero_floor"
       ]
@@ -507,6 +508,7 @@
       "file": "aura-boot.webp",
       "from": "store:11919",
       "width": 562,
+      "height": 523,
       "flags": [
         "below_hero_floor"
       ]
@@ -515,6 +517,7 @@
       "file": "aura-selection-chart.webp",
       "from": "store:11919",
       "width": 1088,
+      "height": 1408,
       "flags": [
         "duplicate_of:aura-size-guide.webp"
       ]
@@ -523,6 +526,7 @@
       "file": "aura-size-guide.webp",
       "from": "store:11941",
       "width": 1088,
+      "height": 1408,
       "flags": [
         "duplicate_of:aura-selection-chart.webp"
       ]
@@ -531,6 +535,7 @@
       "file": "aura-size-width-grid.webp",
       "from": "melsskateshop.co.za",
       "width": 523,
+      "height": 618,
       "flags": [
         "below_hero_floor"
       ],
@@ -541,6 +546,7 @@
       "file": "product-2925.webp",
       "from": "store:2925",
       "width": 225,
+      "height": 225,
       "flags": [
         "below_hero_floor"
       ]
@@ -549,6 +555,7 @@
       "file": "product-3726.webp",
       "from": "store:3726",
       "width": 425,
+      "height": 425,
       "flags": [
         "below_hero_floor"
       ]
@@ -557,6 +564,7 @@
       "file": "product-5194.webp",
       "from": "store:5194",
       "width": 456,
+      "height": 608,
       "flags": [
         "below_hero_floor"
       ]
@@ -565,12 +573,14 @@
       "file": "product-10351.webp",
       "from": "store:10351",
       "width": 800,
+      "height": 800,
       "flags": []
     },
     {
       "file": "product-5030.webp",
       "from": "store:5030",
       "width": 401,
+      "height": 289,
       "flags": [
         "below_hero_floor"
       ]
@@ -579,6 +589,7 @@
       "file": "product-7696.webp",
       "from": "store:7696",
       "width": 353,
+      "height": 353,
       "flags": [
         "below_hero_floor"
       ]
@@ -587,6 +598,7 @@
       "file": "product-7827.webp",
       "from": "store:7827",
       "width": 679,
+      "height": 376,
       "flags": [
         "below_hero_floor"
       ]
@@ -595,24 +607,28 @@
       "file": "product-2923.webp",
       "from": "store:2923",
       "width": 1000,
+      "height": 559,
       "flags": []
     },
     {
       "file": "product-7111.webp",
       "from": "store:7111",
       "width": 1024,
+      "height": 1024,
       "flags": []
     },
     {
       "file": "product-11847.webp",
       "from": "store:11847",
       "width": 1000,
+      "height": 1000,
       "flags": []
     },
     {
       "file": "product-4368.webp",
       "from": "store:4368",
       "width": 519,
+      "height": 519,
       "flags": [
         "below_hero_floor"
       ]
@@ -621,30 +637,35 @@
       "file": "product-8159.webp",
       "from": "store:8159",
       "width": 1000,
+      "height": 1000,
       "flags": []
     },
     {
       "file": "product-9565.webp",
       "from": "store:9565",
       "width": 1000,
+      "height": 1000,
       "flags": []
     },
     {
       "file": "product-9571.webp",
       "from": "store:9571",
       "width": 1000,
+      "height": 1000,
       "flags": []
     },
     {
       "file": "product-9656.webp",
       "from": "store:9656",
       "width": 1200,
+      "height": 915,
       "flags": []
     },
     {
       "file": "product-6395.webp",
       "from": "store:6395",
       "width": 769,
+      "height": 628,
       "flags": [
         "below_hero_floor"
       ]
@@ -653,6 +674,7 @@
       "file": "product-6403.webp",
       "from": "store:6403",
       "width": 692,
+      "height": 796,
       "flags": [
         "below_hero_floor"
       ]
@@ -661,6 +683,7 @@
       "file": "product-4901.webp",
       "from": "store:4901",
       "width": 524,
+      "height": 620,
       "flags": [
         "below_hero_floor"
       ]
@@ -669,6 +692,7 @@
       "file": "product-7941.webp",
       "from": "store:7941",
       "width": 500,
+      "height": 500,
       "flags": [
         "below_hero_floor"
       ]
@@ -677,6 +701,7 @@
       "file": "product-9665.webp",
       "from": "store:9665",
       "width": 120,
+      "height": 120,
       "flags": [
         "below_hero_floor"
       ]
@@ -685,6 +710,7 @@
       "file": "product-12043.webp",
       "from": "store:12043",
       "width": 600,
+      "height": 600,
       "flags": [
         "below_hero_floor"
       ]

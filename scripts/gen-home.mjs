@@ -67,6 +67,20 @@ function spliceBetweenMarkers(html, openMarker, closeMarker, inner, pageLabel) {
   return `${before}\n${inner}\n    ${after}`;
 }
 
+// --- image dimension attributes (task 19, decision #629) -------------------
+// Renders the true intrinsic pixels manifest.images[] carries (width since
+// task 3, height added by task 19) as explicit attributes, plus
+// loading="lazy" unless the caller opts out. Only two images on the whole
+// epic stay eager — the header logo (gen-shared-blocks.mjs) and the PDP's
+// aura-boot.webp, its LCP element — and this generator emits neither, so
+// every call site here is unconditionally lazy.
+function imgAttrs(img, { lazy = true } = {}) {
+  if (typeof img.width !== "number" || typeof img.height !== "number") {
+    throw new Error(`gen-home: manifest.images entry "${img.file}" is missing a numeric width/height`);
+  }
+  return `width="${img.width}" height="${img.height}"${lazy ? ' loading="lazy"' : ""}`;
+}
+
 // --- the chip-legend + aria-describedby contract (#550) --------------------
 const LEGEND_ID = "chip-legend";
 const chip = (id) => ` data-illustrative="${id}" aria-describedby="${LEGEND_ID}"`;
@@ -362,9 +376,10 @@ ${disciplineCardsHtml}
       const file = `product-${p.id}.webp`;
       const alt = altMap[file];
       if (!alt) throw new Error(`gen-home: img-alt.json is missing an entry for "${file}"`);
+      const img = imagesByFile.get(file);
       return `      <li class="card">
         <div class="card__media">
-          <img src="${IMG_ROOT}/${file}" alt="${esc(alt)}" />
+          <img src="${IMG_ROOT}/${file}" alt="${esc(alt)}" ${imgAttrs(img)} />
         </div>
         <h3 class="card__title">${esc(p.name)}</h3>
         <p class="price" data-price="${cents}">${moneyWhole(cents)}</p>
@@ -394,6 +409,8 @@ ${heroCardsHtml}
   // -- 6. trust row -----------------------------------------------------------
   const rollLineAlt = altMap["roll-line-listing.webp"];
   if (!rollLineAlt) throw new Error(`gen-home: img-alt.json is missing "roll-line-listing.webp"`);
+  const rollLineImg = imagesByFile.get("roll-line-listing.webp");
+  if (!rollLineImg) throw new Error(`gen-home: manifest.images has no entry for "roll-line-listing.webp"`);
   const rollLineHref = manifest.links[6].href;
   const roadhouseHref = manifest.links[7].href;
 
@@ -405,7 +422,7 @@ ${heroCardsHtml}
         <ul class="grid grid--wide">
           <li class="card" id="roll-line-evidence">
             <div class="card__media">
-              <img src="${IMG_ROOT}/roll-line-listing.webp" alt="${esc(rollLineAlt)}" />
+              <img src="${IMG_ROOT}/roll-line-listing.webp" alt="${esc(rollLineAlt)}" ${imgAttrs(rollLineImg)} />
             </div>
             <h3 class="card__title">${esc(home.trustRow.dealerCardLabel)}</h3>
             <p class="card__body">${esc(home.trustRow.dealerCardNote)}</p>

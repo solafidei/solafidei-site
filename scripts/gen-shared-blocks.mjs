@@ -81,7 +81,17 @@ function buildHeader(contact, copy, alt, manifest) {
   // manifest.images[0] is the logo (spec §5, task instructions); its `file`
   // drives both the <img> src and the img-alt.json lookup, so the filename
   // is never typed twice.
-  const logoFile = manifest.images[0].file;
+  const logoImg = manifest.images[0];
+  const logoFile = logoImg.file;
+  // Task 19 (decision #629): explicit width/height, read from the manifest's
+  // own true-intrinsic-pixel fields (never a hand-typed number) — logo.webp
+  // is one of the two images that stays eager (top=12, above the fold on
+  // all five pages), so no loading attribute is added here.
+  if (typeof logoImg.width !== "number" || typeof logoImg.height !== "number") {
+    throw new Error(
+      `gen-shared-blocks: manifest.images[0] (${logoFile}) is missing a numeric width/height`
+    );
+  }
   return fill(template, {
     SKIP_LINK: esc(copy.header.skipLink),
     // The four internal nav hrefs are the demo's fixed clean-URL routes
@@ -92,6 +102,8 @@ function buildHeader(contact, copy, alt, manifest) {
     HOME_HREF: "/decks/mels-skate-shop/demo",
     LOGO_SRC: `/decks/mels-skate-shop/img/${logoFile}`,
     LOGO_ALT: esc(alt[logoFile]),
+    LOGO_WIDTH: String(logoImg.width),
+    LOGO_HEIGHT: String(logoImg.height),
     DERBY_HREF: "/decks/mels-skate-shop/demo/roller-derby",
     NAV_DERBY: esc(copy.header.navDerby),
     FINDER_HREF: "/decks/mels-skate-shop/demo/size-finder",

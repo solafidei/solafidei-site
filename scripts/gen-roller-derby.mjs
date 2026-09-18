@@ -60,6 +60,20 @@ function spliceBetweenMarkers(html, openMarker, closeMarker, inner, pageLabel) {
   return `${before}\n${inner}\n    ${after}`;
 }
 
+// --- image dimension attributes (task 19, decision #629) -- copied verbatim
+// from gen-home.mjs (only the error-message prefix differs). Every one of
+// the 15 grid cards this generator emits is below the fold — including the
+// 4 that render `hidden` (out-of-stock, filtered out by default: a hidden
+// element measures top=0/box=0x0, which is NOT "above the fold", and they
+// get lazy same as the other 11) — so every call site here is
+// unconditionally lazy, same as gen-home.mjs.
+function imgAttrs(img, { lazy = true } = {}) {
+  if (typeof img.width !== "number" || typeof img.height !== "number") {
+    throw new Error(`gen-derby: manifest.images entry "${img.file}" is missing a numeric width/height`);
+  }
+  return `width="${img.width}" height="${img.height}"${lazy ? ' loading="lazy"' : ""}`;
+}
+
 // --- the chip-legend + aria-describedby contract (#550, widened to this page
 // by this task) -- copied verbatim from gen-home.mjs. ------------------------
 const LEGEND_ID = "chip-legend";
@@ -249,6 +263,7 @@ function run() {
     }
     const file = `product-${p.id}.webp`;
     const alt = altMap[file];
+    const img = imagesByFile.get(file);
     const buyable = isBuyable(p);
     const cardKey = cardKeyFor(p);
     // Baked initial state: toggle defaults ON, no decision card active, so a
@@ -273,7 +288,7 @@ function run() {
 
     return `      <li class="card" data-derby-set="${cardKey}" data-derby-buyable="${buyable}"${hiddenAttr}>
         <div class="card__media">
-          <img src="${IMG_ROOT}/${file}" alt="${esc(alt)}" />
+          <img src="${IMG_ROOT}/${file}" alt="${esc(alt)}" ${imgAttrs(img)} />
         </div>
         <h3 class="card__title">${esc(p.name)}</h3>
         <p class="price" data-price="${cents}">${money(cents)}</p>

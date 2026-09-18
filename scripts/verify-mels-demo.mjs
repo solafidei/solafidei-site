@@ -1033,9 +1033,63 @@ async function groupMobileLayout(page, browser) {
 // only one image is rendered today. A basename missing from either fixture
 // is a FAIL naming the file -- the fixtures are the source of truth, not a
 // checklist to render everything.
+//
+// Ruling #630: T19 shipped 34 sized/lazy <img> tags with nothing in this
+// spine asserting width/height/loading -- 11/11 PASS both before and after
+// that diff, provably blind to it. Extended here, same group, no new
+// dependency, per the ruling:
+//   A. total <img> count across the FIVE demo pages (deck excluded -- it
+//      carries zero <img> and is absent from EXPECTED_IMG_COUNT_BY_PAGE) is
+//      exactly 34, with a named per-page count (index 6, roller-derby 16,
+//      aura-sky-100 10, size-finder 1, book-a-fitting 1).
+//   B. every <img> carries BOTH a width and a height attribute -- every
+//      image counted, never a spot check.
+//   C. that attribute pair EQUALS naturalWidth/naturalHeight once the
+//      browser has actually decoded the image -- reading naturalWidth
+//      before decode() resolves returns 0 and would pass every comparison
+//      vacuously. Below-the-fold and `hidden` images never start
+//      downloading on their own (lazy-loading's near-viewport heuristic
+//      never fires for a 0x0 box), so each image is scrolled into view --
+//      and, on roller-derby, the "In stock only" toggle is clicked first to
+//      reveal the four out-of-stock cards -- before decode() is awaited.
+//   D. exactly 6 tags are eager and 28 carry loading="lazy", asserted by
+//      NAME, not only by count (a count-only check passes if the wrong six
+//      are eager): logo.webp is eager on all five demo pages (group 4
+//      stamps the shared header byte-identical, so its loading attribute is
+//      necessarily uniform across all five) and aura-boot.webp is eager on
+//      the PDP (its LCP element); every other <img> must be loading="lazy".
+//   E. the four hidden roller-derby cards -- product-7111/8159/9565/9656,
+//      `<li hidden>`, 0x0 while filtered out -- are asserted lazy by name.
+//      They are the easiest pair to get backwards: a naive
+//      "top < viewportHeight" rule marks them eager because they render at
+//      top=0. Their `loading` attribute is read directly, never inferred
+//      from their (currently 0x0) rendered box.
 function basenameFromSrc(src) {
   return src.split(/[?#]/)[0].split("/").pop();
 }
+
+// Per-page <img> totals + eager identity for assertions A/D/E above.
+// EXTRA_EAGER_BY_PAGE lists non-logo basenames that must stay eager;
+// logo.webp is checked directly on every demo page (not listed here)
+// because it is eager everywhere by construction (group 4's byte-identical
+// shared header).
+const EXPECTED_IMG_COUNT_BY_PAGE = {
+  "demo home": 6,
+  "roller-derby": 16,
+  "aura-sky-100": 10,
+  "size-finder": 1,
+  "book-a-fitting": 1,
+};
+const TOTAL_IMG_COUNT = 34; // sum of the five values above
+const EAGER_TOTAL = 6; // 5x logo.webp + aura-boot.webp
+const LAZY_TOTAL = TOTAL_IMG_COUNT - EAGER_TOTAL; // 28
+const EXTRA_EAGER_BY_PAGE = { "aura-sky-100": ["aura-boot.webp"] };
+const HIDDEN_ROLLER_DERBY_BASENAMES = [
+  "product-7111.webp",
+  "product-8159.webp",
+  "product-9565.webp",
+  "product-9656.webp",
+];
 
 async function groupImageAndDocHygiene(page, browser) {
   let altMap;
@@ -1050,10 +1104,30 @@ async function groupImageAndDocHygiene(page, browser) {
 
   const failures = [];
   const details = [];
+  let totalImgCount = 0;
+  let totalSizedCount = 0;
+  let totalEagerCount = 0;
+  let totalLazyCount = 0;
 
   await forEachSixPages(browser, { width: 390, height: 844 }, async (p, { label, url }) => {
     try {
       await p.goto(url, { waitUntil: "load" });
+
+      // Reveal roller-derby's four "In stock only"-hidden cards BEFORE any
+      // rendered-width or sizing capture below, exactly like a real visitor
+      // pressing the toggle. Moved up from right before the sizing capture
+      // (#632/F1): `[hidden]` is `display: none !important` (site.css),
+      // which zeroes getBoundingClientRect().width, so capturing renderedWidth
+      // before this click made the manifest-width comparison for those four
+      // cards permanently vacuous (0 > manifestWidth is always false). A
+      // no-op on every other page -- none of them carry [data-derby-toggle].
+      // Harmless on alt/manifest-key lookups and the <img> COUNT check below:
+      // `hidden` never removes elements from the DOM, so images.length and
+      // every img's src/alt attribute are unaffected by this click.
+      await p.evaluate(() => {
+        const toggle = document.querySelector("[data-derby-toggle]");
+        if (toggle) toggle.click();
+      });
 
       const images = await p.evaluate(() =>
         Array.from(document.querySelectorAll("img")).map((img) => ({
@@ -1094,6 +1168,128 @@ async function groupImageAndDocHygiene(page, browser) {
         }
       }
 
+      // --- #630: total count + width/height/loading, five demo pages only.
+      // The deck is excluded exactly like group 10's payload floor/ceiling
+      // (`label !== "deck"`) -- it carries zero <img> today and is absent
+      // from EXPECTED_IMG_COUNT_BY_PAGE.
+      if (label !== "deck") {
+        const expectedCount = EXPECTED_IMG_COUNT_BY_PAGE[label];
+        if (expectedCount === undefined) {
+          failures.push(`${label}: no expected <img> count configured for this page (add one to EXPECTED_IMG_COUNT_BY_PAGE)`);
+        } else if (images.length !== expectedCount) {
+          failures.push(`${label}: ${images.length} <img>(s), expected exactly ${expectedCount}`);
+        }
+        totalImgCount += images.length;
+
+        // The derby toggle click already ran above, before renderedWidth was
+        // captured (#632/F1). It still had to run before this decode() pass
+        // regardless: while `hidden`, an image never starts downloading (no
+        // layout box, so lazy-loading's near-viewport heuristic never
+        // fires), so decode() below would hang/time out on them otherwise.
+        const sizing = await p.evaluate(async () => {
+          const DECODE_TIMEOUT_MS = 8000;
+          const imgs = Array.from(document.querySelectorAll("img"));
+          const out = [];
+          for (const img of imgs) {
+            const hasWidthAttr = img.hasAttribute("width");
+            const hasHeightAttr = img.hasAttribute("height");
+            const widthAttr = img.getAttribute("width");
+            const heightAttr = img.getAttribute("height");
+            const loadingAttr = img.getAttribute("loading");
+            // Scrolled into view so lazy-loading's near-viewport heuristic
+            // fires and the browser actually starts fetching the image --
+            // otherwise naturalWidth/naturalHeight read 0 below and every
+            // comparison would pass vacuously, defeating assertion C's
+            // whole purpose.
+            img.scrollIntoView({ block: "center" });
+            let decodeError = null;
+            try {
+              const timeout = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("decode timed out")), DECODE_TIMEOUT_MS)
+              );
+              await Promise.race([img.decode(), timeout]);
+            } catch (err) {
+              decodeError = (err && err.message) || String(err);
+            }
+            out.push({
+              src: img.getAttribute("src") || "",
+              hasWidthAttr,
+              hasHeightAttr,
+              widthAttr,
+              heightAttr,
+              naturalWidth: img.naturalWidth,
+              naturalHeight: img.naturalHeight,
+              loadingAttr,
+              decodeError,
+            });
+          }
+          return out;
+        });
+
+        for (const img of sizing) {
+          const basename = basenameFromSrc(img.src);
+
+          if (img.hasWidthAttr && img.hasHeightAttr) {
+            totalSizedCount += 1;
+          } else {
+            const missing = [!img.hasWidthAttr && "width", !img.hasHeightAttr && "height"].filter(Boolean).join("/");
+            failures.push(`${label}: ${basename} is missing its ${missing} attribute`);
+          }
+
+          if (img.decodeError) {
+            failures.push(
+              `${label}: ${basename} failed to decode (${img.decodeError}), cannot verify its width/height attributes match naturalWidth/naturalHeight`
+            );
+          } else if (
+            img.hasWidthAttr &&
+            img.hasHeightAttr &&
+            (String(img.widthAttr) !== String(img.naturalWidth) || String(img.heightAttr) !== String(img.naturalHeight))
+          ) {
+            failures.push(
+              `${label}: ${basename} width/height attributes (${img.widthAttr}x${img.heightAttr}) do not equal its decoded naturalWidth/naturalHeight (${img.naturalWidth}x${img.naturalHeight})`
+            );
+          }
+
+          const isEager = img.loadingAttr !== "lazy";
+          if (isEager) {
+            totalEagerCount += 1;
+          } else {
+            totalLazyCount += 1;
+          }
+
+          // #632/F2: `mustBeEager && !isEager` could never fire for an image
+          // carrying loading="eager" -- isEager is only "not lazy", so an
+          // explicit loading="eager" attribute (which the must-be-eager
+          // contract says must be ABSENT, per PRODUCT.md and this failure
+          // string) satisfied isEager and skipped the branch entirely. The
+          // must-be-eager set requires genuine absence of the attribute --
+          // getAttribute("loading") is confirmed to return null when the
+          // attribute is not present (see loadingAttr's own capture above) --
+          // so this must check `!== null`, not `!isEager`. isEager itself is
+          // untouched and still tallies loading="eager" into totalEagerCount,
+          // never into totalLazyCount.
+          const mustBeEager = basename === "logo.webp" || (EXTRA_EAGER_BY_PAGE[label] || []).includes(basename);
+          if (mustBeEager && img.loadingAttr !== null) {
+            failures.push(`${label}: ${basename} must be eager (no loading attribute) but has loading="${img.loadingAttr}"`);
+          } else if (!mustBeEager && img.loadingAttr !== "lazy") {
+            failures.push(`${label}: ${basename} must carry loading="lazy" but has loading="${img.loadingAttr}"`);
+          }
+        }
+
+        if (label === "roller-derby") {
+          for (const basename of HIDDEN_ROLLER_DERBY_BASENAMES) {
+            const found = sizing.find((img) => basenameFromSrc(img.src) === basename);
+            if (!found) {
+              failures.push(`roller-derby: hidden card ${basename} not found among rendered <img> tags`);
+            } else if (found.loadingAttr !== "lazy") {
+              failures.push(
+                `roller-derby: hidden card ${basename} must carry loading="lazy" but has loading="${found.loadingAttr}"`
+              );
+            }
+          }
+        }
+      }
+
       const h1Count = await p.evaluate(() => document.querySelectorAll("h1").length);
       if (h1Count !== 1) {
         failures.push(`${label}: ${h1Count} <h1> element(s), expected exactly 1`);
@@ -1111,6 +1307,19 @@ async function groupImageAndDocHygiene(page, browser) {
       failures.push(`${label}: errored: ${err.message || err}`);
     }
   });
+
+  if (totalImgCount !== TOTAL_IMG_COUNT) {
+    failures.push(`total <img> across the five demo pages is ${totalImgCount}, expected exactly ${TOTAL_IMG_COUNT}`);
+  }
+  if (totalEagerCount !== EAGER_TOTAL) {
+    failures.push(`total eager <img> across the five demo pages is ${totalEagerCount}, expected exactly ${EAGER_TOTAL}`);
+  }
+  if (totalLazyCount !== LAZY_TOTAL) {
+    failures.push(`total loading="lazy" <img> across the five demo pages is ${totalLazyCount}, expected exactly ${LAZY_TOTAL}`);
+  }
+  details.push(
+    `image triple: total=${totalImgCount}/${TOTAL_IMG_COUNT}, sized=${totalSizedCount}/${TOTAL_IMG_COUNT}, eager=${totalEagerCount}/${EAGER_TOTAL}, lazy=${totalLazyCount}/${LAZY_TOTAL}`
+  );
 
   if (failures.length > 0) {
     return { pass: false, detail: failures.join("; ") };
@@ -3199,7 +3408,8 @@ const GROUPS = {
     run: groupMobileLayout,
   },
   9: {
-    title: "Every <img> has non-empty alt matching img-alt.json and is not rendered wider than manifest.images[].width; exactly one <h1>; noindex meta on all six pages",
+    title:
+      "Every <img> has non-empty alt matching img-alt.json, is not rendered wider than manifest.images[].width, and carries width/height matching its decoded natural size; TOTAL 34 across the five demo pages with exactly 6 eager (5x logo.webp + PDP aura-boot.webp) and 28 loading=\"lazy\" (asserted by name, including the four hidden roller-derby cards); exactly one <h1>; noindex meta on all six pages",
     task: "T10",
     run: groupImageAndDocHygiene,
   },

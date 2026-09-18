@@ -84,6 +84,24 @@ function spliceBetweenMarkers(html, openMarker, closeMarker, inner, pageLabel) {
   return `${before}\n${inner}\n    ${after}`;
 }
 
+// --- image dimension attributes (task 19, decision #629) -- copied verbatim
+// from gen-home.mjs (only the error-message prefix differs), with one call
+// site opting OUT of the lazy default: aura-boot.webp (top=597/624, box
+// 378×352) is the PDP's LCP element (lcp-discovery-insight eagerlyLoaded:
+// true, T18 measured) and MUST stay eager, or the PDP's LCP score tanks.
+// It is one of only two eager image FILES on the whole epic, rendered as six
+// eager <img> tags (this one + the header logo repeated on all five demo
+// pages, gen-shared-blocks.mjs) — not "two eager images" (#632/F6: that file-
+// vs-tag conflation is what produced the brief's unreachable lazy=32 target,
+// ruling #631). Everything else this generator emits
+// (the rest of the gallery, both rails) is below the fold and lazy.
+function imgAttrs(img, { lazy = true } = {}) {
+  if (typeof img.width !== "number" || typeof img.height !== "number") {
+    throw new Error(`gen-pdp: manifest.images entry "${img.file}" is missing a numeric width/height`);
+  }
+  return `width="${img.width}" height="${img.height}"${lazy ? ' loading="lazy"' : ""}`;
+}
+
 // --- the chip-legend + aria-describedby contract (#550, widened to this
 // page by this task) -- copied verbatim from gen-home.mjs. ------------------
 const LEGEND_ID = "chip-legend";
@@ -188,9 +206,14 @@ function run() {
     }
     const alt = altMap[file];
     if (!alt) throw new Error(`gen-pdp: img-alt.json is missing an entry for "${file}"`);
+    const img = imagesByFile.get(file);
+    // aura-boot.webp is the PDP's LCP element (§4a of the T19 brief) and is
+    // the one gallery image that stays eager; the other two are below the
+    // fold like everything else on this page.
+    const lazy = file !== "aura-boot.webp";
     return `      <li class="card">
         <div class="card__media">
-          <img src="${IMG_ROOT}/${file}" alt="${esc(alt)}" />
+          <img src="${IMG_ROOT}/${file}" alt="${esc(alt)}" ${imgAttrs(img, { lazy })} />
         </div>
         <p class="card__title">${esc(caption)}</p>
       </li>`;
@@ -415,11 +438,12 @@ ${serviceRowsHtml}
     }
     const alt = altMap[file];
     if (!alt) throw new Error(`gen-pdp: img-alt.json is missing an entry for "${file}"`);
+    const img = imagesByFile.get(file);
     const state = stockState(p);
     const badgeClass = state === "Sold out" ? "badge--sold-out" : "badge--in-stock";
     return `      <li class="card">
         <div class="card__media">
-          <img src="${IMG_ROOT}/${file}" alt="${esc(alt)}" />
+          <img src="${IMG_ROOT}/${file}" alt="${esc(alt)}" ${imgAttrs(img)} />
         </div>
         <p class="card__title">${esc(p.name)}</p>
         ${railAPriceHtml(p)}

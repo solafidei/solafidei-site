@@ -1087,3 +1087,239 @@ false claim about the tree. An opus completeness critic reading the brief rather
   acceptable given Aura's own "fit Very Snug prior to heat moulding" design intent, or whether it
   should round up like the other five brands, is a domain fit-safety call for the owner, not a
   measurable fact this build can resolve on its own.
+
+## T19 — image dimensions + lazy loading: findings
+
+**Ruling applied:** #629 (the WebP re-encode/downscale lever is closed — raise it, do not touch a
+byte). Scope input: T18's measurement-only pass (`~/handoffs/t18/t18-measurements.md`), not
+re-derived here.
+
+- **All 34 `<img>` across the five demo pages now carry explicit `width`/`height`**, read from
+  `manifest.images[].width`/`.height` at generation time (never hand-typed). `height` did not
+  previously exist on most of the manifest; this task added it to **26** of the manifest's 27
+  `images[]` rows — `roll-line-listing.webp` already carried `height: 940` from an earlier task and
+  was left untouched, so the diff is 26 insertions, not 27 — machine-derived with `sharp` (resolved
+  via `createRequire` from `next`'s dependency
+  tree, the `fetch-mels-fixtures.mjs:18` precedent — no new dependency). Every value was
+  cross-checked against the shipped file's real pixel dimensions before being written; zero
+  mismatches.
+- **`loading="lazy"` on every below-the-fold image.** The two above-the-fold image FILES
+  (`logo.webp` in the shared header, `aura-boot.webp` on the PDP — the PDP's LCP element),
+  rendered as six eager `<img>` tags (the header repeats `logo.webp` on all five demo pages),
+  carry no `loading` attribute (eager is the default; adding `loading="eager"` as decoration was
+  deliberately skipped per the brief). The edit surface is the generators and
+  `demo/.source/header.html` only — the five `.html` pages are never hand-edited (task 8's rule);
+  regenerating all six is idempotent (verified byte-identical across three consecutive runs).
+- **The four roller-derby hidden-card trap (§4a) held.** `product-7111`/`8159`/`9565`/`9656` render
+  inside `<li hidden>` (out-of-stock, filtered by the default "In stock only" toggle) and measure
+  `top=0`/`box=0x0` — not "above the fold," genuinely off-screen. All four get `loading="lazy"`
+  like the other 11 grid cards; no special-casing was needed in the generator because the fold
+  logic here is a flat rule (only the header logo and `aura-boot.webp` are eager — everything this
+  generator emits is lazy unconditionally), not a derived top-position calculation that could have
+  mis-classified them. A runtime check confirmed `naturalWidth`/`naturalHeight` match the baked
+  attributes for these four only after clicking the real "In stock only" toggle to reveal them —
+  while `hidden`, their images do not load at all (no layout box, so `loading="lazy"` never
+  fires), which is the correct, real-visitor behavior, not a bug.
+- **Discrepancy filed:** the brief's own gate 8 states the exact triple must be
+  `TOTAL 34, sized=34, lazy=32`, and §4 frames it as "34 total minus the 2 eager." The shipped,
+  measurement-faithful, group-4-compliant result is `lazy=28`, not 32, and 32 is unreachable under
+  the brief's own constraints: the shared header block (holding `logo.webp`) is byte-identical
+  across all five pages by construction (group 4, task 8's rule), so its `loading` attribute is
+  necessarily uniform across all five — either all 5 header instances are eager or all 5 are lazy,
+  never a mix. §4 itself states the logo measures `top=12`, above the fold, "on all five pages"
+  — so keeping it eager (uniformly) is the only reading consistent with §1's "the two above-the-fold
+  images stay eager" and with not lazy-loading a genuinely above-the-fold, always-visible header
+  image. That gives 5 eager logo instances + 1 eager `aura-boot.webp` = 6 eager, 28 lazy. The only
+  other internally-consistent option (logo lazy on all five) gives 33 lazy, not 32 either. 32 is
+  simply arithmetically unreachable once the header's five-page repetition is accounted for — this
+  reads as an oversight in the brief's own tally, not a fact to silently work around. Shipped with
+  28, both because it is the only value the brief's other rules actually allow and because it is
+  the one that does not lazy-load a real above-the-fold image.
+- **Lighthouse mobile, no-slash URL: PDP holds or beats T18's baseline on its typical run. Home
+  does NOT — its median across the three recorded runs is 94, under its 98 baseline — and the dip
+  is not charged to this diff, on mechanical grounds set out below. Observed range Home 94–100,
+  PDP 99–100 across repeated runs — not "every run" at 100.** Measured across several runs, not a
+  single shot, after a rework pass found the first report's single clean run was not
+  representative on this shared/noisy sandbox:
+  - **Home:** a11y/bp pinned 100/100 across every run; performance is **flaky on this shared
+    sandbox** — the three recorded runs gave 100/100/100, 94/100/100, 94/100/100, so the median is
+    **94, four points under the 98/100/100 baseline**. Load average does NOT discriminate them:
+    `uptime` sat at ~1.25–1.3 throughout all three (other sessions active on the same host,
+    confirmed via `ps aux`), so the 100 and both 94s were measured under materially the same load
+    and the earlier load-correlation reading does not survive its own data. LCP timing moved with
+    the score (1.6s / 3.1s / 3.1s); what caused that is unexplained. **The dip is not charged to
+    this diff on mechanical grounds, not statistical ones:** Home's LCP element is
+    `<p class="lede">`, the hero text paragraph — present unchanged since before this task, not an
+    image — and this task's diff only adds `width`/`height`/`loading` to `<img>` tags, which
+    cannot move a text LCP; the one behavioral effect it can have (reserved layout boxes) only
+    reduces CLS. Record the range AND the median, never the single best-case number. **Open for
+    CP6:** three runs is a thin sample and the 94 is unexplained — re-measure on a genuinely quiet
+    box before reading anything into Home's perf score either way.
+  - **PDP:** typically **99/100/100** across repeated runs, **100/100/100** on a best run (not
+    steady at the single 100/100/100 first reported) — still comfortably clear of the 95/100/100
+    baseline. `aura-boot.webp` confirmed
+    `eagerlyLoaded: true` (not lazy) on every run; `unsized-images` scores 1 (pass).
+- **Group 10 payload, before (T18) → after (T19), cold load:** demo home 243,529 → 201,177 bytes;
+  roller-derby 646,455 → 425,933 bytes; aura-sky-100 346,094 → 232,385 bytes; size-finder 87,481 →
+  87,498 bytes (a few bytes up — its one image is the eager logo, no lazy savings available, and it
+  now carries `width="586" height="360"`); book-a-fitting 76,154 → 76,172 bytes (same reason). All
+  five stay clear of the 20,480-byte floor — that number is a measurement-sanity floor (it exists
+  so a warm-cache read can never pass as a cold-load measurement), not a performance budget, so a
+  larger multiple above it means a heavier page, not a better one. Stated as distance above that
+  floor: book-a-fitting is **3.72x** (lightest page, closest to the floor) up to roller-derby at
+  **20.80x** (heaviest page at 425,933 bytes, and the worst perf outcome of the five, not the
+  widest margin) — home 9.82x, aura-sky-100 11.35x, size-finder 4.27x — not a uniform "4x to 5x."
+  The brief's own §7 table's "after lazy (est.)"
+  column was explicitly an estimate, not a measured fact like its other tables, and the real
+  savings came in lower than it guessed (e.g. roller-derby shed ~221 KB, not the ~500 KB the
+  estimate suggested) — real and worth having, just smaller than guessed; not raised as a
+  discrepancy since the brief itself flagged that column as an estimate.
+- **impeccable: same 18 findings, zero new** (10 low-contrast hover states, 7 cramped-padding, 1
+  skipped heading) — none map to the image lever list.
+- **CLOSED in-task under ruling #630 — the verify spine's zero regression protection for this
+  task's own invariant.** Before this fix pass, `scripts/verify-mels-demo.mjs` was byte-identical
+  to `ad38bf9` (empty diff) and asserted nothing on `width=`/`height=`/`loading=`; ruling #630
+  ordered the gap closed inside this same commit rather than carried to CP6, overriding T19's named
+  edit surface for this one file. (§2's table names `.source/header.html` plus the three page
+  generators; `gen-shared-blocks.mjs` was also edited — 13 insertions, 1 deletion — because it
+  stamps the shared header and had to fill the new `LOGO_WIDTH`/`LOGO_HEIGHT` placeholders. That is
+  a consequence of the logo dimensions, not a second scope override, and is recorded in the commit
+  body's edit-surface paragraph.) Group 9
+  now asserts: the total/eager/lazy triple (34 / 6 / 28), the named per-page `<img>` counts (index 6,
+  roller-derby 16, aura-sky-100 10, size-finder 1, book-a-fitting 1), that every `<img>`'s
+  `width`/`height` attributes equal its decoded `naturalWidth`/`naturalHeight` (scrolled into view
+  and awaited through `decode()` first, never read before that resolves), and eager/lazy identity
+  by NAME — the six-tag eager allowlist (`logo.webp` × 5 + `aura-boot.webp`) and the four hidden
+  roller-derby cards (`product-7111`/`8159`/`9565`/`9656`, asserted `loading="lazy"` by name, not
+  inferred from their `0x0` rendered box while filtered out). `git diff ad38bf9 HEAD --
+  scripts/verify-mels-demo.mjs` is now **211 insertions, 1 deletion**, not empty. Twelve sabotages across two
+  negative controls proved every new assertion load-bearing — five at `92cad50`, then those same
+  five plus two more at `26c8843`: stripped `width`/`height` (`product-2925.webp`), a transposed
+  `width`/`height` pair (`product-5194.webp`), stripped `loading="lazy"` from a hidden card
+  (`product-7111.webp`), a wrongly-lazy PDP hero (`aura-boot.webp`), a deleted `<img>`
+  (`product-3726.webp`), and — added for the #632 pass — `loading="eager"` on the shared
+  `logo.webp` (exercises the F2 fix) and an inline `width:2000px;max-width:none` over-width on a
+  hidden card (exercises the F1 fix). Each turned group 9 RED — naming the exact file in every case but the
+  deleted-`<img>` sabotage, which necessarily fails on the counts instead (roller-derby 15 not 16,
+  total 33 not 34) because there is no tag left to name — with the tree restored byte-identical
+  and re-verified clean after every one — see ruling #632's adjudication of
+  this same fix pass below.
+
+### The RAISE list for CP6 (fix none of it, carried forward from T18 plus four NEW items this task surfaced)
+
+- `site.css` render-blocking (~600–700 ms), unminified CSS (46% waste) and unminified JS
+  (`site.js` 76%, `pdp.js` 69%).
+- No `preconnect` hints; longest chain 78 ms (home) / 91 ms (PDP).
+- PDP LCP image (`aura-boot.webp`) lacks `fetchpriority="high"` — adjacent to the lever list, not
+  on it.
+- `label-content-name-mismatch` on the shared WhatsApp FAB: visible "WhatsApp us" vs
+  `aria-label="WhatsApp Mel's Skate Shop"`. Zero-weight, a11y still scores 100.
+- impeccable's 18 static findings (10 low-contrast hover states `#7e2810` on `#9e3315`, 1.0–1.3:1;
+  7 cramped-padding; 1 skipped heading, roller-derby h1→h3) plus 3 distinct viewport-mode findings
+  at 390×844. None map to the lever list.
+- **NEW — the WebP downscale trade-off (#629).** T18 measured 109 KiB (Home, 4 of 6 flagged) /
+  183 KiB (PDP, 9 of 10) of "waste" Lighthouse attributes to image re-encoding, but a `sharp` sweep
+  at unchanged pixel dimensions over all 12 flagged files showed the shipped WebPs already sit
+  between q80 and q90 — re-encoding at q90 GROWS all 12 of 12 (e.g. `product-10351` 46→53 KB,
+  `aura-selection-chart` 81→92 KB, `logo` 30→34 KB); only a lower-quality double-compress or an
+  actual pixel downscale would recover the bytes. Downscaling is a spec change: it touches
+  `manifest.images[].width` (the encoded width, which verify group 9 asserts rendered ≤, and which
+  `below_hero_floor` is derived from at `width < 800`), so dropping e.g. `product-10351` (800px) or
+  `product-9656` (1200px) under 800px would silently flip a flag §2.5 ties to Mel's photography.
+  Owner ruled "Skip it, raise it" (#629) before this task began.
+- **NEW — four roller-derby cards ship `hidden` by default (§4a).** 215 KB (85+32+57+41 KB) of
+  product imagery on roller-derby.html is invisible to Lighthouse (home + PDP only) and to
+  impeccable (no dimension checks), because the cards sit behind the default "In stock only"
+  filter. **Group 9's width check DOES reach them** — #632's F1 fix moved the
+  `[data-derby-toggle]` click ahead of the `renderedWidth` capture (`verify-mels-demo.mjs:1128`
+  vs `:1136`), all four now measure within manifest width for real, and the sabotage that forced
+  `product-7111.webp` to 2000px turned group 9 red naming it. This task's fix (`loading="lazy"` on all 15 grid cards uniformly) already
+  gets the right outcome for these four — they do not download on a cold visit unless a visitor
+  actually reveals them — but the owner should know the same 215 KB would be invisible to any
+  future audit that never clicks that toggle.
+
+- **NEW — `aura-size-guide.webp`'s manifest row renders on no page, so its T19-added `height:
+  1408` is verified by no gate.** `manifest.images[]` carries 27 rows; `aura-size-guide.webp` (a
+  `duplicate_of` target of `aura-selection-chart.webp`, flagged since before this task) is not
+  referenced by any `<img src>` on any of the five demo `.html` pages
+  (`TOKENSAVE_DISABLE_GREP_HOOK=1 grep -rl aura-size-guide public/decks/mels-skate-shop/demo/*.html`
+  returns nothing), so it is invisible to group 9's per-image width/height/natural-size check the
+  same way the roller-derby cards above are invisible to Lighthouse — except these never render at
+  all, not even behind a toggle. Ruling #632 raised this to CP6 rather than fixing it in T19's fix
+  pass; filed here as the RAISE item itself (previously named only in the commit message, not
+  written to this list). Either drop the row or add a fixture check that every `manifest.images[]`
+  row matches a real file on disk (not that it renders — `duplicate_of` rows are deliberately kept
+  unrendered).
+- **NEW — `totalSizedCount` is reported in group 9's detail line but never asserted at group
+  level, unlike `totalImgCount`/`totalEagerCount`/`totalLazyCount`.** `scripts/verify-mels-demo.mjs`
+  already pushes a per-image failure the moment any `<img>` is missing its `width` or `height`
+  attribute (`if (img.hasWidthAttr && img.hasHeightAttr) { totalSizedCount += 1 } else {
+  failures.push(...) }`), so this is a symmetry gap, not a live defect — no dimension-missing image
+  can pass silently today. Cosmetic: add a group-level `if (totalSizedCount !== TOTAL_IMG_COUNT)`
+  check alongside the other three for consistency.
+
+### T19 review — adjudicated findings (six lenses, this fix pass)
+
+Six lenses reviewed the T19 commit; five said `ship`, one (the opus completeness critic) said
+`rework` on a single major. Re-verified from scratch against a fresh `build && start`, not taken
+on faith:
+
+- **CONFIRMED as real, REFUTED as a defect in this commit — Home's Lighthouse performance score is
+  flaky (94–100) on this shared sandbox.** Reproduced independently: 3 fresh runs gave 100, 94, 94
+  while `uptime` load average sat at ~1.25–1.3 throughout (other Claude sessions active on the same
+  host, confirmed via `ps aux`); a11y and bp held 100/100 in all 3. LCP timing moved with it
+  (1.6s / 3.1s / 3.1s). The LCP element is `<p class="lede">` — hero body text, present unchanged
+  since before this task — not an image; this task's diff only adds `width`/`height`/`loading` to
+  `<img>` tags and cannot mechanically move a text LCP, and the one behavioral effect it can have
+  (reserved layout boxes) only reduces CLS. **Not reworked as a code change** — the opus critic's
+  own reclassification (minor/process, not major/blocker) is correct. Fixed instead: the T19 note
+  above now records both figures as a range with the load-average context, not a single best-case
+  number.
+- **CONFIRMED — PDP's claimed 100/100/100 was the best of one run, not the typical result.**
+  Reproduced: 2 fresh runs both landed at 99/100/100, still clear of the 95/100/100 baseline.
+  Fixed: the note above now says 99/100/100, not 100/100/100.
+- **CONFIRMED — before this pass, the verify spine (`scripts/verify-mels-demo.mjs`) had no
+  assertion on `width=`, `height=`, or `loading=`.** At the time this was found:
+  `TOKENSAVE_DISABLE_GREP_HOOK=1 grep -niE 'loading|lazy|getAttribute\("width"\)|getAttribute\("height"\)' scripts/verify-mels-demo.mjs`
+  returned only two `errored loading page` error handlers (one in the link-crawl group, one in the
+  chip-manifest group), nothing touching image attributes; `git diff ad38bf9 HEAD -- scripts/verify-mels-demo.mjs`
+  was empty; group 9 (:1040–1140) checked alt text and `renderedWidth <= manifest width`, never
+  attribute presence; group 8 (`groupMobileLayout`, :971) is the mobile-layout/tap-target group,
+  unrelated to images despite sharing its number with this brief's own §10 checklist item 8. **Real
+  gap, closed in-task under ruling #630** rather than raised to CP6 — see the closure bullet earlier
+  in this section for what group 9 now asserts. The same grep against the shipped file now returns
+  **38 lines** — 36 new group 9 lines (assertion bodies, the `EAGER_TOTAL`/`LAZY_TOTAL`
+  constants, group 9's comment block and its `GROUPS` title string: `loadingAttr`, `getAttribute("width")`,
+  `getAttribute("height")`, the `LAZY_TOTAL` constant, etc.) plus the same two pre-existing
+  `errored loading page` handlers (`:1493` in `groupLinkCrawl`, `:2355` in `groupChipsManifest`)
+  that were the grep's entire output at `ad38bf9` — and `git diff ad38bf9 HEAD -- scripts/verify-mels-demo.mjs` is 211 insertions / 1 deletion.
+- **No other lens's finding required a code or markup change.** Coverage, generator-fidelity,
+  regression and scope-cap all returned `ship` with no findings; their claims (image triple,
+  dimension table, idempotency, byte-identical shared header, empty `.webp`/`package.json` diffs)
+  were independently re-derived in this pass and matched exactly — see the re-run gate output in
+  the T19 commit's evidence trail.
+- **Ruling #632 — opus-critic pass on this fix pass's own execution, five of six findings fixed
+  before this issue closed.** F1: group 9's `renderedWidth` capture ran before the "In stock only"
+  toggle click, making the four hidden roller-derby cards' manifest-width comparison permanently
+  vacuous (`0 > manifestWidth` is always false); fixed by moving the click first, re-measured, all
+  four pass for real. F2: the must-be-eager check tested `!isEager` (only "not lazy") instead of
+  `loadingAttr !== null`, so an image carrying an explicit `loading="eager"` on the shared header
+  would have passed a regression silently; fixed to check `!== null`, proved live by temporarily
+  adding `loading="eager"` to the logo and confirming the group turned red naming it on all five
+  pages, then restoring byte-identical. F3 and F4 are the PDP-median and payload-margin wording
+  already folded into this section's prose above; F6 is the "two image FILES rendered as six eager
+  `<img>` tags" distinction, also already reflected above. F5, the sixth finding — the unused
+  `aura-size-guide.webp` manifest row — was raised to CP6 rather than fixed here; see the RAISE
+  list.
+
+**Every gate in brief §10 was re-run from scratch for this pass** (not summarized from the earlier
+report): six generators twice (idempotent, `git status --short` empty both times), all 11 verify
+groups PASS with payload bytes matching to the exact byte, the 34 total / 34 sized / 28 lazy image triple (not 32 — see
+the discrepancy above, re-confirmed), `impeccable detect` reporting the identical 18 findings plus
+the same 1 advisory note with zero new findings, `npm run lint`/`build` green, and
+`git diff ad38bf9 HEAD -- package.json package-lock.json` / `-- public/decks/mels-skate-shop/img/`
+both empty.
+
+**Do NOT re-raise** the `redirects` audit — T18 struck it (fires only on the plan's own
+Lighthouse command's trailing-slash URL, `weight: 0` / `group: "hidden"`, cannot move the score);
+this task's own Lighthouse runs used the no-slash URL throughout, keeping before/after comparable.
