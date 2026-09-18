@@ -26,8 +26,146 @@
   <!-- /shared:header -->
 
   <main id="main" class="page__main">
-    <h1>Size Finder</h1>
-    <p>Stub — screen built in a later task.</p>
+    <!-- main:finder -->
+    <div class="finder" data-finder data-finder-whatsapp-number="27823706771" data-finder-disclaimer-lead="Read this before you order:" data-finder-out-of-range-note="Not a dead end: the message already has your measurement in it, so nothing is retyped.">
+
+    <section class="section">
+      <div class="wrap">
+        <p class="source">Size Finder</p>
+        <h1>Measure once. We will tell you the size in the brand you are buying.</h1>
+        <p class="lede">Three steps on one screen. No wizard, no account, and no result we cannot stand behind.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <h2>What are you buying</h2>
+        <fieldset class="sizes" data-finder-discipline-group>
+      <legend>What are you buying skates for?</legend>
+      <button class="btn" type="button" data-finder-discipline="derby" aria-pressed="false">Derby / Recreational quad</button>
+      <button class="btn" type="button" data-finder-discipline="artistic" aria-pressed="false">Artistic</button>
+      <button class="btn" type="button" data-finder-discipline="ice" aria-pressed="false">Ice / Figure</button>
+      <button class="btn" type="button" data-finder-discipline="kids" aria-pressed="false">Kids &amp; adjustable</button>
+    </fieldset>
+        <div data-finder-brand-wrap hidden>
+          <fieldset class="sizes" data-finder-brand-group>
+        <legend>Which brand?</legend>
+        <button class="btn" type="button" data-finder-brand="rio" aria-pressed="false">Rio Roller</button>
+        <button class="btn" type="button" data-finder-brand="sfr" aria-pressed="false">SFR Galaxy</button>
+        <button class="btn" type="button" data-finder-brand="chaya-emerald" aria-pressed="false">Chaya Emerald</button>
+        <button class="btn" type="button" data-finder-brand="chaya-sapphire" aria-pressed="false">Chaya Sapphire</button>
+        <button class="btn" type="button" data-finder-brand="atom" aria-pressed="false">Atom</button>
+        <button class="btn" type="button" data-finder-brand="riedell" aria-pressed="false">Riedell</button>
+        <button class="btn" type="button" data-finder-brand="sure-grip" aria-pressed="false">Sure-Grip</button>
+      </fieldset>
+          <p class="field__hint">We only ask where we stock more than one option.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+<div class="note" data-finder-notable hidden>
+        <p><strong>Some brands we stock have no table we can size you from</strong></p>
+        <p>We would rather say so than compute a number out of nothing. Roll-Line, one of our two flagship lines, publishes no size table anywhere we could find. Riedell has a tab on our size chart, but it sends you off to Riedell's own pages, and one of those links is broken as we published it. Sure-Grip's tab carries our own measuring method and a printable insole chart on our domain — the most personal sizing content on the site, and also the one thing a calculator cannot read. For any of those, send us your measurement on WhatsApp and we size you ourselves.</p>
+        <p><a class="btn btn--primary" data-finder-notable-cta target="_blank" rel="noopener">Send my measurement to Melony</a></p>
+      </div>
+<div class="note" data-finder-fallback hidden>
+        <p>Outside our table - WhatsApp us your measurement.</p>
+        <p><a class="btn btn--primary" data-finder-fallback-cta target="_blank" rel="noopener">Send my measurement to Melony</a></p>
+      </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+<div data-finder-measure hidden>
+        <h2>Measure heel to wall</h2>
+        <p class="lede">Two minutes, a sheet of paper and a pencil. Do it standing — your foot spreads under your own weight, and that is the foot the boot has to fit.</p>
+        <ol class="u-stack">
+      <li>Put a sheet of paper on a hard floor, one short edge tight against the wall.</li>
+      <li>Stand on it with your heel against the wall and your weight on that foot.</li>
+      <li>Mark the paper at the end of your longest toe. That is not always the big toe.</li>
+      <li>Measure from the wall edge to the mark, in millimetres.</li>
+      <li>Now do the other foot. Feet differ. Use the larger number.</li>
+        </ol>
+        <p class="field__hint">Measure late in the day, wearing the sock you skate in.</p>
+        <div class="field">
+          <label class="field__label" for="finder-mm">Foot length (mm)</label>
+          <input class="input" type="number" inputmode="decimal" id="finder-mm" data-finder-mm min="0" />
+        </div>
+        <div data-finder-altmodes-wrap>
+        <p>Or start from something you already know</p>
+        <fieldset class="sizes" data-finder-altmodes>
+          <button class="btn" type="button" data-finder-altmode="shoe" aria-pressed="false">Your current shoe size</button>
+          <button class="btn" type="button" data-finder-altmode="own" aria-pressed="false">A skate you already own</button>
+        </fieldset>
+        </div>
+        <div data-finder-altpanel hidden>
+          <p class="field__hint" data-finder-althint></p>
+          <div class="field">
+            <!-- "Scale" is a structural form-field label (which column of
+            the brand's own table the value below belongs to: UK, EU, US...),
+            not authored marketing copy -- same class as DISCIPLINES above,
+            not a _meta.refConvention violation. -->
+            <label class="field__label" for="finder-scale">Scale</label>
+            <select class="select" id="finder-scale" data-finder-scale></select>
+          </div>
+          <div class="field">
+            <!-- "Size" is the matching structural label for the value input
+            next to "Scale" above -- same rationale. -->
+            <label class="field__label" for="finder-scale-value">Size</label>
+            <input class="input" id="finder-scale-value" data-finder-scale-value />
+          </div>
+        </div>
+        <!-- "Find my size" is the same literal string as draft-copy.json's
+        home.ctaPrimary/home.sizeFinderBand.cta, but is NOT templated from
+        either: this button's job (submit the measure step) differs from
+        both of those (navigate to this page), so pointing it at either
+        would couple two unrelated calls to action. Kept as a structural
+        label, same rationale as "Scale"/"Size" above, not a
+        _meta.refConvention violation -- reviewed during T16 adjudication. -->
+        <button class="btn btn--primary" type="button" data-finder-submit>Find my size</button>
+      </div>
+<div data-finder-sky hidden>
+        <h2>Which Sky?</h2>
+        <p>Aura makes three Sky boots and its own chart picks between them. We need three things: your foot length in millimetres, your body weight, and whether you jump.</p>
+        <p class="field__hint">This step is straight off Aura's selection chart. It is their matrix, not our opinion.</p>
+        <p class="field__hint" data-finder-sky-brannock>Important: AURA skate sizing is based on the Brannock Suggested Size, not raw foot length alone. This finder measures raw foot length, so the millimetre result below is a starting point - Melony confirms your exact fit against a Brannock device in store.</p>
+        <div class="field">
+          <!-- Structural form-field label, same rationale as "Scale"/"Size"
+          above -- not authored marketing copy. -->
+          <label class="field__label" for="finder-sky-kg">Body weight (kg)</label>
+          <input class="input" type="number" id="finder-sky-kg" data-finder-sky-kg min="0" />
+        </div>
+        <fieldset class="sizes" data-finder-sky-jump>
+      <legend>Do you jump?</legend>
+        <button class="btn" type="button" data-finder-jump="singles" aria-pressed="false">Singles</button>
+        <button class="btn" type="button" data-finder-jump="singles-doubles" aria-pressed="false">Singles/Doubles</button>
+        <button class="btn" type="button" data-finder-jump="doubles-triple" aria-pressed="false">Doubles/Triple</button>
+        <button class="btn" type="button" data-finder-jump="triples" aria-pressed="false">Triples</button>
+        <button class="btn" type="button" data-finder-jump="triples-quads" aria-pressed="false">Triples/Quads</button>
+    </fieldset>
+      </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <h2>Your starting point</h2>
+        <p class="field__hint">The result region is empty until a real result exists. No placeholder, nothing pre-announced.</p>
+        <div class="live live--result" aria-live="polite" data-finder-result></div>
+        <div data-finder-result-ctas hidden>
+          <p><a class="btn btn--primary" data-finder-whatsapp target="_blank" rel="noopener">WhatsApp this result to Melony</a></p>
+        </div>
+        <p><a class="btn btn--secondary" href="/decks/mels-skate-shop/demo/book-a-fitting">Book a fitting</a></p>
+      </div>
+    </section>
+
+    </div>
+
+    <script type="module" src="/decks/mels-skate-shop/demo/assets/finder.js"></script>
+    <!-- /main:finder -->
   </main>
 
   <!-- shared:contact -->

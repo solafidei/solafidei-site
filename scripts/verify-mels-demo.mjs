@@ -22,6 +22,12 @@ import { dirname, join } from "node:path";
 // warned against in §10: nothing here is DERIVED from pdp.js, it is compared
 // against hard literals typed in this file.
 import { instalments, moneyCents } from "../public/decks/mels-skate-shop/demo/assets/pdp.js";
+// Group 5 (T16) does the identical thing against finder.js's two pure
+// exports -- a top-level static import, exactly like the one above. If
+// finder.js touched `document` at module scope this import would already
+// have thrown, killing every group in this file (build brief §2.3's
+// sharpest trap), so this line is itself part of trap 11's purity proof.
+import { findSize, whichSky } from "../public/decks/mels-skate-shop/demo/assets/finder.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -1794,6 +1800,574 @@ async function pdpInteractiveBody(page, failures, details) {
   );
 }
 
+// --- group 5 (task 16, issue #34) ------------------------------------------
+// findSize()/whichSky() fixtures, including the out-of-range/no-table/
+// unknown-brand fallback shapes, plus a browser-driven WhatsApp-href proof.
+// Wrapper/body split in ONE try (#571, same shape as groups 6 and 7's own
+// wrapper/body pairs) so a mid-flight throw never discards failures already
+// accumulated.
+const SIZE_FINDER_URL = `${DECK}/demo/size-finder`;
+
+// VACUITY TRAP 1 (build brief §10): every expected value below is a LITERAL
+// typed in THIS file, independent of data/sizes.json. If the fixture ever
+// changes, this group must FAIL, not follow it -- reading the expected
+// values out of the same table findSize() reads would pass for an
+// implementation that ignored its input entirely. Each was measured against
+// the live functions in the main session (gate 13.5's purity command) before
+// being pinned here, never derived from finder.js's own source.
+//
+// VACUITY TRAP 4: riedell/sure-grip are `noTable: true` and cannot serve as
+// a positive fixture (plan Task 16's original bullet made exactly this
+// mistake). Every positive fixture below comes from one of the SIX brands
+// that actually have a table -- aura, rio, sfr, chaya-emerald,
+// chaya-sapphire, atom -- 3 each, giving 18, at the floor build brief §10
+// names (VACUITY TRAP 2: the count is asserted against that floor, and
+// printed, below).
+const FINDSIZE_FIXTURES = [
+  // brand, input, expected row (or availability, for aura), expected first scale value
+  { brand: "rio", input: { mm: 220 }, expectRow: { uk: "1", eu: "33", insoleMm: 220 } },
+  { brand: "rio", input: { mm: 245 }, expectRow: { uk: "5", eu: "38", insoleMm: 253 } },
+  { brand: "rio", input: { mm: 300 }, expectRow: { uk: "12", eu: "47", insoleMm: 300 } },
+  { brand: "sfr", input: { mm: 166 }, expectRow: { uk: "J10", eu: "28", footLengthMm: 166, ballGirthMm: 174 } },
+  { brand: "sfr", input: { mm: 200 }, expectRow: { uk: "1", eu: "33", footLengthMm: 206, ballGirthMm: 204 } },
+  { brand: "sfr", input: { mm: 302 }, expectRow: { uk: "10A", eu: "44.5", footLengthMm: 302, ballGirthMm: 276 } },
+  { brand: "chaya-emerald", input: { mm: 227 }, expectRow: { us: "4", uk: "3.5", mm: 227 } },
+  { brand: "chaya-emerald", input: { mm: 250 }, expectRow: { us: "8", uk: "7", mm: 255 } },
+  { brand: "chaya-emerald", input: { mm: 289 }, expectRow: { us: "13", uk: "12", mm: 289 } },
+  { brand: "chaya-sapphire", input: { mm: 228 }, expectRow: { us: "4", uk: "2", mm: 228 } },
+  { brand: "chaya-sapphire", input: { mm: 260 }, expectRow: { us: "9", uk: "7", mm: 262 } },
+  { brand: "chaya-sapphire", input: { mm: 301 }, expectRow: { us: "15", uk: "13", mm: 301 } },
+  { brand: "atom", input: { mm: 217 }, expectRow: { usWomens: "4", usUnisexWider: null, inches: "8.5", mm: 217, eu: "36.5" } },
+  { brand: "atom", input: { mm: 250 }, expectRow: { usWomens: "8", usUnisexWider: "7", inches: "9.94", mm: 252, eu: "40.5" } },
+  { brand: "atom", input: { mm: 294 }, expectRow: { usWomens: null, usUnisexWider: "13", inches: "11.87", mm: 294, eu: "46.5" } },
+];
+const FINDSIZE_FIXTURES_FLOOR = 18; // six table brands x three, build brief §10
+
+// Aura has its own row shape (row.availability across six model/gender
+// grids), so its three positive fixtures are asserted separately from the
+// generic table-brand loop above but count toward the same floor.
+const AURA_FIXTURES = [
+  {
+    mm: 210,
+    expectAvailability: [
+      { model: "Sky 50", gender: "mens", label: "SKY50 - Men's", widths: ["C"] },
+      { model: "Sky 50", gender: "womens", label: "SKY50 - Women's", widths: ["B", "C"] },
+      { model: "Sky 100", gender: "mens", label: "SKY100 - Men's", widths: ["C"] },
+      { model: "Sky 100", gender: "womens", label: "SKY100 - Women's", widths: ["B", "C"] },
+      { model: "Sky 200", gender: "mens", label: "SKY200 - Men's", widths: [] },
+      { model: "Sky 200", gender: "womens", label: "SKY200 - Women's", widths: [] },
+    ],
+  },
+  {
+    mm: 250,
+    expectAvailability: [
+      { model: "Sky 50", gender: "mens", label: "SKY50 - Men's", widths: ["C", "D"] },
+      { model: "Sky 50", gender: "womens", label: "SKY50 - Women's", widths: ["B", "C", "D"] },
+      { model: "Sky 100", gender: "mens", label: "SKY100 - Men's", widths: ["C"] },
+      { model: "Sky 100", gender: "womens", label: "SKY100 - Women's", widths: ["B", "C"] },
+      { model: "Sky 200", gender: "mens", label: "SKY200 - Men's", widths: ["C"] },
+      { model: "Sky 200", gender: "womens", label: "SKY200 - Women's", widths: ["B", "C"] },
+    ],
+  },
+  {
+    mm: 285,
+    expectAvailability: [
+      { model: "Sky 50", gender: "mens", label: "SKY50 - Men's", widths: [] },
+      { model: "Sky 50", gender: "womens", label: "SKY50 - Women's", widths: [] },
+      { model: "Sky 100", gender: "mens", label: "SKY100 - Men's", widths: ["C"] },
+      { model: "Sky 100", gender: "womens", label: "SKY100 - Women's", widths: [] },
+      { model: "Sky 200", gender: "mens", label: "SKY200 - Men's", widths: ["C"] },
+      { model: "Sky 200", gender: "womens", label: "SKY200 - Women's", widths: ["B", "C"] },
+    ],
+  },
+];
+
+// One fixture per Aura length band (build brief §10: floor 4, four bands),
+// each a LITERAL typed here, never derived from the matrix -- and ruling
+// #602's lower-band-wins is asserted directly by the fifth, boundary entry
+// (mm=240/kg=36 sits in two bands on EACH axis; lower-band-wins must land
+// it on the SAME cell as mm=220/kg=30, not the neighbouring 240-265/36-45
+// cell, which would answer differently).
+const WHICHSKY_FIXTURES = [
+  { mm: 220, kg: 30, level: "singles", expect: { models: ["Sky 50"], lengthBand: "210-240", weightBand: "22-36" } },
+  { mm: 250, kg: 50, level: "triples", expect: { models: ["Sky 100"], lengthBand: "240-265", weightBand: "45-54" } },
+  { mm: 270, kg: 75, level: "doubles-triple", expect: { models: ["Sky 100"], lengthBand: "265-280", weightBand: "68-81" } },
+  { mm: 285, kg: 90, level: "singles-doubles", expect: { models: ["Sky 200"], lengthBand: "280-plus", weightBand: "81-plus" } },
+];
+const WHICHSKY_BOUNDARY = {
+  mm: 240,
+  kg: 36,
+  level: "singles",
+  expect: { models: ["Sky 50"], lengthBand: "210-240", weightBand: "22-36" },
+};
+const WHICHSKY_FIXTURES_FLOOR = 4;
+
+function deepEqual(a, b) {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
+async function groupSizeFinder(page, browser) {
+  const failures = [];
+  const details = [];
+  try {
+    await sizeFinderBody(page, browser, failures, details);
+  } catch (err) {
+    failures.push(`threw before finishing: ${(err && err.message) || String(err)}`);
+  }
+  if (failures.length > 0) {
+    return { pass: false, detail: failures.join("; ") };
+  }
+  return { pass: true, detail: details.join(" | ") };
+}
+
+async function sizeFinderBody(page, browser, failures, details) {
+  // --- PURE-FUNCTION fixtures, in plain Node, no DOM (trap 11: the top-level
+  // import already proves module-scope purity; calling both functions here
+  // proves findSize/whichSky THEMSELVES never touch `document`, since this
+  // whole file runs under plain Node with no DOM shim). -----------------------
+  let findSizeAsserted = 0;
+  for (const fx of FINDSIZE_FIXTURES) {
+    const result = findSize(fx.brand, fx.input);
+    if (!result || result.ok !== true) {
+      failures.push(`findSize(${fx.brand}, ${JSON.stringify(fx.input)}) returned ${JSON.stringify(result)}, expected ok:true`);
+      continue;
+    }
+    if (!deepEqual(result.row, fx.expectRow)) {
+      failures.push(
+        `findSize(${fx.brand}, ${JSON.stringify(fx.input)}).row is ${JSON.stringify(result.row)}, expected ${JSON.stringify(fx.expectRow)}`
+      );
+      continue;
+    }
+    findSizeAsserted++;
+  }
+  for (const fx of AURA_FIXTURES) {
+    const result = findSize("aura", { mm: fx.mm });
+    if (!result || result.ok !== true) {
+      failures.push(`findSize(aura, {mm:${fx.mm}}) returned ${JSON.stringify(result)}, expected ok:true`);
+      continue;
+    }
+    if (!deepEqual(result.row.availability, fx.expectAvailability)) {
+      failures.push(
+        `findSize(aura, {mm:${fx.mm}}).row.availability is ${JSON.stringify(result.row.availability)}, expected ${JSON.stringify(fx.expectAvailability)}`
+      );
+      continue;
+    }
+    findSizeAsserted++;
+  }
+  details.push(`findSize fixtures asserted: ${findSizeAsserted}`);
+  if (findSizeAsserted < FINDSIZE_FIXTURES_FLOOR) {
+    failures.push(`findSize fixtures asserted (${findSizeAsserted}) is below the floor of ${FINDSIZE_FIXTURES_FLOOR}`);
+  }
+
+  let whichSkyAsserted = 0;
+  for (const fx of WHICHSKY_FIXTURES) {
+    const result = whichSky(fx.mm, fx.kg, fx.level);
+    if (!result || result.ok !== true) {
+      failures.push(`whichSky(${fx.mm}, ${fx.kg}, "${fx.level}") returned ${JSON.stringify(result)}, expected ok:true`);
+      continue;
+    }
+    if (
+      !deepEqual(result.models, fx.expect.models) ||
+      result.lengthBand !== fx.expect.lengthBand ||
+      result.weightBand !== fx.expect.weightBand
+    ) {
+      failures.push(
+        `whichSky(${fx.mm}, ${fx.kg}, "${fx.level}") returned ${JSON.stringify(result)}, expected ${JSON.stringify(fx.expect)}`
+      );
+      continue;
+    }
+    whichSkyAsserted++;
+  }
+  details.push(`whichSky fixtures asserted: ${whichSkyAsserted}`);
+  if (whichSkyAsserted < WHICHSKY_FIXTURES_FLOOR) {
+    failures.push(`whichSky fixtures asserted (${whichSkyAsserted}) is below the floor of ${WHICHSKY_FIXTURES_FLOOR}`);
+  }
+
+  // Ruling #602's lower-band-wins, asserted directly at the boundary: mm=240
+  // and kg=36 each sit in TWO bands, and the answer must match the
+  // lower-band cell (mm=220/kg=30's cell), not 240-265/36-45's.
+  const boundary = whichSky(WHICHSKY_BOUNDARY.mm, WHICHSKY_BOUNDARY.kg, WHICHSKY_BOUNDARY.level);
+  if (
+    !boundary ||
+    boundary.ok !== true ||
+    !deepEqual(boundary.models, WHICHSKY_BOUNDARY.expect.models) ||
+    boundary.lengthBand !== WHICHSKY_BOUNDARY.expect.lengthBand ||
+    boundary.weightBand !== WHICHSKY_BOUNDARY.expect.weightBand
+  ) {
+    failures.push(
+      `#602 lower-band-wins: whichSky(240, 36, "singles") returned ${JSON.stringify(boundary)}, expected ${JSON.stringify(WHICHSKY_BOUNDARY.expect)} (the LOWER band on both axes)`
+    );
+  }
+
+  // Ruling #605: Aura snaps UP to the next published 5 mm row, never to the
+  // nearest one, so the answer is never SHORTER than the measured foot.
+  // Literals typed here, not derived from brand.range: a nearest-rounding
+  // implementation answers 210 for 211 and 300 for 301, so each of these
+  // fails loudly if the direction is ever reverted.
+  const AURA_ROUNDING = [
+    { raw: 211, expect: 215 },   // nearest would answer 210 -- 1 mm SHORTER than the foot
+    { raw: 214, expect: 215 },
+    { raw: 215, expect: 215 },   // an exact row stays put, it is not pushed to 220
+    { raw: 251, expect: 255 },   // nearest would answer 250
+    { raw: 207.5, expect: 210 }, // below the run still snaps UP to the first row
+  ];
+  let auraRoundingAsserted = 0;
+  for (const fx of AURA_ROUNDING) {
+    const r = findSize("aura", { mm: fx.raw });
+    if (!r || r.ok !== true || r.row.mm !== fx.expect) {
+      failures.push(
+        `#605 round-up: findSize(aura, {mm:${fx.raw}}).row.mm is ${r && r.ok ? r.row.mm : JSON.stringify(r)}, expected ${fx.expect}`
+      );
+      continue;
+    }
+    if (r.row.mm < fx.raw) {
+      failures.push(`#605 round-up: findSize(aura, {mm:${fx.raw}}) answered ${r.row.mm}, which is SHORTER than the foot`);
+      continue;
+    }
+    auraRoundingAsserted++;
+  }
+  // and above the published run there is no higher row to snap up to, so it
+  // is out-of-range rather than clamped down to 300 (which #605 forbids).
+  const auraAbove = findSize("aura", { mm: 301 });
+  if (!auraAbove || auraAbove.ok !== false || auraAbove.reason !== "out-of-range") {
+    failures.push(`#605: findSize(aura, {mm:301}) returned ${JSON.stringify(auraAbove)}, expected ok:false reason:"out-of-range"`);
+  }
+  details.push(`#605 Aura round-up literals asserted: ${auraRoundingAsserted}`);
+  if (auraRoundingAsserted < AURA_ROUNDING.length) {
+    failures.push(`#605 round-up fixtures asserted (${auraRoundingAsserted}) is below the floor of ${AURA_ROUNDING.length}`);
+  }
+  // Sweep, not a spot check (#602's lesson): no raw length in the published
+  // run may ever answer a row SHORTER than itself.
+  const shortReads = [];
+  for (let raw = 210; raw <= 300; raw += 0.5) {
+    const r = findSize("aura", { mm: raw });
+    if (r && r.ok === true && r.row.mm < raw) shortReads.push(`${raw}->${r.row.mm}`);
+  }
+  if (shortReads.length) {
+    failures.push(`#605: ${shortReads.length} raw length(s) answered a SHORTER row, e.g. ${shortReads.slice(0, 4).join(", ")}`);
+  } else {
+    details.push(`#605 swept 181 raw lengths, none answered a shorter row`);
+  }
+
+  // VACUITY TRAP 3: a fallback gate that only checks `ok === false` passes
+  // for every input, including valid ones, if the function is broken to
+  // always fail. Assert the `reason` DISCRIMINATES: out-of-range, no-table
+  // and unknown-brand each return their OWN reason, and (above) a valid
+  // input returns ok:true.
+  const outOfRange = findSize("chaya-sapphire", { mm: 990 });
+  if (!outOfRange || outOfRange.ok !== false || outOfRange.reason !== "out-of-range") {
+    failures.push(`findSize(chaya-sapphire, {mm:990}) returned ${JSON.stringify(outOfRange)}, expected ok:false reason:"out-of-range"`);
+  }
+  const unknownBrand = findSize("not-a-brand", { mm: 255 });
+  if (!unknownBrand || unknownBrand.ok !== false || unknownBrand.reason !== "unknown-brand") {
+    failures.push(`findSize(not-a-brand, {mm:255}) returned ${JSON.stringify(unknownBrand)}, expected ok:false reason:"unknown-brand"`);
+  }
+  const noTable = findSize("roll-line", { mm: 255 });
+  if (!noTable || noTable.ok !== false || noTable.reason !== "no-table") {
+    failures.push(`findSize(roll-line, {mm:255}) returned ${JSON.stringify(noTable)}, expected ok:false reason:"no-table"`);
+  }
+  // riedell/sure-grip are ALSO noTable -- confirm both, not just roll-line
+  // (VACUITY TRAP 4 in the other direction: proving the picker's two
+  // hand-off brands behave identically to the one named in the copy).
+  const riedell = findSize("riedell", { mm: 255 });
+  const sureGrip = findSize("sure-grip", { mm: 255 });
+  if (!riedell || riedell.ok !== false || riedell.reason !== "no-table") {
+    failures.push(`findSize(riedell, {mm:255}) returned ${JSON.stringify(riedell)}, expected ok:false reason:"no-table"`);
+  }
+  if (!sureGrip || sureGrip.ok !== false || sureGrip.reason !== "no-table") {
+    failures.push(`findSize(sure-grip, {mm:255}) returned ${JSON.stringify(sureGrip)}, expected ok:false reason:"no-table"`);
+  }
+  const whichSkyOutOfRange = whichSky(100, 30, "singles");
+  if (!whichSkyOutOfRange || whichSkyOutOfRange.ok !== false || whichSkyOutOfRange.reason !== "out-of-range") {
+    failures.push(`whichSky(100, 30, "singles") returned ${JSON.stringify(whichSkyOutOfRange)}, expected ok:false reason:"out-of-range"`);
+  }
+
+  // --- BROWSER-DRIVEN: the page itself, mobile viewport -----------------
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  // TRAP 10: the page must degrade honestly with JavaScript off. Check the
+  // RAW HTML BYTES from disk, before the browser touches the page at all --
+  // a gate that only ever measures post-JS state cannot tell a baked page
+  // from an injected one.
+  let staticHtml;
+  try {
+    staticHtml = readFileSync(join(DEMO_DIR, "size-finder.html"), "utf8");
+  } catch (err) {
+    failures.push(`STATIC: could not read size-finder.html from disk: ${err.message || err}`);
+    staticHtml = "";
+  }
+  if (staticHtml) {
+    const liveMatch = /data-finder-result><\/div>/.exec(staticHtml);
+    if (!liveMatch) {
+      failures.push(`STATIC: [data-finder-result] is not baked empty (expected an immediately self-closing "><...></div>")`);
+    }
+    const disciplineCount = (staticHtml.match(/data-finder-discipline="/g) || []).length;
+    if (disciplineCount !== 4) {
+      failures.push(`STATIC: ${disciplineCount} baked [data-finder-discipline] button(s) found, expected 4`);
+    }
+    const brandCount = (staticHtml.match(/data-finder-brand="/g) || []).length;
+    if (brandCount !== 7) {
+      failures.push(`STATIC: ${brandCount} baked [data-finder-brand] button(s) found, expected 7 (#603(1)/(2))`);
+    }
+    if (!staticHtml.includes('<script type="module" src="/decks/mels-skate-shop/demo/assets/finder.js">')) {
+      failures.push(`STATIC: no root-absolute <script type="module" src="/decks/mels-skate-shop/demo/assets/finder.js"> tag found`);
+    }
+    // T16 ADJUDICATION FIX: ruling #600 requires the Aura branch to STATE
+    // PLAINLY (to the skater, not just in a source comment) that Aura sizes
+    // off a Brannock Suggested Size. Literal substring, independent of
+    // sizes.json's own fittingRules text (trap 1) -- "Brannock" alone would
+    // pass on an unrelated stray mention, so pin the full phrase.
+    if (!staticHtml.includes("Brannock Suggested Size")) {
+      failures.push(`STATIC: size-finder.html does not disclose the Brannock Suggested-Size gap (#600) -- expected the phrase "Brannock Suggested Size" baked into the page`);
+    }
+    // T16 ADJUDICATION FIX: the Kids & adjustable handoff panel must never
+    // claim a measurement is "already in" a WhatsApp message it never
+    // collected one for (#540). This is the STATIC fallback block only --
+    // the genuine out-of-range runtime path carries this sentence via a
+    // dataset attribute and is untouched.
+    const fallbackBlockMatch = /data-finder-fallback hidden>([\s\S]*?)<\/div>/.exec(staticHtml);
+    if (!fallbackBlockMatch) {
+      failures.push(`STATIC: could not find the [data-finder-fallback] block to check for the false-measurement claim`);
+    } else if (fallbackBlockMatch[1].includes("already has your measurement")) {
+      failures.push(`STATIC: [data-finder-fallback] (the Kids & adjustable handoff) falsely claims a measurement is already in the message -- Kids collects none (#540)`);
+    }
+  }
+
+  await page.goto(SIZE_FINDER_URL, { waitUntil: "load" });
+
+  // VACUITY TRAP 5 (part 1) + TRAP 7: assert-empty -> act -> assert-content,
+  // read BEFORE any interaction, in the load block.
+  const resultRegion = page.locator("[data-finder-result]");
+  const firstPaintText = ((await resultRegion.textContent()) ?? "").trim();
+  if (firstPaintText !== "") {
+    failures.push(`region: [data-finder-result] textContent on first paint was "${firstPaintText}", expected empty`);
+  }
+  const liveAttr = await resultRegion.getAttribute("aria-live");
+  if (liveAttr !== "polite") {
+    failures.push(`region: [data-finder-result] carries aria-live="${liveAttr}", expected "polite"`);
+  }
+
+  // VACUITY TRAP 9: every querySelectorAll needs its COUNT asserted before
+  // its contents are.
+  const disciplineButtons = page.locator("[data-finder-discipline]");
+  const disciplineButtonCount = await disciplineButtons.count();
+  if (disciplineButtonCount !== 4) {
+    failures.push(`selector: [data-finder-discipline] matched ${disciplineButtonCount} button(s), expected 4`);
+  }
+  const brandButtons = page.locator("[data-finder-brand]");
+  const brandButtonCount = await brandButtons.count();
+  if (brandButtonCount !== 7) {
+    failures.push(`selector: [data-finder-brand] matched ${brandButtonCount} button(s), expected 7`);
+  }
+
+  // --- drive the derby -> Chaya Sapphire -> mm=255 branch to a REAL result --
+  await page.locator('[data-finder-discipline="derby"]').click();
+  const brandWrapVisible = await page.locator("[data-finder-brand-wrap]").isVisible();
+  if (!brandWrapVisible) {
+    failures.push(`derby: brand picker did not become visible after selecting "derby"`);
+  }
+  await page.locator('[data-finder-brand="chaya-sapphire"]').click();
+  const measureVisible = await page.locator("[data-finder-measure]").isVisible();
+  if (!measureVisible) {
+    failures.push(`chaya-sapphire: the measure step did not become visible after picking a table brand`);
+  }
+  await page.locator("[data-finder-mm]").fill("255");
+  await page.locator("[data-finder-submit]").click();
+
+  const resultText255 = ((await resultRegion.textContent()) ?? "").trim();
+  // VACUITY TRAP 6: pin the FULL expected string, not "contains the model
+  // name" -- chaya-sapphire mm=255 resolves to row {us:"8", uk:"6", mm:255}.
+  if (!resultText255.includes("US SIZE") || !resultText255.includes("8") || !resultText255.includes("UK SIZE") || !resultText255.includes("6")) {
+    failures.push(`result: chaya-sapphire mm=255 rendered "${resultText255}", expected it to contain US SIZE 8 and UK SIZE 6`);
+  } else {
+    details.push(`result region rendered a real chaya-sapphire result: "${resultText255.slice(0, 80)}..."`);
+  }
+
+  // TRAP 5: the rendered href, read from the real page after driving the
+  // real flow -- NOT a hand-built string, and NOT asserted by calling
+  // buildWhatsAppLink again (that would be trap 1 in another costume).
+  // Assert against the DECODED "text=" QUERY PARAM ONLY, never the whole
+  // href: the base "https://wa.me/27823706771" already contains an "8" (and
+  // most other digits) from the phone number, so a bare `.includes("8")`
+  // against the full href is vacuous -- it would still pass with the result
+  // deleted from the message entirely. Demonstrated: negative control (c)
+  // deleted the result from the composed message and this exact assertion,
+  // written the naive way, kept passing; only checking the text= param
+  // specifically, for the FULL "US SIZE 8"/"UK SIZE 6" substrings (not a
+  // bare digit), catches it.
+  const whatsappHref = await page.locator("[data-finder-whatsapp]").getAttribute("href");
+  if (!whatsappHref || !whatsappHref.startsWith("https://wa.me/")) {
+    failures.push(`whatsapp: href is "${whatsappHref}", expected it to start with "https://wa.me/"`);
+  } else {
+    const textParam = new URL(whatsappHref).searchParams.get("text") || "";
+    if (!textParam.includes("255 mm")) {
+      failures.push(`whatsapp: text= param does not contain the encoded measurement "255 mm" -- text: "${textParam}"`);
+    }
+    if (!textParam.includes("US SIZE 8") || !textParam.includes("UK SIZE 6")) {
+      failures.push(`whatsapp: text= param does not contain the encoded result "US SIZE 8"/"UK SIZE 6" -- text: "${textParam}"`);
+    }
+    details.push(`whatsapp href text= param (decoded): "${textParam}"`);
+  }
+
+  // TRAP 6 (part 2): a DIFFERENT input must yield a DIFFERENT rendered
+  // string -- reset via the discipline click (site's own resetDownstream)
+  // and drive rio mm=220 instead.
+  await page.locator('[data-finder-discipline="derby"]').click();
+  await page.locator('[data-finder-brand="rio"]').click();
+  await page.locator("[data-finder-mm]").fill("220");
+  await page.locator("[data-finder-submit]").click();
+  const resultText220 = ((await resultRegion.textContent()) ?? "").trim();
+  if (resultText220 === resultText255) {
+    failures.push(`result: rio mm=220 and chaya-sapphire mm=255 rendered the IDENTICAL string "${resultText220}" -- the mapping is not distinguishing inputs`);
+  }
+  if (!resultText220.includes("1") || !resultText220.includes("33")) {
+    failures.push(`result: rio mm=220 rendered "${resultText220}", expected it to contain UK 1 and EU 33`);
+  }
+
+  // --- the Ice/Figure branch: drive Which Sky? to a real model, and the
+  // no-table handoff for a picker brand that hands off. ---------------------
+  await page.locator('[data-finder-discipline="ice"]').click();
+  const skyVisible = await page.locator("[data-finder-sky]").isVisible();
+  if (!skyVisible) {
+    failures.push(`ice: the Which Sky? panel did not become visible after selecting "ice"`);
+  }
+  await page.locator("[data-finder-mm]").fill("250");
+  await page.locator("[data-finder-sky-kg]").fill("50");
+  await page.locator('[data-finder-jump="triples"]').click();
+  await page.locator("[data-finder-submit]").click();
+  const skyResultText = ((await resultRegion.textContent()) ?? "").trim();
+  if (!skyResultText.includes("Sky 100")) {
+    failures.push(`ice: mm=250/kg=50/triples rendered "${skyResultText}", expected it to contain "Sky 100"`);
+  }
+
+  // Ruling #606: a BLANK measurement box is not a measurement of zero.
+  // Number("") is 0 and 0 is finite, so before #606 clicking submit with
+  // nothing typed rendered a real out-of-range answer and composed a
+  // WhatsApp message to Melony reading "my foot measures 0 mm". Asserted on
+  // BOTH branches, and asserted on the composed href too -- a result region
+  // that stays empty while the CTA quietly carries "0 mm" would still be
+  // the defect.
+  for (const [label, prep] of [
+    ["derby", async () => {
+      await page.locator('[data-finder-discipline="derby"]').click();
+      await page.locator('[data-finder-brand="rio"]').click();
+    }],
+    ["ice", async () => {
+      await page.locator('[data-finder-discipline="ice"]').click();
+      await page.locator('[data-finder-jump="triples"]').click();
+    }],
+  ]) {
+    await prep();
+    await page.locator("[data-finder-mm]").fill("");
+    await page.locator("[data-finder-submit]").click();
+    const blankText = ((await resultRegion.textContent()) ?? "").trim();
+    if (blankText !== "") {
+      failures.push(`#606 ${label}: submitting a BLANK measurement rendered "${blankText}", expected the result region to stay empty`);
+    }
+    // whitespace must behave identically -- " " coerces to 0 the same way
+    await page.locator("[data-finder-mm]").fill("   ");
+    await page.locator("[data-finder-submit]").click();
+    const spaceText = ((await resultRegion.textContent()) ?? "").trim();
+    if (spaceText !== "") {
+      failures.push(`#606 ${label}: submitting a WHITESPACE-ONLY measurement rendered "${spaceText}", expected the result region to stay empty`);
+    }
+    // and a real value still answers, so the guard has not simply killed the button
+    await page.locator("[data-finder-mm]").fill("255");
+    if (label === "ice") await page.locator("[data-finder-sky-kg]").fill("50");
+    await page.locator("[data-finder-submit]").click();
+    const realText = ((await resultRegion.textContent()) ?? "").trim();
+    if (realText === "") {
+      failures.push(`#606 ${label}: a REAL measurement of 255 mm rendered nothing -- the blank guard is swallowing valid input`);
+    }
+    const blankHref = await page.locator("[data-finder-whatsapp]").getAttribute("href");
+    if (blankHref && (new URL(blankHref).searchParams.get("text") || "").includes("0 mm")) {
+      failures.push(`#606 ${label}: the WhatsApp text= param still carries "0 mm" -- ${new URL(blankHref).searchParams.get("text")}`);
+    }
+  }
+  details.push(`#606 blank + whitespace-only submits render nothing on both branches, a real value still answers`);
+
+  await page.locator('[data-finder-discipline="artistic"]').click();
+  const notableVisible = await page.locator("[data-finder-notable]").isVisible();
+  if (!notableVisible) {
+    failures.push(`artistic: the no-table handoff panel did not become visible (Roll-Line has no table, #506)`);
+  }
+
+  // T16 ADJUDICATION FIX: Kids & adjustable collects no measurement, so its
+  // handoff panel must not claim one is already in the WhatsApp message.
+  await page.locator('[data-finder-discipline="kids"]').click();
+  const kidsFallbackVisible = await page.locator("[data-finder-fallback]").isVisible();
+  if (!kidsFallbackVisible) {
+    failures.push(`kids: the fallback handoff panel did not become visible after selecting "kids"`);
+  }
+  const kidsFallbackText = ((await page.locator("[data-finder-fallback]").textContent()) ?? "").trim();
+  if (kidsFallbackText.includes("already has your measurement")) {
+    failures.push(`kids: fallback panel falsely claims a measurement is already in the message: "${kidsFallbackText}"`);
+  }
+  const kidsHref = await page.locator("[data-finder-fallback-cta]").getAttribute("href");
+  if (!kidsHref || !kidsHref.startsWith("https://wa.me/")) {
+    failures.push(`kids: fallback CTA href is "${kidsHref}", expected it to start with "https://wa.me/"`);
+  } else {
+    const kidsText = new URL(kidsHref).searchParams.get("text") || "";
+    if (/\d+\s*mm/.test(kidsText)) {
+      failures.push(`kids: fallback CTA href text= falsely encodes a measurement that was never taken: "${kidsText}"`);
+    }
+  }
+
+  // T16 ADJUDICATION FIX: a row with no value for a given scale (Atom's
+  // usUnisexWider is null on most rows) must never render the literal word
+  // "null" -- on screen or in the WhatsApp message -- and the row must
+  // simply be absent, not present-but-empty (VACUITY TRAP 9: assert the
+  // COUNT of rendered rows, not just that "null" is missing, since a
+  // scale rendered as an empty string would also dodge a bare /null/
+  // check while still under-counting).
+  await page.locator('[data-finder-discipline="derby"]').click();
+  await page.locator('[data-finder-brand="atom"]').click();
+  await page.locator("[data-finder-mm]").fill("217");
+  await page.locator("[data-finder-submit]").click();
+  const atomResultText = ((await resultRegion.textContent()) ?? "").trim();
+  if (/\bnull\b/i.test(atomResultText)) {
+    failures.push(`atom: mm=217 rendered "${atomResultText}", contains the literal word "null" (row.usUnisexWider is null and must be dropped, not stringified, #540/#603(3))`);
+  }
+  if (!atomResultText.includes("36.5") || !atomResultText.includes("8.5")) {
+    failures.push(`atom: mm=217 rendered "${atomResultText}", expected it to contain the EU 36.5 and 8.5" scales it DOES carry`);
+  }
+  const atomRowCount = await resultRegion.locator("table tbody tr").count();
+  if (atomRowCount !== 4) {
+    failures.push(`atom: mm=217 result table has ${atomRowCount} row(s), expected 4 (usWomens, inches, mm, eu -- usUnisexWider is null on this row and must be dropped)`);
+  }
+  const atomHref = await page.locator("[data-finder-whatsapp]").getAttribute("href");
+  if (atomHref) {
+    const atomTextParam = new URL(atomHref).searchParams.get("text") || "";
+    if (/\bnull\b/i.test(atomTextParam)) {
+      failures.push(`atom: whatsapp text= param contains the literal word "null": "${atomTextParam}"`);
+    }
+  }
+
+  // T16 ADJUDICATION FIX: a reverse lookup (shoe size / owned skate) is not
+  // a foot measurement -- the WhatsApp sentence must not say "my foot
+  // measures UK SIZE 7" for one.
+  await page.locator('[data-finder-discipline="derby"]').click();
+  await page.locator('[data-finder-brand="chaya-emerald"]').click();
+  await page.locator('[data-finder-altmode="shoe"]').click();
+  await page.locator("[data-finder-scale]").selectOption("uk");
+  await page.locator("[data-finder-scale-value]").fill("7");
+  await page.locator("[data-finder-submit]").click();
+  const reverseHref = await page.locator("[data-finder-whatsapp]").getAttribute("href");
+  if (reverseHref) {
+    const reverseText = new URL(reverseHref).searchParams.get("text") || "";
+    if (reverseText.includes("my foot measures UK")) {
+      failures.push(`reverse lookup: whatsapp text= falsely says "my foot measures" a shoe size: "${reverseText}"`);
+    }
+    if (!reverseText.includes("I gave the Size Finder UK")) {
+      failures.push(`reverse lookup: whatsapp text= does not use the reverse-lookup stem: "${reverseText}"`);
+    }
+  }
+
+  details.push(
+    `#602 lower-band-wins boundary confirmed | 2 no-table reasons (roll-line/riedell/sure-grip) + out-of-range + unknown-brand all discriminated | static HTML baked honestly, discloses the Brannock gap, and Kids fallback carries no false measurement claim | live region empty on load | 3 distinct real results driven (chaya-sapphire, rio, atom with a null scale dropped) | reverse-lookup WhatsApp text does not misdescribe a shoe size as a foot measurement | WhatsApp href carries the real measurement and result | Ice/Which-Sky?, Artistic no-table and Kids fallback branches all driven`
+  );
+}
+
 // --- registry ------------------------------------------------------------
 // number -> { title, task, run(page) | null for "not yet implemented" }
 // Ownership map (spec §7 group -> owning task):
@@ -1823,7 +2397,7 @@ const GROUPS = {
   5: {
     title: "findSize()/whichSky() fixtures, including the out-of-range WhatsApp fallback",
     task: "T16",
-    run: null,
+    run: groupSizeFinder,
   },
   6: {
     title: "PDP: size selection, service checkbox total, instalments(), static price vs products.json",

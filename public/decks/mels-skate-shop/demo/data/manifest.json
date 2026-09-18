@@ -400,7 +400,7 @@
     },
     {
       "id": "aura-size-stock-states",
-      "text": "Per-size stock states on the Aura size selector — in stock, imported to order with a lead time, or notify me. The size run and its widths are real and published by Aura; which size is on a shelf on any given day is not published anywhere, so the states are structure, not stock truth.",
+      "text": "Per-size stock states on the Aura size selector — every size reads the same mechanism, imported to order at an approx. 2-week lead time. The size run and its widths are real and published by Aura; which size is on a shelf on any given day is not published anywhere, so the state shown is structure, not stock truth.",
       "source": "illustrative"
     },
     {

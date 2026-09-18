@@ -1067,3 +1067,21 @@ legend[data-illustrative]::after { vertical-align: middle; }
   .site-footer { padding-block: var(--s-6) var(--s-8); }
   .promise-row { grid-template-columns: repeat(4, 1fr); }
 }
+
+/* --- 13. Size Finder (task 16) ---------------------------------------------
+   Every interactive control on this screen (.btn, .input, .select) already
+   clears the 44px tap-target floor via --tap (spec 7.8) -- see .btn/.input/
+   .select above, unchanged. The rules below are spacing only: the two
+   handoff notes stack with no gap by default (.note carries none of its
+   own), and the two step panels need visual separation from the picker
+   above them once revealed. */
+.finder .note + .note { margin-top: var(--s-4); }
+.finder [data-finder-measure],
+.finder [data-finder-sky] {
+  margin-top: var(--s-5);
+}
+.finder [data-finder-sky] {
+  padding-top: var(--s-5);
+  border-top: var(--bw-1) solid var(--c-border);
+}
+.finder [data-finder-result-ctas] p { margin-bottom: var(--s-3); }

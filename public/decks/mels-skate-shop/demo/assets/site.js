@@ -71,7 +71,12 @@ export function initDerbyFilters(root) {
   const toggleButton = root.querySelector('[data-derby-toggle]');
   const liveRegion = root.querySelector('[data-derby-count]');
   // #569. Optional on purpose: a later page that reuses this wiring without an
-  // empty-state note (T16's Size Finder, T17's Book a fitting) must not throw.
+  // empty-state note must not throw. As it turned out, T16's Size Finder does
+  // NOT reuse this wiring at all -- it never carries [data-derby-filters], so
+  // initDerbyFilters() is never called on it in the first place (see the
+  // guard at the bottom of this file); it ships its own initFinder() in
+  // finder.js instead. This stays optional for whatever T17's Book a fitting
+  // turns out to need, which is still open.
   const emptyState = root.querySelector('[data-derby-empty]');
   const cards = Array.from(root.querySelectorAll('[data-derby-set]'));
   if (!toggleButton || cards.length === 0) return;
@@ -148,8 +153,12 @@ export function initDerbyFilters(root) {
 // this runs. The guard is what keeps `node scripts/gen-home.mjs` and
 // `node scripts/gen-roller-derby.mjs` working -- they import this file in
 // plain Node, where `document` does not exist. The `if (root)` half matters
-// too: a later task (T17) loads site.js for the floating WhatsApp button on
-// pages that have no derby grid, where the selector below finds nothing.
+// too: T16's Size Finder already exercises exactly this path -- its
+// finder.js imports buildWhatsAppLink from this file, so the browser loads
+// site.js as a module dependency on a page that carries no
+// [data-derby-filters] at all, and the selector below correctly finds
+// nothing. T17's Book a fitting is expected to load it the same way for the
+// floating WhatsApp button.
 if (typeof document !== 'undefined') {
   const root = document.querySelector('[data-derby-filters]');
   if (root) initDerbyFilters(root);
