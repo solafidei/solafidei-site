@@ -581,6 +581,27 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 **Files likely touched:** `docs/decks/mels-skate-shop-slides.json`
 **Spec refs:** §6.7, §2.6, §2.14, §2.15, §9, §11 Q5
 
+### Task 21a: Price comma cell fix + six-screenshot re-shoot (#646)
+
+**Description:** `.price` sets `font-family: var(--font-mono)` with `font-variant-numeric: tabular-nums` (`site.css:257-258` and `:646-647`), so the thousands separator occupies a full digit cell and every four-figure price renders as `R2 , 700` where the markup correctly says `R2,700`. Pixel review at CP6 found it on essentially every four-figure price on Home, the roller-derby hub and the PDP, so it reaches every product image T22's canvas uses; it was previously carried as a closed task's cosmetic choice and was ruled a real defect at the gate (#646). Fix the rendering only — keep tabular figures so price columns stay aligned across cards, but stop the separator claiming a digit cell (wrap the separator, or set `font-variant-numeric`/`font-feature-settings` so the comma is proportional while the digits are not). Do not touch the markup, which is already correct, and do not change any price **value**: `R700.01` on Riedell Superball Toestop Long (SKU 9571) is Mel's genuine live store price, preserved under #549/#563 and asserted by gate G7. Then re-run `scripts/shoot-mels-demo.mjs` against `npm run start` so the six screenshots T22 consumes carry clean prices. Read the T20 evidence note's four negative controls before altering capture order — the untimed `await img.decode()` at `shoot-mels-demo.mjs:140` is unguarded and is only safe because the eager flip precedes it, so a reorder turns a failing assertion into a hang.
+
+**Acceptance criteria:**
+- [ ] Every four-figure price renders with no gap around the thousands separator at 390 px on Home, the roller-derby hub and the PDP.
+- [ ] Digits stay tabular — price column alignment across product cards is unchanged — and no price value changes anywhere; `R700.01` on SKU 9571 renders exactly as before and gate G7 is green.
+- [ ] The six PNGs under `public/decks/mels-skate-shop/.shots/` are re-captured from a production server, each 390 px wide, with the PDP shot showing a selected size and the finder shot showing a populated result.
+- [ ] Every verify group still passes; `npm run lint` and `npm run build` green; no npm dependency added; `git diff main -- package.json package-lock.json` empty.
+
+**Verification:**
+- [ ] `. ~/.nvm/nvm.sh && nvm use 24 && cd ~/solafidei-site && npm run build && (npm run start &) && sleep 10 && node scripts/verify-mels-demo.mjs && node scripts/shoot-mels-demo.mjs --out public/decks/mels-skate-shop/.shots`
+- [ ] `cd ~/solafidei-site && node -e "const{execSync}=require('child_process');for(const f of ['01-home','02-roller-derby','03-aura-sky-100','04-size-finder','05-book-a-fitting','06-deck']){const b=require('fs').readFileSync('public/decks/mels-skate-shop/.shots/'+f+'.png');if(b.readUInt32BE(16)!==390)throw new Error(f+' width '+b.readUInt32BE(16));}console.log('six shots, all 390 wide')"`
+- [ ] `cd ~/solafidei-site && grep -n 'R700.01\|70001' public/decks/mels-skate-shop/demo/data/products.json | head -3; echo "expect SKU 9571 price unchanged"`
+- [ ] `cd ~/solafidei-site && npm run lint && git status --short`
+
+**Dependencies:** 21 · **Model:** sonnet · **Estimated scope:** S · **Issue:** #49
+**Files likely touched:** `public/decks/mels-skate-shop/demo/assets/site.css`, `public/decks/mels-skate-shop/.shots/*.png`
+**Spec refs:** §4, §9, §10
+
+
 ### Task 22: Deck canvas — twelve artboards with the design skill (main session)
 
 **Description:** Main-session step, not a subagent task: use the `design` skill to build the twelve-artboard canvas from the task-21 copy pack and the task-20 screenshots, laid out for a laptop step-through and legible at 390 px wide, in Mel's brand direction from the task-5 design pass (not the Solafidei dark tokens), so the deck and the demo read as one package. Slide 4 embeds the six demo thumbnails and makes the demo URL the primary tappable element; slide 8 uses the Size Finder hero shot; slide 2 uses the saved Roll-Line listing screenshot with the locator URL in the footnote; slide 12 carries the demo link primary and a QR code secondary labelled "for the laptop or printed copy" plus presenter contact. **Note on §9's "ask first — any use of Mel's images beyond the demo pages":** slides 4 and 8 embed task-20's demo screenshots, which carry Mel's product photography and logo. The approved §6.7 slide table already calls for demo thumbnails on slide 4 and the Size Finder hero shot on slide 8, which supports this use — but this plan does not treat that as a closed boundary decided on the spec author's behalf: CP7 below carries an explicit owner confirmation line for this specific use, and the canvas ships pending that sign-off alongside the rest of the deck review, not as a foregone conclusion. Publish the canvas and hand the URL to the owner with the export target path.
@@ -596,7 +617,7 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 - [ ] Manual: view the canvas at 390 px width and confirm every slide is legible with no clipped text.
 - [ ] Manual: confirm the canvas URL and the export target `public/decks/mels-skate-shop/index.html` have been sent to the owner, along with the standing photography-use question CP7 will ask.
 
-**Dependencies:** 20, 21 · **Model:** main-session · **Estimated scope:** M
+**Dependencies:** 20, 21, 21a · **Model:** main-session · **Estimated scope:** M
 **Files likely touched:** none in-repo (canvas artifact) — consumes `docs/decks/mels-skate-shop-slides.json`, `public/decks/mels-skate-shop/.shots/*.png`
 **Spec refs:** §2.6, §6.7, §9 ask-first, §11 Q1
 
