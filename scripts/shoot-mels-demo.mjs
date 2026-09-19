@@ -176,8 +176,10 @@ async function main() {
         //
         // (1) A fullPage raster never scrolls, so every image T19 gave
         // `loading="lazy"` (28 of the 34) stays unloaded and rasterizes as its
-        // reserved-but-empty box. Uncorrected that is 24 of 34 images blank —
-        // 13 of roller-derby's 16 product cards are grey rectangles with a
+        // reserved-but-empty box. Uncorrected that is 18 of 34 images
+        // visibly blank: 22 never load, and four of those are roller-derby
+        // cards hidden in the markup, which rasterize nothing — so 9 of that
+        // page's 12 rasterizable product cards are grey rectangles with a
         // price under them. These PNGs become prospect-facing deck slides in
         // T22, so force the lazy images in and WAIT for them to decode.
         // (2) A fullPage raster also cannot honestly place a `position: fixed`
