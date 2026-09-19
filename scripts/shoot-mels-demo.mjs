@@ -174,14 +174,16 @@ async function main() {
         }
         // TWO capture-time overrides, both disclosed in the evidence note.
         //
-        // (1) A fullPage raster never scrolls, so every image T19 gave
-        // `loading="lazy"` (28 of the 34) stays unloaded and rasterizes as its
-        // reserved-but-empty box. Uncorrected that is 18 of 34 images
-        // visibly blank: 22 never load, and four of those are roller-derby
-        // cards hidden in the markup, which rasterize nothing — so 9 of that
-        // page's 12 rasterizable product cards are grey rectangles with a
-        // price under them. These PNGs become prospect-facing deck slides in
-        // T22, so force the lazy images in and WAIT for them to decode.
+        // (1) A fullPage raster never scrolls, so all but six of the images
+        // T19 gave `loading="lazy"` (28 of the 34) never enter the viewport
+        // and never load — the six that do are two on `02` and four on `03`.
+        // Of the 22 that do not, four are roller-derby cards hidden in the
+        // markup, which rasterize nothing at all; the other 18 rasterize as
+        // the reserved-but-empty box their width/height attributes create,
+        // so 9 of that page's 12 rasterizable product cards are grey
+        // rectangles with a price under them. These PNGs become
+        // prospect-facing deck slides in T22, so force the lazy images in and
+        // WAIT for them to decode.
         // (2) A fullPage raster also cannot honestly place a `position: fixed`
         // overlay: Chromium bakes the mobile WhatsApp FAB
         // (demo/assets/site.css:898-917, `position: fixed` on :899, spec 6.6)
