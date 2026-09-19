@@ -26,7 +26,7 @@
     },
     {
       "id": "roll-line-dealer",
-      "text": "Roll-Line's own dealer database lists Mel's Skate Shop, and Mel's is its only South African dealer.",
+      "text": "Roll-Line's own dealer database lists Mel's Skate Shop. Roll-Line sells to no private buyers, so dealer status is genuinely scarce.",
       "source": "roll-line.it"
     },
     {
@@ -722,7 +722,7 @@
       "flags": [],
       "height": 940,
       "source": "https://roll-line.it/en/dealers (Country filter = South Africa)",
-      "note": "Owner-authorised manual browser capture at CP1 — the locator needs a filter interaction the fetch script may not perform (spec §9 no forms). Mel is the sole South African Roll-Line dealer.",
+      "note": "Owner-authorised manual browser capture at CP1 — the locator needs a filter interaction the fetch script may not perform (spec §9 no forms). Roll-Line sells to no private buyers, so Mel's dealer status is genuinely scarce.",
       "capturedAt": "2026-09-15T00:00:00.000Z"
     }
   ],

@@ -643,7 +643,6 @@ a:hover { color: var(--c-accent-strong); }
 }
 
 .price {
-  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-size: var(--t-2xl);
   font-weight: var(--fw-bold);
