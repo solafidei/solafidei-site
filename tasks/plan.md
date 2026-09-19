@@ -104,7 +104,7 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 
 **Acceptance criteria:**
 - [ ] `git diff main -- next.config.ts` adds exactly two rewrite objects; `git diff main --stat -- src/ package.json package-lock.json` is empty.
-- [ ] All seven clean URLs and their `.html` twins return 200 under `npm run dev` **and** under `npm run build && npm run start`; `/decks/lux-fragrance` and `/decks/optimus-plumbing` still return 200.
+- [ ] All six clean URLs (the deck placeholder + the five demo screens) and their `.html` twins return 200 under `npm run dev` **and** under `npm run build && npm run start`; `/decks/lux-fragrance` and `/decks/optimus-plumbing` still return 200.
 - [ ] Every one of the six HTML files has exactly one `<h1>` and `<meta name="robots" content="noindex">`.
 - [ ] `node scripts/verify-mels-demo.mjs` exits 0 printing `GROUP 1 PASS` plus ten SKIPPED rows; renaming one stub makes it exit non-zero naming that URL (negative control run and captured).
 
@@ -346,7 +346,7 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 - [ ] Eight groups PASS (1, 2, 3, 4, 8, 9, 10, 11), three SKIPPED, exit 0; all six negative controls (dead link, off-allow-list host, block drift, orphan chip, manifest-required-but-unrendered id, plus task 1's URL negative control) demonstrated and their output saved for the PR.
 - [ ] Header and contact blocks byte-identical across all five pages; every page reaches every other page.
 - [ ] No horizontal scroll at 390 × 844; every page ≤ 1.5 MB; `noindex` and one `<h1>` on all six.
-- [ ] `npm run lint` and `npm run build` green; dev server serves all seven URLs.
+- [ ] `npm run lint` and `npm run build` green; dev server serves all six Mel's-shop URLs.
 
 ### Phase 5 — Screens
 
@@ -534,11 +534,11 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 
 ### Task 20: Six screenshots + full §4 command sweep on a production build
 
-**Description:** Produce the PR evidence and prove the §4 command list end to end. Write `scripts/shoot-mels-demo.mjs` (throwaway Playwright, same convention) capturing six 390 × 844 full-page screenshots — the deck page and the five demo screens, with the PDP shot taken after a size is selected so the availability line shows and the Size Finder shot showing a real computed result — waiting for `networkidle` and `document.fonts.ready` so type is not caught mid-swap, named `01-home.png` … `06-deck.png` into `public/decks/mels-skate-shop/.shots/` (a **repo-relative, gitignored** scratch directory — not `/tmp` — so the artifact survives the handoff from this subagent task to task 22's main-session canvas step regardless of sandboxing; a prior draft of this plan used `/tmp/mels-shots`, which a fresh subagent session may not share with the main session). Then run the full sweep against the production build: `npm run lint`, `npm run build`, `npm run start`, all seven URLs 200, every verify group green against `start` (not just `dev`), and the two existing decks still 200. Collect the Lighthouse numbers, the impeccable result, the screenshot paths and the negative-control outputs into an evidence note for the PR body.
+**Description:** Produce the PR evidence and prove the §4 command list end to end. Write `scripts/shoot-mels-demo.mjs` (throwaway Playwright, same convention) capturing six 390 × 844 full-page screenshots — the deck page and the five demo screens, with the PDP shot taken after a size is selected so the availability line shows and the Size Finder shot showing a real computed result — waiting for `networkidle` and `document.fonts.ready` so type is not caught mid-swap, named `01-home.png` … `06-deck.png` into `public/decks/mels-skate-shop/.shots/` (a **repo-relative, gitignored** scratch directory — not `/tmp` — so the artifact survives the handoff from this subagent task to task 22's main-session canvas step regardless of sandboxing; a prior draft of this plan used `/tmp/mels-shots`, which a fresh subagent session may not share with the main session). Then run the full sweep against the production build: `npm run lint`, `npm run build`, `npm run start`, all six Mel's-shop URLs 200, every verify group green against `start` (not just `dev`), and the two existing decks still 200. Collect the Lighthouse numbers, the impeccable result, the screenshot paths and the negative-control outputs into an evidence note for the PR body.
 
 **Acceptance criteria:**
 - [ ] Six 390 × 844 PNGs exist under `public/decks/mels-skate-shop/.shots/`, covering the deck placeholder and all five demo screens, each non-empty, with the PDP shot showing a selected size and the finder shot showing a result.
-- [ ] Every verify group passes against `npm run start`; all seven URLs return 200 from the production server and lux-fragrance / optimus-plumbing still return 200.
+- [ ] Every verify group passes against `npm run start`; all six Mel's-shop URLs return 200 from the production server and lux-fragrance / optimus-plumbing still return 200.
 - [ ] `npm run lint` and `npm run build` are green; the script adds no npm dependency; `.gitignore` covers `.shots/` so `git status` stays clean.
 - [ ] The evidence note collects the Lighthouse numbers, the impeccable result, the screenshot paths and the negative-control outputs, ready to paste into the PR.
 
@@ -711,7 +711,7 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 | Risk | Impact | Mitigation |
 |---|---|---|
 | The Store API changes shape, rate-limits or blocks, stranding every downstream task | High | Retired first (task 2, before any page exists); acceptance asserts the §2.15 counts so a shape change fails loudly; output committed so one successful fetch serves the whole build; the hand-written fixture fallback is raised to the owner at CP1, never taken silently |
-| The two new rewrites collide with the existing `/decks/:deck` rule and break the live LUX/Optimus decks | High | Demo rules declared first; task 1 tests all seven URLs plus both existing decks before any content; group 1 re-asserts on every run; task 24 re-checks on the production build |
+| The two new rewrites collide with the existing `/decks/:deck` rule and break the live LUX/Optimus decks | High | Demo rules declared first; task 1 tests all six Mel's-shop URLs plus both existing decks before any content; group 1 re-asserts on every run; task 24 re-checks on the production build |
 | The ≤ 10 outbound budget — 9 fetched of 12 enumerated (Google Maps + Waze exempt per decision #495, Facebook never fetched) | Low | Task 4 asserts the fetched count before issuing any request and fails with the full candidate list if that ever changes |
 | A dead link or an off-allow-list host reaches the demo — the exact fault the deck criticises Mel's site for | High | Group 3 lands at task 11, before any screen content, with both negative controls demonstrated, and runs on every verify invocation thereafter; task 24 extends it over the exported deck using the existing single-pass `manifest.links[]` (no second fetch, §9 one-pass); task 25's manifest audit confirms every entry is still resolved |
 | The chip↔manifest bijection passes vacuously, or a chip is added to the manifest to make the assertion green | High | Group 11 pins the set against the nine ids §6.0 enumerates, not merely set-equality, and ships with three self-contained negative controls at task 11 (see that task for why they're injection-based rather than assuming a real screen); CP5 puts the chips in front of the owner on a phone |

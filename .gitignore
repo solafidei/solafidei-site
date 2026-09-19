@@ -47,3 +47,8 @@ next-env.d.ts
 # scripts/fetch-mels-fixtures.mjs (spec §9: one pass over the live site;
 # never committed, never re-fetched while the cache file exists)
 /.cache/mels-fixtures/
+
+# Mel's Skate Shop pitch — PR evidence screenshots produced by
+# scripts/shoot-mels-demo.mjs (task 20, issue #39); regenerated on demand,
+# never committed
+/public/decks/mels-skate-shop/.shots/
