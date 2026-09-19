@@ -555,7 +555,7 @@ T1 spine: branch + 2 rewrites + 6 stubs + verify skeleton (grp 1)
 ### Checkpoint: pre-PR evidence (owner gate)
 
 - [ ] MECHANICAL: Lighthouse mobile on Home and PDP ≥ 90 / ≥ 95 / ≥ 95, JSON saved, numbers transcribed verbatim (or the documented substitute, labelled, with no invented score).
-- [ ] MECHANICAL: `impeccable detect` zero error-level findings, or the unavailability recorded.
+- [ ] MECHANICAL: `impeccable detect` zero primary findings — the CLI has no error-level tier, it reports primary findings (which drive exit 2) and advisory findings (which never count) — or the raised-item path documented as Task 19's acceptance criteria at `:522` already allow for this same command, or the unavailability recorded. (#644)
 - [ ] MECHANICAL: six 390 × 844 screenshots captured; every verify group passes against `npm run start`, not just `npm run dev`.
 - [ ] OWNER: review the Lighthouse numbers, the impeccable output and the six screenshots and approve them as the PR evidence, or name what to re-shoot / chase.
 
