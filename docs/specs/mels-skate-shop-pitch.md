@@ -4,7 +4,7 @@ Status: APPROVED v2 (owner gate #486, 2026-09-14; §11 ruled #487–#493) · nex
 
 ## 1. Objective
 
-Build the package the owner uses to pitch Mel's Skate Shop (melsskateshop.co.za, Midrand) cold:
+Build the package the owner uses to pitch Mel's Skate Shop (melsskateshop.co.za, Eastgate Shopping Centre, Bedfordview) cold:
 
 1. **The deck** at `/decks/mels-skate-shop` — 12 slides (≤ 14), one claim + one piece of evidence per slide, demo link and "R0 upfront" by slide 4, the retainer ask on slide 10 (rand figure a placeholder), "how we'll know it worked" on slide 11, next step on 12.
 2. **The demo** at `/decks/mels-skate-shop/demo` — six screens Melony can tap through on her phone: Home · Roller Derby hub · Aura Sky 100 product page · Size Finder → WhatsApp · Book a fitting · canonical contact block on every page.
@@ -29,7 +29,7 @@ Build the package the owner uses to pitch Mel's Skate Shop (melsskateshop.co.za,
 6. **The deck is authored as a design canvas** (`design` skill). The LUX and Optimus decks are Claude Design **"Bundled Page" HTML exports** (`__bundler/*` markers, 11–18 MB) — an owner-side browser export, not something this pipeline produces. So: the build delivers the canvas; the owner exports it to `public/decks/mels-skate-shop/index.html`. Fallback = hand-authored HTML slides, §9 "ask first" (ruled #487).
 7. **Shipping is two-tier and Mel's two pages disagree.** Homepage: **R100 Gauteng · R150 elsewhere · 1–3 days** (`audit.json` strengths; report L46). `/shipping-information/`: R100 JHB/PTA · R180 other. The demo shows the homepage figures everywhere (promise row, `contact.json`), sourced to the homepage in the manifest; the deck's slide 3 names the contradiction with both URLs; report §10 Mel-question 5 is the ask.
 8. **Instalments:** PayJustNow is pay-in-3 at 0 % (report §7) but Mel's is **not onboarded** (report §10 developer-question 5), so the line is a proposal: "or 3 interest-free instalments of R4,016.67 — PayJustNow, once onboarded" with a "proposed" chip. `instalments(priceCents)` returns three cent amounts that sum exactly to the price (remainder on the first); the display shows the first. The report's "4 × R3,887" line is a pay-in-4 slip and is not reused.
-9. **Address** Swallow Drive 20, Midrand 1686 comes from Roll-Line's dealer listing, not Mel's site (which publishes none). Shown, and flagged "confirm" in the manifest (ruled #489).
+9. **Address** Roll-Line's dealer listing gives Swallow Drive 20, Midrand 1686; Mel's site publishes none and its own site-wide banner says the shop has relocated to Eastgate Shopping Centre. #489 first ruled the street address shown-and-flagged, but **#504 superseded it: neither candidate address survived scrutiny, so the demo asserts no street address at all** — the maps/waze entries stay in the manifest as audit trail, emitted by no page. Place is named as Eastgate Shopping Centre (#544, #548).
 10. **Hours** are Mel's published **by-appointment** hours (Wed 12:00–18:00 … Sun 09:30–16:00, `audit.json`). The demo says "by appointment" and never "walk-ins welcome" (that line is Double Threat's practice, report L404, not Mel's). Phone +27 82 370 6771 → `tel:` and `https://wa.me/27823706771`; email melony@melsskateshop.co.za. Deep links only; nothing automated.
 11. **Reviews:** Mel's has one public review (Facebook, Elizabeth de Lange, 2 Nov 2022). The demo quotes that one, plus the two verifiable credentials (Roll-Line dealer listing, Roadhouse "recommended shop"). **No invented reviews, ratings, follower counts or Lighthouse scores.**
 12. **Fit Guarantee is a proposal, not a policy.** Report §5.9 wording is used as the draft terms and every mention carries the "proposed" chip (§6.0); the drafted terms are shown under the chip wherever the guarantee appears (ruled #493).
@@ -106,7 +106,7 @@ One header duplicated verbatim between `<!-- shared:header -->` markers on all f
 
 ### 6.1 Home (`/demo`) — angles 2, 6, 7
 1. **Promise row** (persistent, top): "R100 Gauteng · R150 elsewhere · 1–3 days" (homepage figures) · "Fit Guarantee" (chip) with the one-line terms beneath — "30 days, unworn outdoors · not on imported-to-order boots" — linking to the full terms on the PDP (ruled #493) · "Official Roll-Line dealer" (links to the saved Roll-Line listing screenshot, §6.7 slide 2 — the locator URL shows nothing without a query) · "WhatsApp us".
-2. **Hero:** "South Africa's skate specialists since 2012. First roller derby shop in the country. Official Roll-Line dealer. Fitted by skaters, in Midrand, shipped everywhere." Roll-Line badge beside it. Primary CTA "Find my size", secondary "Book a fitting".
+2. **Hero:** "South Africa's skate specialists since 2012. First roller derby shop in the country. Official Roll-Line dealer. Fitted by skaters at Eastgate Shopping Centre, shipped everywhere." (place per #548) Roll-Line badge beside it. Primary CTA "Find my size", secondary "Book a fitting".
 3. **Six discipline cards:** Roller Derby (→ hub, 8) · Artistic & Rhythm (48) · Recreational Quad (71) · Kids & Adjustable (17 adjustable · 30 in kids sizes) · Ice & Figure (35) · Inline (28) — counts from `store:categories`; the five unbuilt cards link to Mel's live category pages built as `/product-category/<slug>/` from the categories endpoint's `slug` (or its `link` field when present), tagged "live site", each checked by the fetch script (§7.3).
 4. **Size Finder CTA band** — one sentence + button.
 5. **In-stock hero products:** four real derby/rec SKUs from `products.json` with `is_purchasable && is_in_stock`; card = image, name, price, instalment line (chip), stock badge.
@@ -126,7 +126,7 @@ One header duplicated verbatim between `<!-- shared:header -->` markers on all f
 3. **Title** "Aura Sky 100 Ice Skate Boot — White" with a one-line note "also stocked in black" (the black record exists; its listing is a duplicate, so it is not linked).
 4. **Price** R12,050 (rendered from `products.json`) → "or 3 interest-free instalments of R4,016.67 — PayJustNow, once onboarded" (chip).
 5. **Fit Guarantee** beside the price (chip), with terms shown (ruled #493) — report §5.9 as draft: *"Mel's Fit Guarantee — if it doesn't fit, we exchange it. 30 days, unworn outdoors."* Three literal lines beneath: what qualifies (unworn outdoors, original box, guards unfitted) · who pays the courier each way · how to start (one WhatsApp message with the order number). Then the imported-boot carve-out in bold: **no fit-based exchange on custom or imported-to-order boots — size confirmed with us on WhatsApp before we order.**
-6. **Size selector:** buttons for the illustrative mm run inside the selection chart's bands (chip on the fieldset legend; ruled #488); selecting one updates a line: "Size 240 · in stock in Midrand" / "Size 250 · imported to order, ~2 weeks" / "Size 265 · notify me". Measurements shown in the label. "Not sure? Find my size" link (finder pre-set to Ice/Aura, which runs the "Which Sky?" step first).
+6. **Size selector:** buttons for the illustrative mm run inside the selection chart's bands (chip on the fieldset legend; ruled #488); selecting one updates a line. **#589 struck two of the three states**: Aura Sky boots are imported to order and never held in stock, so every size reads the one true line "Size 250 · imported to order, approx. 2 weeks" ("approx.", not "~", per #512). Measurements shown in the label. "Not sure? Find my size" link (finder pre-set to Ice/Aura, which runs the "Which Sky?" step first).
 7. **Fit note in Melony's voice** (`draft-copy`).
 8. **Spec table:** boot only (blade sold separately), heat-mouldable, level, stiffness — values marked "confirm" unless sourced from Aura.
 9. **Service checkbox:** "Heat-mould & fit in store — R___" (a foot-in-boot custom mould — Mel's own PDP says she performs this) and "Mail-in heat-mould — R___ + courier" (a pre-ship bake; `confirm` flag — report §10 Mel-question 3 asks which she actually does) (chips); ticking updates a running total.
@@ -151,7 +151,7 @@ Single page, three steps on one screen, no wizard:
 5. Contact block.
 
 ### 6.6 Canonical contact block (every page)
-Phone (`tel:`) · WhatsApp (`wa.me`) · email (`mailto:`) · address (Swallow Drive 20, Midrand 1686 — shown, flagged `confirm`, ruled #489) + "Open in Google Maps" / "Waze" links (no embedded map, no third-party script) · hours (by appointment) · Facebook link (facebook.com/melsskateshopofficial — **unconfirmed**: facebook.com and m.facebook.com bot-block scripts, `audit.json` issue 10; the owner opens it once in a real browser before the PR and ticks `manifest.links[]` `status: "manual-ok"`, otherwise it is dropped) · courier line "R100 Gauteng · R150 elsewhere · 1–3 days". Floating WhatsApp button on ≤ 768 px.
+Phone (`tel:`) · WhatsApp (`wa.me`) · email (`mailto:`) · no street address and no maps/waze links (**#504** — neither candidate address survived; the manifest entries are audit trail, emitted by no page) · "We fit in person in Gauteng, by appointment." · hours (by appointment; Wed 12:00-18:00 through Sun 09:30-16:00) · Facebook link (facebook.com/melsskateshopofficial — **unconfirmed**: facebook.com and m.facebook.com bot-block scripts, `audit.json` issue 10; the owner opens it once in a real browser before the PR and ticks `manifest.links[]` `status: "manual-ok"`, otherwise it is dropped) · courier line "R100 Gauteng · R150 elsewhere · 1–3 days". Floating WhatsApp button on ≤ 768 px.
 
 ### 6.7 The deck (`/decks/mels-skate-shop`) — slide list
 | # | Slide | Evidence on the slide |
@@ -220,7 +220,7 @@ Static, boring, honest. One snippet shows the conventions:
 
 ```js
 // assets/pdp.js — no framework, no build; one module per page
-const STATES = { in_stock: 'in stock in Midrand', lead_time: w => `imported to order, ~${w} weeks`, notify: 'notify me when it lands' };
+const STATES = { leadTime: w => `imported to order, approx. ${w} weeks` }; // one entry survives, #589
 export function availabilityText(el) { /* ponytail: strings live here, not in HTML, so the copy is editable in one place */ }
 export function instalments(priceCents, n = 3) { /* three cent amounts summing exactly to priceCents; remainder on the first */ }
 ```
@@ -280,7 +280,7 @@ All seven ruled by the owner on 2026-09-14 (decision log #487–#493); the secti
 |---|---|
 | 1 Deck export | Claude Design canvas, owner exports to `index.html`; hand-authored HTML only as a §9 "ask first" fallback (#487) |
 | 2 Aura size run | mm bands + illustrative per-size run, chipped "proposed" (#488) |
-| 3 Address | shown, flagged `confirm` (#489) |
+| 3 Address | shown, flagged `confirm` (#489) — **superseded by #504**: no street address asserted at all; place named as Eastgate Shopping Centre (#544, #548) |
 | 4 Fitting prices | durations + chipped illustrative prices (#490) |
 | 5 Slide 10 | (a) "from R ______ / month", figure still a placeholder (#484); (b) day-30 get-out kept as worded; (c) third-party tools inside the retainer, no pass-through line (#491) |
 | 6 Header branding | Mel's current logo, fetched read-only, saved locally, recorded in the manifest (#492) |
