@@ -1,0 +1,210 @@
+[
+  {
+    "n": 1,
+    "title": "Cover — Mel's Skate Shop × Solafidei",
+    "headline": "Nobody asked me to build this one. I did it anyway.",
+    "body": [
+      "Mel's Skate Shop × Solafidei",
+      "I build storefronts for South African specialist retailers.",
+      "I read 26 skate shops' websites before I picked yours.",
+      "The next eleven slides are why it was yours and not one of the other twenty-five."
+    ],
+    "claim": "A stranger read 26 skate shops end to end, uninvited, and picked this one.",
+    "evidence": "26 full teardowns, done page by page before a line of this deck existed.",
+    "exempt": true
+  },
+  {
+    "n": 2,
+    "title": "The moat nobody can see",
+    "headline": "In South Africa, only one shop carries ice, artistic and derby under one roof. It's yours.",
+    "body": [
+      "Roll-Line lists you as a dealer, in Roll-Line's own database. Anyone can check it in thirty seconds — and almost nobody can get it.",
+      "A manufacturer dealership is not buyable. Roll-Line sells to no private buyers at all.",
+      "Roadhouse Roller Rink names you its recommended shop — roadhouserollerrink.co.za, Eastgate, Bedfordview.",
+      "Your only real SA peer is Lino Skate Shop, Cape Town, founded 2015. Its brands are quad and recreational — Impala, Rio Roller, Micro, Chaya, Cosmo ID.",
+      "First roller derby shop in the country, trading since 2012.",
+      "Neither the dealership nor the Roadhouse recommendation appears anywhere on melsskateshop.co.za — and the 2012 story is one unused line on your About page."
+    ],
+    "claim": "Mel's is the only shop in South Africa covering ice, artistic and derby under one roof.",
+    "evidence": "Across 26 full teardowns the only other South African specialist is Lino Skate Shop, Cape Town, and its range is quad and recreational: Impala, Rio Roller, Micro, Chaya, Cosmo ID.",
+    "footnote": "Screenshot: /decks/mels-skate-shop/img/roll-line-listing.webp — the Roll-Line locator at https://roll-line.it/en/dealers with the country filter set to South Africa, since the bare URL shows nothing until that filter runs (per the demo manifest's capture note). The listing reads MEL'S SKATE SHOP, Swallow Drive 20, Midrand 1686: report L12. Dealer status is scarce because Roll-Line sells to no private buyers: report L41. Roadhouse \"RECOMMENDED SHOP\": https://roadhouserollerrink.co.za/ (report L44; Eastgate, Bedfordview at report L655). First roller derby shop in South Africa, trading since 2012, stated on melsskateshop.co.za/about/: report L40. Lino Skate Shop, Cape Town, founded 2015, the only real SA peer, stocking Impala, Rio Roller, Micro, Chaya and Cosmo ID: report L649. \"The only shop in SA under one roof\" is my inference from that survey rather than a quoted line — the report finds no other credible multi-discipline SA specialist (report L11). Neither the dealership nor the Roadhouse recommendation appears on melsskateshop.co.za: report L12.",
+    "link": "https://solafidei.com/decks/mels-skate-shop/img/roll-line-listing.webp",
+    "note": "For the canvas: the link is a .webp image, not a page. Show the screenshot inline with an enlarge affordance, or open it in a new tab, so tapping it does not drop the reader out of the deck."
+  },
+  {
+    "n": 3,
+    "title": "Five things I'd fix in your first week — bigger shops ship the same bugs",
+    "headline": "Then I opened your shop page. It says \"No results\" on a page listing 430 products.",
+    "body": [
+      "It is a pre-rendered string in the HTML. Not a search result — it is in the page before anyone searches.",
+      "/shop/ lists 430 products and says it. Roller skates, 98. Ice, 35.",
+      "SkatePro ships the identical hidden placeholder, with zero product markup, on a 55-SKU category. Same bug, a 20,000-SKU shop.",
+      "Fix: category pages rendered on the server, an empty state only after a real zero-result query resolves.",
+      "Second: your booking hops off-domain to Koalendar. Spotech hands its booking to Naver Booking — one of four of the 16 new teardowns that do the same.",
+      "Fix: booking on your own domain.",
+      "Three more in the footnote. Five in all, and all five are a week's work. These are not your failings. They are the trade's, and they are cheap."
+    ],
+    "claim": "A 430-product catalogue is announcing \"No results\" to crawlers and screen readers before anyone has searched for anything.",
+    "evidence": "A hidden live-region announcing \"No results\" sits in the served HTML of three category pages — /shop/ (430 products), /product-category/roller-skates/ (98) and /product-category/ice-skates/ (35).",
+    "footnote": "The markup, raw HTML on all three pages — <div class=\"screen-reader-text\" aria-live=\"polite\" role=\"status\"> No results</div> — report L13 and L61. SkatePro's twin, a hidden no_products_match_message with zero product markup on a 55-SKU category: report L14, L569 and L148. Spotech to Naver Booking, four of the 16 new teardowns routing booking off-domain: report L352. The three demoted faults, same week: every social icon on the homepage is href=\"#\" — 7 of them, 3 Facebook, 3 Instagram and 1 Twitter across header and footer (audit.json issue 1, grep-confirmed; report L55 tallies 11 while listing the same 3/3/1, so the grep count is used, and the report carries no peer twin for this one, so none is invented) · /contact-us/ and /book-an-appointment/ both 404 — the obvious URLs for a contact page and a booking page, while the live contact page is /contact/ and the booking button points off-domain to koalendar.com (report L57, L59; twin: ProSkaters Place 404s its own /about-us, report L318) · the homepage quotes R100/R150 shipping while /shipping-information/ quotes R100/R180 (report L60; twin: Willies shows \"Sold out\" on all 21 sizes beside a widget on the same page reading \"Only 3 left! In Stock\", report L14). These are the five the demo's Home, derby hub, booking page and shared contact block fix.",
+    "note": "For the canvas: this footnote is the longest in the pack and its first clause contains literal HTML. Escape it on render, and lay the three demoted faults out as separate lines rather than one paragraph."
+  },
+  {
+    "n": 4,
+    "title": "See it fixed — tap through six screens",
+    "headline": "I didn't write you a proposal. I built it. Tap it.",
+    "body": [
+      "Six screens: your home page · the derby hub · the Aura Sky 100 · the Size Finder · booking — and this deck.",
+      "102 of your products, your prices, your photography — pulled straight off your store.",
+      "Category pages that render. Booking that never leaves your domain. Every contact link going somewhere.",
+      "Anything you have not promised wears a small \"proposed\" chip, so you can see what is mine and what is yours.",
+      "R0 upfront. Nothing before the work — slide 10 has the rest.",
+      "Go through it. It is your shop. Tell me what I got wrong.",
+      "solafidei.com/decks/mels-skate-shop/demo"
+    ],
+    "claim": "Every fault on the last slide is already repaired in a working demo of your shop, built from your own catalogue before anyone asked for it.",
+    "evidence": "Five working demo screens plus this deck, live at /decks/mels-skate-shop/demo — index, roller-derby, aura-sky-100, size-finder and book-a-fitting — running on Mel's own product data.",
+    "footnote": "Five demo screens — home, the derby hub, the Aura Sky 100, the Size Finder and booking — plus this deck as the sixth, all built on Mel's own catalogue, prices and photography. The \"proposed\" chips mark everything that is my proposal rather than your existing policy.",
+    "link": "https://solafidei.com/decks/mels-skate-shop/demo",
+    "note": "URL assumption — https://solafidei.com/decks/mels-skate-shop/demo is the site's canonical domain plus the deck path; nothing is deployed yet. Confirm the demo resolves before this deck is sent. The demo carries 102 of the 430 products; the full catalogue figure belongs on slide 9, about the live shop."
+  },
+  {
+    "n": 5,
+    "title": "The lost sale",
+    "headline": "Someone went looking for you by name, and left.",
+    "body": [
+      "r/southafrica. A Gauteng skater, verbatim: \"i found mels skate shop but they're all out of stock :(\"",
+      "They found you. That is the hard part, and you had already done it.",
+      "Your ice category still interleaves SOLD OUT accessories with in-stock boots from R7,850 to R15,550.",
+      "No waitlist, no notify-me on those pages — so that visitor left no trace and no address.",
+      "This is not a design opinion. It is a buyer with money who could not tell what you had.",
+      "Straight with you on the evidence: Reddit blocked the full thread, so that line is a verbatim search-index excerpt — directional signal, not measured demand."
+    ],
+    "claim": "A buyer who had already found Mel's by name left with nothing, because the page could not tell them what was in stock.",
+    "evidence": "The r/southafrica line, quoted verbatim: \"i found mels skate shop but they're all out of stock :(\"",
+    "footnote": "The quote, attributed to a Gauteng skater, as a verbatim search-index excerpt: report L15 and L670. What was corroborated live is the stock-out itself, not the thread — Reddit blocked full retrieval on every access path, so all quotes are search-index excerpts: report L678. Sold-out accessories interleaved with in-stock R12,050 boots, and no waitlist: report L846; the R7,850 to R15,550 range at report L15."
+  },
+  {
+    "n": 6,
+    "title": "I read 26 skate shops' websites, including your Cape Town competitor",
+    "headline": "Two shops in twenty-six answer \"what size\". Two take the booking themselves. None of them is in South Africa.",
+    "body": [
+      "About 140 skate shops found. 26 read page by page.",
+      "Interactive size calculator: 2 of 26 — ProSkaters Place and Pigeon's.",
+      "Booking treated as a primary conversion path: 2 of 26 — Figure Skating Boutique and Lucky Skate. Only Figure Skating Boutique keeps it on its own domain.",
+      "Services sold as cart products: proven but rare — SkatePro, Schlittschuh, L'Estel, RollerFit, Derby Warehouse.",
+      "Instalments: Skate Attack and Willies in the UK, Lucky Skate in Finland. Still zero in SA skate retail — PayJustNow and Ozow would close that, once onboarded.",
+      "Lino Skate Shop, Cape Town, is in the set — quad and recreational brands, and on neither of those two lists.",
+      "These are not catch-up items. There is nothing to catch up to."
+    ],
+    "claim": "The two features that would put Mel's in front are almost absent from the whole category, here and overseas.",
+    "evidence": "Across 26 full teardowns, booking is treated as a primary conversion path on just 2.",
+    "footnote": "Survey size — 165 raw entries deduplicated to ~140 unique shops: report Appendix E, L994; all 26 teardowns: report §4, L139. Interactive size calculator, ProSkaters Place and Pigeon's: scoreboard row 8 at L601, with the v1 correction at L18. Only two of 26 treat booking as a primary conversion path: report L855; report L352 names them, Figure Skating Boutique and Lucky Skate, and of the two only Figure Skating Boutique keeps booking on its own domain, embedding Calendly in its contact page (report L354) — Lucky Skate routes out to vello.fi, one of the four that leave the domain exactly as Mel's does (report L352). Services as cart products: scoreboard row 14 at L607. Instalments — Skate Attack and Willies in the UK, Lucky Skate in Finland, still zero in SA skate retail: scoreboard row 35 at L628 and the v1 correction at L17; PayJustNow and Ozow onboarding terms are an open question (report L921). Lino Skate Shop, Cape Town, and its brands: report L649."
+  },
+  {
+    "n": 7,
+    "title": "The concept",
+    "headline": "You are already the answer to \"which one, and what size\". The storefront has to say so.",
+    "body": [
+      "Heritage: 2012. The first roller derby shop in the country.",
+      "Credentials: listed Roll-Line dealer.",
+      "Service: fitted by Melony, by name, in the shop. The build takes that expertise remote and puts a named guarantee behind it.",
+      "(The demo's \"Mel's Fit Guarantee — 30 days, unworn outdoors\" is illustrative until you set the terms.)",
+      "Then six doors, each carrying your own catalogue count:",
+      "Roller Derby 8 · Artistic & Rhythm 48 · Recreational Quad 71",
+      "Kids & Adjustable 17 adjustable, 30 in kids sizes · Ice & Figure 35 · Inline 28",
+      "Heritage and credentials are already yours. The storefront's work is to state them, then answer which one and what size."
+    ],
+    "claim": "Mel's positioning is already true and already owned, so the storefront's work is to state it and then answer \"which one, and what size\".",
+    "evidence": "Six discipline counts read straight from store:categories — Roller Derby 8, Artistic & Rhythm 48, Recreational Quad 71, Kids & Adjustable 17 adjustable plus 30 in kids sizes, Ice & Figure 35, Inline 28.",
+    "footnote": "Three pillars, all verifiable — heritage, credentials, service: report L705, where \"available remotely, backed by a named fit guarantee\" is the proposed positioning rather than a description of today. Heritage stated on melsskateshop.co.za/about/: report L40. The six counts come from store:categories and are mirrored as the six \"What we fit\" cards on the demo Home; the Kids & Adjustable card shows two figures, not a sum. The fit-guarantee wording is proposed copy carried in the demo as illustrative, not Mel's existing policy, which is why the slide says so."
+  },
+  {
+    "n": 8,
+    "title": "Demo: Size Finder → WhatsApp",
+    "headline": "Two of twenty-six shops answer \"what size\". Yours can be the third.",
+    "body": [
+      "Three steps on one screen. No wizard, no account, no sign-up.",
+      "Measure once — foot length in cm, or your shoe size, or a skate you already own.",
+      "Out comes the size in that brand's own scale, the full cm · UK · EU · US row, and a line saying brands differ by 1-2 full sizes.",
+      "Ice adds one step — \"Which Sky?\" — read straight off Aura's own selection chart.",
+      "Roll-Line has no published table, so the tool says so and hands the conversation to WhatsApp with the numbers already in it.",
+      "Out of range, unknown brand, no table: it still ends in a message to you. Never a dead end.",
+      "Your fitting expertise, working at 11pm, arriving in your hand as a lead."
+    ],
+    "claim": "The Size Finder is a leapfrog rather than catch-up, and it is already running on Mel's own catalogue.",
+    "evidence": "An interactive size calculator ships on 2 of the 26 shops torn down — ProSkaters Place and Pigeon's — against a working tool at /decks/mels-skate-shop/demo/size-finder.",
+    "footnote": "2 of 26: scoreboard row 8 at report L601, with the v1 correction at L18, which calls a size calculator still a leapfrog, just no longer an unprecedented one. Roll-Line and Aura, the two flagship lines, appear to have no entry on Mel's own /size-chart/ page — and none was reachable anywhere else either: report L47 and L188. The 1-2 full sizes variance line: report L182.",
+    "link": "https://solafidei.com/decks/mels-skate-shop/demo/size-finder"
+  },
+  {
+    "n": 9,
+    "title": "How it's built",
+    "headline": "You keep WooCommerce. You keep your admin. You keep all 430 products.",
+    "body": [
+      "A Next.js storefront in front of the Woo you already run. Your payment gateway and your courier stay exactly where they are.",
+      "Your stack is not the problem: WooCommerce 11.0.1, Blocksy, PHP 8.3.33 on LiteSpeed — and a server that already answers in about 230 ms.",
+      "Every category page rendered on the server, finished before the browser arrives.",
+      "Why that matters: SkatePro and Spotech both ship category pages with zero product markup to a crawler or a slow connection.",
+      "That is the \"No results\" bug at full scale, and a pre-rendered page cannot do it.",
+      "Why this is not ProSkaters Place: their headless rebuild left /about-us 404, dev. and test. subdomains crawlable, and \"- WooNuxt\" leaking into their indexed page titles.",
+      "So: pre-rendered category pages, a redirect for every web address you already have so nothing breaks, no template names in any title, and Woo stays the source of truth."
+    ],
+    "claim": "A pre-rendered storefront over the WooCommerce Mel's already runs removes the failure mode without moving the shop.",
+    "evidence": "SkatePro and Spotech both ship category pages with zero product markup to a crawler or a slow connection — which is the \"No results\" bug at scale, and it is impossible on pre-rendered pages.",
+    "footnote": "Server-rendered category pages as a genuine robustness advantage over two of the largest sites in the benchmark: report L806. ProSkaters Place migration debt — /about-us 404, dev. and test. subdomains resolving, \"- WooNuxt\" leaking into indexed titles, and the complete 301 map requirement: report L318 and L571. Platform facts — WooCommerce 11.0.1, Blocksy, PHP 8.3.33 on LiteSpeed, TTFB ~230 ms: report L13. Catalogue depth, 430 SKUs: report L42. The nationwide courier already running at R100/R150, 1-3 days: report L42; the live payment gateway could not be determined without completing a checkout (audit.json), so this deck names neither and the build changes neither."
+  },
+  {
+    "n": 10,
+    "title": "How we work together",
+    "headline": "One number a month. Nothing up front. Out at day 30 if I don't deliver.",
+    "body": [
+      "R0 upfront · 12-month minimum · from R ______ / month",
+      "Why R0: the build is paid across the 12 months, not before it. You are not funding a project up front — you pay as it goes live.",
+      "Month 1 — the five fixes, WhatsApp, the contact block, the derby hub. That is the list day 30 is measured against.",
+      "Months 2-3 — the Size Finder, booking on your own domain, the Aura page pattern across the ice range.",
+      "Month 4 on — per-size stock truth and notify-me, service SKUs, reviews seeded then switched on.",
+      "Social posting every month, throughout.",
+      "Tools are inside the retainer: one monthly number covers labour and tools, no pass-through line.",
+      "What's yours: the site, the code and the domain are yours from day one.",
+      "The get-out: if the month-1 list isn't live by day 30, walk away owing nothing."
+    ],
+    "claim": "Nothing is paid before the work — the build is paid across the twelve months.",
+    "evidence": "R0 upfront and a 12-month minimum: the build cost is spread across the twelve retainer months rather than invoiced before the work.",
+    "footnote": "Month 1 / months 2-3 / month 4-on is my sequencing of the report's launch scope, which sequences the work and marks the expensive items as later phases (report L881) — the month boundaries are mine, not a quoted line. Third-party recurring tools sit inside the retainer: one monthly number covers labour and tools, no pass-through line."
+  },
+  {
+    "n": 11,
+    "title": "How we'll know it worked",
+    "headline": "Four numbers, written down before we start. Month 12 is checkable, not arguable.",
+    "body": [
+      "Four counters, and here is where each one stands today.",
+      "Enquiries by channel — WhatsApp, phone, email. There is no WhatsApp channel at all today.",
+      "Service-SKU revenue: R0. You already do the fitting work. It is not priced.",
+      "Review count: 1. Elizabeth de Lange, Facebook, 2 November 2022.",
+      "Notify-me captures: one ad-hoc line, hand-written on one SKU. Nothing systematic.",
+      "None of these is a projection. They are countable in month 12 the same way they are countable now.",
+      "No new analytics, no dashboard to buy, and nowhere for either of us to hide."
+    ],
+    "claim": "Every measure has a baseline that can be written down today, so month 12 is checkable rather than arguable.",
+    "evidence": "One public review anywhere, from 2022 — Elizabeth de Lange, Facebook, 2 November 2022.",
+    "footnote": "Enquiries by channel, service-SKU revenue currently R0, and review count as the measurables, none invented: report L884. The one public review anywhere — Elizabeth de Lange, Facebook, 2 November 2022: report L16, mirrored as demo/data/manifest.json fact one-public-review. The live notify-me line, quoted verbatim, and the absence of any systematic notify-me: report L287, mirrored as manifest fact notify-me-adhoc."
+  },
+  {
+    "n": 12,
+    "title": "Next step",
+    "headline": "Thirty minutes is the whole ask.",
+    "body": [
+      "A 30-minute call, or I come to Mel's and we go through it on your counter — whichever is less trouble for you.",
+      "Open the demo on your phone first: solafidei.com/decks/mels-skate-shop/demo",
+      "QR code — for the laptop or the printed copy.",
+      "Every number in this deck is either sourced or marked as proposed. Ask me for the source on any line and I will show you where it came from.",
+      "[presenter name] · [presenter mobile] · [presenter email]"
+    ],
+    "claim": "The entire ask is one 30-minute conversation, on the phone or in the shop.",
+    "evidence": "The demo is already built — five screens of your own shop plus this deck, and nothing on it needs a login, an install or a decision from you.",
+    "exempt": true,
+    "link": "https://solafidei.com/decks/mels-skate-shop/demo",
+    "note": "Owner input required before render: presenter name, mobile and email. Not filled from git author metadata — not a permitted source. URL assumption — https://solafidei.com/decks/mels-skate-shop/demo is the site's canonical domain plus the deck path; nothing is deployed yet, so confirm the demo resolves before this deck is sent."
+  }
+]
