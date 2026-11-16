@@ -110,7 +110,11 @@ export default function RootLayout({
               url: "https://solafidei.com",
               logo: "https://solafidei.com/logo_opaque_smaller.png",
               email: "info@solafidei.com",
-              sameAs: [],
+              sameAs: [
+                "https://www.linkedin.com/company/solafidei",
+                "https://www.instagram.com/sola.fidei/",
+                "https://www.facebook.com/profile.php?id=61590645442169",
+              ],
             }),
           }}
         />

@@ -1,4 +1,15 @@
 import Link from "next/link";
+import { IconBrandFacebook, IconBrandInstagram, IconBrandLinkedin } from "@tabler/icons-react";
+
+const socials = [
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/solafidei", Icon: IconBrandLinkedin },
+  { label: "Instagram", href: "https://www.instagram.com/sola.fidei/", Icon: IconBrandInstagram },
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=61590645442169",
+    Icon: IconBrandFacebook,
+  },
+];
 
 const columns = [
   {
@@ -46,6 +57,20 @@ export function Footer() {
               We design and build modern, intuitive web and mobile apps to help you launch and scale
               with confidence.
             </p>
+            <div className="mt-6 flex items-center gap-4">
+              {socials.map(({ label, href, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Solafidei on ${label}`}
+                  className="text-muted transition-colors hover:text-foreground"
+                >
+                  <Icon size={20} stroke={1.5} aria-hidden />
+                </a>
+              ))}
+            </div>
           </div>
 
           {columns.map((col) => (
